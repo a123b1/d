@@ -720,7 +720,10 @@ function chdir(e,) {
     }
     const currentUrl = new URL(window.location.href);
     currentUrl.pathname = "/" + path;
-    history.pushState(null, null, currentUrl.toString());
+    const newUrl = currentUrl.toString();
+    if (newUrl !== window.location.href) {
+        history.pushState(null, null, currentUrl.toString());
+    }
     toggleAnimation(true);
     _chdir(e);
 }
