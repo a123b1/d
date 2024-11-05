@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DIndex</title>
+    <title>FDIndex</title>
     <link rel="icon" href="data:;base64,=" type="image/x-icon">
     <style>
         html {
@@ -426,7 +426,7 @@
 <div class="banner">
     <div class="banner-left">
         <div class="home">
-            <div id="home-click"><span>DIndex</span></div>
+            <div id="home-click"><span>FDIndex</span></div>
         </div>
         <span class="blank"></span>
         <div class="paths">
@@ -719,11 +719,15 @@ function addFile(attr) {
             if (e.target.classList.contains('item-content')) {
                 e.preventDefault();
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                console.log("收到拖放数据。", parsedObject,);
-                if (window.root_attr.upload && e.target.item_attr.type.toString() === 'folder') {
-                    if (confirm(`把文件${(parsedObject.type.toString() === ItemTypes.folder) ? "夹" : ""} “${parsedObject.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
+                let source = findFileItem(parsedObject);
+                console.log("收到拖放数据。", source, parsedObject,);
+                if (!source) {
+                    return;
+                }
+                if (window.root_attr.upload && e.target.item_attr.type.toString() === ItemTypes.folder) {
+                    if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
                         toggleAnimation(true);
-                        _move(parsedObject, e.target);
+                        _move(source, e.target);
                     }
                 }
             }
@@ -761,7 +765,7 @@ function addFile(attr) {
         if (e.target.classList.contains('item-content')) {
         }
     });
-    // console.log('initItem:', _new__content.item_attr, _new__content.parent_path.textContent,);
+    // console.log('initItem:', _new__content.item_attr, _new__content.parent_path.item_attr.name,);
 }
 
 
@@ -807,7 +811,7 @@ function chdir(e,) {
     if (e !== null && e.target.hasOwnProperty("item_attr")) {
         document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
     }
-    let path = spansArray.map(element => encodeURIComponent(element.textContent)).join("/");
+    let path = spansArray.map(element => encodeURIComponent(element.item_attr.name)).join("/");
     if (path.length >= 1) {
         path += "/";
     }
@@ -823,7 +827,7 @@ function chdir(e,) {
 
 async function _chdir(e,) {
     const baseUrl = new URL(window.location.href.replace(/#$/, ""));
-    // console.log('chdir:', e.target.textContent, baseUrl);
+    // console.log('chdir:', e.target.item_attr.name, baseUrl);
     try {
         const response = await fetch(baseUrl.href, {
             method: "POST", headers: {
@@ -855,14 +859,36 @@ async function _chdir(e,) {
     toggleAnimation(false);
 }
 
-async function _move(source, element,) {
+function findFileItem(attr) {
+    document.querySelectorAll('.item-content').forEach((item) => {
+        if (item.item_attr.id === attr.id) {
+            return item;
+        }
+    });
+    return null;
+}
+
+function getFullPath(element) {
+    let path = [];
+    while (true) {
+        if (element == null) {
+            break;
+        }
+        path.push(element.item_attr.name);
+        element = element.parent_path;
+    }
+    path.pop();
+    return "/" + path.map(name => encodeURIComponent(name)).reverse().join("/");
+}
+
+async function _move(source, to,) {
     const baseUrl = new URL(window.location.href.replace(/#$/, ""));
     try {
         const response = await fetch(baseUrl.href, {
             method: "POST", headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({action: "move", source: source, to: element.item_attr,}),
+            body: JSON.stringify({action: "move", source: getFullPath(source), to: getFullPath(to),}),
         });
         console.log("move:response:", response);
         if (!response.ok) {
@@ -894,7 +920,7 @@ function addPath(attr, parent_path) {
     let _new = container.querySelector('.path:last-child span'); // span
     _new.item_attr = attr;
     _new.parent_path = parent_path;
-    // console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
+    // console.log('initPath:', _new.item_attr.name, _new.parent_path == null ? null : _new.parent_path.item_attr.name,);
     _new.addEventListener('click', function (event) {
         if (event.target.tagName === 'SPAN') {
             chdir(event);
@@ -932,12 +958,13 @@ if (window.root_attr.upload === true) {
 
 
 let parent_path = document.querySelector('#home-click'); // div
+parent_path.item_attr = {name: parent_path.textContent,};
 parent_path.parent_path = null;
 parent_path.addEventListener('click', function (e) {
     chdir(e);
 });
 const pathList = window.location.pathname.split('/').map(decodeURIComponent).filter(part => part !== '');
-// console.log('initPath:', parent_path.textContent,);
+// console.log('initPath:', parent_path.item_attr.name,);
 for (const i of pathList) {
     parent_path = addPath(i, parent_path);
 }
