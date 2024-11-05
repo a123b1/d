@@ -892,6 +892,22 @@ function getFullPath(element) {
     return "/" + path.map(name => encodeURIComponent(name)).reverse().join("/");
 }
 
+function getPathCount() {
+    return document.querySelectorAll('.path').length;
+}
+
+function getPathIndex(element) {
+    let pathIndex = -1;
+    let i = 0;
+    document.querySelectorAll('.path').forEach((item) => {
+        if (item === element) {
+            pathIndex = i;
+        }
+        i++;
+    });
+    return pathIndex;
+}
+
 async function _move(source, to,) {
     const baseUrl = new URL(window.location.href.replace(/#$/, ""));
     try {
@@ -943,7 +959,6 @@ function addPath(attr, parent_path) {
             event.target.style.backgroundColor = "";
             const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
             let source = findFileItem(parsedObject);
-            console.log("收到拖放数据。", source, parsedObject,);
             if (!source) {
                 return;
             }
@@ -958,13 +973,10 @@ function addPath(attr, parent_path) {
     _new.addEventListener('dragover', function (event) {
         if (event.target.tagName === 'SPAN') {
             const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
-            // console.log("是否允许拖入。", e.target.item_attr);
-            if (window.root_attr.upload) {
-                // console.log("允许。",);
+            if (window.root_attr.upload && getPathIndex(event.target) + 1 !== getPathCount()) {
                 event.preventDefault();
                 event.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
             } else {
-                // console.log("不允许。",);
                 event.target.style.backgroundColor = "";
             }
         }
@@ -1003,12 +1015,44 @@ parent_path.parent_path = null;
 parent_path.addEventListener('click', function (e) {
     chdir(e);
 });
+parent_path.addEventListener('drop', function (event) {
+    event.preventDefault();
+    event.target.style.backgroundColor = "";
+    const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
+    let source = findFileItem(parsedObject);
+    if (!source) {
+        return;
+    }
+    if (window.root_attr.upload) {
+        if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""} “${source.item_attr.name}“ 移至 “${event.target.item_attr.name}” ？`)) {
+            toggleAnimation(true);
+            _move(source, event.target);
+        }
+    }
+});
+parent_path.addEventListener('dragover', function (event) {
+    const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
+    if (window.root_attr.upload) {
+        event.preventDefault();
+        event.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
+    } else {
+        event.target.style.backgroundColor = "";
+    }
+});
+parent_path.addEventListener('dragenter', function (event) {
+    event.preventDefault();
+});
+parent_path.addEventListener('dragleave', function (event) {
+    event.preventDefault();
+    event.target.style.backgroundColor = "";
+});
 const pathList = window.location.pathname.split('/').map(decodeURIComponent).filter(part => part !== '');
 // console.log('initPath:', parent_path.item_attr.name,);
 for (const i of pathList) {
     parent_path = addPath(i, parent_path);
 }
 parent_path.click();
+
 
 window.addEventListener('popstate', function (event) {
     location.reload();
