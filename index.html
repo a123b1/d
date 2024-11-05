@@ -522,6 +522,12 @@ const Types = Object.freeze({
     google_drive: 1,
 });
 
+const ItemTypes = Object.freeze({
+    file: "file",
+    folder: "folder",
+    symlink: "symlink",
+});
+
 function toggleAnimation(show,) {
     const progress_bar = document.getElementById("progress-bar");
     const progress = document.getElementById("progress");
@@ -557,7 +563,7 @@ function addFile(attr) {
     let container = document.querySelector('.list')
     let _new;
     let _new__content;
-    if (attr.type.toString() === 'file') {
+    if (attr.type.toString() === ItemTypes.file) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
     <div class="item-content" draggable="true">
@@ -637,7 +643,7 @@ function addFile(attr) {
                 console.log('Clicked:', e.target.textContent);
             });
         }
-    } else if (attr.type.toString() === 'folder') {
+    } else if (attr.type.toString() === ItemTypes.folder) {
         let url = new URL(window.location.href);
         if (!url.pathname.endsWith('/')) {
             url.pathname += "/";
@@ -715,23 +721,9 @@ function addFile(attr) {
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
                 console.log("收到拖放数据。", parsedObject,);
                 if (window.root_attr.upload && e.target.item_attr.type.toString() === 'folder') {
-                    if (confirm(`把文件${(parsedObject.type.toString() === 'folder') ? "夹" : ""} “${parsedObject.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
-                        // var n = new XMLHttpRequest;
-                        // var r = new URL(fileUrl);
-                        // var params = new URLSearchParams(r.search);
-                        // params.set("move", "true");
-                        // params.set("source", data[0]);
-                        // params.set("to", event.currentTarget.getAttribute('resourceId'));
-                        // params.set("rootId", t.$route.query.rootId || window.props.default_root_id);
-                        // r.search = params.toString();
-                        // n.onreadystatechange = function () {
-                        //     if (n.readyState === 4) {
-                        //         t.renderPath(t.path, window.props.default_root_id);
-                        //     }
-                        // };
-                        // console.log(r.href);
-                        // n.open("PUT", r.href), localStorage.token && n.setRequestHeader("Authorization", "Basic " + localStorage.token), n.send(i)
-
+                    if (confirm(`把文件${(parsedObject.type.toString() === ItemTypes.folder) ? "夹" : ""} “${parsedObject.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
+                        toggleAnimation(true);
+                        _move(parsedObject, e.target);
                     }
                 }
             }
@@ -739,12 +731,12 @@ function addFile(attr) {
         _new__content.addEventListener('dragover', function (e) {
             if (e.target.classList.contains('item-content')) {
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                console.log("是否允许拖入。", e.target.item_attr);
-                if (e.target.item_attr.type.toString() === "folder" && window.root_attr.upload && parsedObject.id !== e.target.item_attr.id) {
-                    console.log("允许。",);
+                // console.log("是否允许拖入。", e.target.item_attr);
+                if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id !== e.target.item_attr.id) {
+                    // console.log("允许。",);
                     e.preventDefault();
                 }
-                console.log("不允许。",);
+                // console.log("不允许。",);
             }
         });
         _new__content.addEventListener('dragenter', function (e) {
@@ -760,7 +752,7 @@ function addFile(attr) {
     }
     _new__content.addEventListener('dragstart', function (e) {
         if (e.target.classList.contains('item-content')) {
-            console.log("开始拖拽。", e.originalTarget, e.originalTarget.item_attr);
+            // console.log("开始拖拽。", e.originalTarget, e.originalTarget.item_attr);
             e.dataTransfer.setData("application/json", JSON.stringify(e.originalTarget.item_attr));
             e.dataTransfer.effectAllowed = 'move';
         }
@@ -802,17 +794,17 @@ function chdir(e,) {
     for (let i = 0; i < spansArray.length; i++) {
         if (start_rm) {
             spansArray.at(i).parentElement.remove();
-        } else if (spansArray[i] === e.target) {
+        } else if (e !== null && spansArray[i] === e.target) {
             start_rm = true;
         }
     }
     path_spans = document.querySelectorAll('.path span'); // span
     spansArray = Array.from(path_spans);
-    if (e.target.classList.contains('item-content')) {
+    if (e !== null && e.target.classList.contains('item-content')) {
         const _new_path = addPath(e.target.item_attr, spansArray.length === 0 ? home_click : spansArray.at(-1));
         spansArray.push(e.target.querySelector('.item-name span'));
     }
-    if (e.target.hasOwnProperty("item_attr")) {
+    if (e !== null && e.target.hasOwnProperty("item_attr")) {
         document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
     }
     let path = spansArray.map(element => encodeURIComponent(element.textContent)).join("/");
@@ -845,20 +837,44 @@ async function _chdir(e,) {
         }
         let data = await response.json();
         console.log("chdir:response:json", data);
-        if (!e.target.hasOwnProperty("item_attr")) {
-            e.target.item_attr = {};
+        if (e !== null) {
+            if (!e.target.hasOwnProperty("item_attr")) {
+                e.target.item_attr = {};
+            }
+            e.target.item_attr["id"] = data["parent"];
         }
-        e.target.item_attr["id"] = data["parent"];
         for (let i = 0; i < data["list"].length; i++) {
             addFile(data["list"][i]);
         }
-        document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
-
+        if (e !== null) {
+            document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
+        }
     } catch (error) {
         console.error("Error sending request:", error);
     }
     toggleAnimation(false);
 }
+
+async function _move(source, element,) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({action: "move", source: source, to: element.item_attr,}),
+        });
+        console.log("move:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
 
 function addPath(attr, parent_path) {
     if (typeof attr == "string") {
