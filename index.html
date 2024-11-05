@@ -973,7 +973,7 @@ function addPath(attr, parent_path) {
     _new.addEventListener('dragover', function (event) {
         if (event.target.tagName === 'SPAN') {
             const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
-            if (window.root_attr.upload && getPathIndex(event.target) + 1 !== getPathCount()) {
+            if (window.root_attr.upload && getPathIndex(event.target.parentNode) + 1 !== getPathCount()) {
                 event.preventDefault();
                 event.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
             } else {
