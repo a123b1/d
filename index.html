@@ -744,7 +744,7 @@ async function _chdir(e,) {
 }
 
 function addPath(attr, parent_path) {
-    if (attr instanceof String) {
+    if (typeof attr == "string") {
         const name = attr.toString();
         console.log('initPath:name:', name);
         attr = {
@@ -762,7 +762,7 @@ function addPath(attr, parent_path) {
     let _new = container.querySelector('.path:last-child span'); // span
     _new.item_attr = attr;
     _new.parent_path = parent_path;
-    console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
+    console.log('initPath:', attr instanceof String, typeof attr, _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
     _new.addEventListener('click', function (event) {
         if (event.target.tagName === 'SPAN') {
             chdir(event);
