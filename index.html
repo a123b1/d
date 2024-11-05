@@ -539,7 +539,7 @@ function clearFileList() {
 function addFile(attr) {
     let container = document.querySelector('.list')
     let _new;
-    if (attr.type === 'file') {
+    if (attr.type.toString()  === 'file') {
         let htmlTemplate = `
 <div class="item file" draggable="true">
     <div class="item-content">
@@ -613,7 +613,7 @@ function addFile(attr) {
                 console.log('Clicked:', e.target.textContent);
             });
         }
-    } else if (attr.type === 'folder') {
+    } else if (attr.type.toString() === 'folder') {
         let htmlTemplate = `
 <div class="item folder" draggable="true">
     <div class="item-content">
