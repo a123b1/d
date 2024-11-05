@@ -386,6 +386,12 @@
 
         }
 
+        .item-info a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
         .item-name {
             font-size: 14px;
         }
@@ -405,6 +411,10 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+        }
+
+        .item-action button a {
+
         }
 
 
@@ -458,7 +468,9 @@
                         </div>
                         <div class="item-action">
                             <button class="item-action-download">
-                                <i class="item-action-download-icon"></i>
+                                <a href="#" target="_self" onclick="event.preventDefault();">
+                                    <i class="item-action-download-icon"></i>
+                                </a>
                             </button>
                             <button class="item-action-rename">
                                 <i class="item-action-rename-icon"></i>
@@ -477,20 +489,13 @@
                     <div class="item-content">
                         <i class="item-icon"></i>
                         <div class="item-info">
-                            <div class="item-name"><span>文件夹名称</span></div>
-                            <div class="item-meta">
-                            </div>
+                            <a href="#" target="_self" onclick="event.preventDefault();">
+                                <div class="item-name"><span>文件夹名称</span></div>
+                                <div class="item-meta">
+                                </div>
+                            </a>
                         </div>
                         <div class="item-action">
-                            <button class="item-action-rename">
-                                <i class="item-action-rename-icon"></i>
-                            </button>
-                            <button class="item-action-trash">
-                                <i class="item-action-trash-icon"></i>
-                            </button>
-                            <button class="item-action-delete">
-                                <i class="item-action-delete-icon"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -536,7 +541,7 @@ function formatBytes(bytes) {
     if (bytes === 0) return "0 B";
     const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    const formattedSize = (bytes / Math.pow(1024, i)).toFixed(2);
+    const formattedSize = (bytes / Math.pow(1024, i)).toFixed(1);
     return `${formattedSize} ${sizes[i]}`;
 }
 
@@ -576,9 +581,16 @@ function addFile(attr) {
         }
         let _new__action = _new__content.querySelector('.item-action'); // div
         if (window.root_attr.download === true) {
+            let url = new URL(window.location.href);
+            if (!url.pathname.endsWith('/')) {
+                url.pathname += "/";
+            }
+            url.pathname = url.pathname + encodeURIComponent(attr.name);
             _new__action.insertAdjacentHTML('beforeend', `
 <button class="item-action-download" title="下载">
-    <i class="item-action-download-icon"></i>
+    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
+        <i class="item-action-download-icon"></i>
+    </a>
 </button>
 `);
             _new__action.querySelector('.item-action-download').addEventListener('click', function (e) {
@@ -624,14 +636,21 @@ function addFile(attr) {
             });
         }
     } else if (attr.type.toString() === 'folder') {
+        let url = new URL(window.location.href);
+        if (!url.pathname.endsWith('/')) {
+            url.pathname += "/";
+        }
+        url.pathname = url.pathname + encodeURIComponent(attr.name) + "/";
         let htmlTemplate = `
 <div class="item folder" draggable="true">
     <div class="item-content">
         <i class="item-icon"></i>
         <div class="item-info">
-            <div class="item-name"><span>${attr.name}</span></div>
-            <div class="item-meta">
-            </div>
+            <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
+                <div class="item-name"><span>${attr.name}</span></div>
+                <div class="item-meta">
+                </div>
+            </a>
         </div>
         <div class="item-action">
         </div>
@@ -706,6 +725,9 @@ function getCurrentFolderShareLink(attr,) {
     }
 }
 
+if (window.root_attr.download !== true) {
+    document.querySelector('#open_drive').style.display = 'none';
+}
 if (window.root_attr.type === Types.google_drive) {
     document.querySelector('#open_drive').setAttribute('title', "在Google网盘打开");
 } else {
@@ -714,7 +736,7 @@ if (window.root_attr.type === Types.google_drive) {
 
 
 function chdir(e,) {
-    clearFileList();
+    // clearFileList();
     let home_click = document.querySelector('#home-click'); // div
     let path_spans = document.querySelectorAll('.path span'); // span
     let spansArray = Array.from(path_spans);
@@ -736,7 +758,7 @@ function chdir(e,) {
     if (e.target.hasOwnProperty("item_attr")) {
         document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
     }
-    let path = spansArray.map(element => element.textContent).join("/");
+    let path = spansArray.map(element => encodeURIComponent(element.textContent)).join("/");
     if (path.length >= 1) {
         path += "/";
     }
