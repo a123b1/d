@@ -745,8 +745,10 @@ async function _chdir(e,) {
 
 function addPath(attr, parent_path) {
     if (attr instanceof String) {
+        const name = attr.toString();
+        console.log('initPath:name:', name);
         attr = {
-            name: attr.toString(),
+            name: name,
         }
     }
     let container = document.querySelector('.paths')
