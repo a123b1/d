@@ -327,7 +327,6 @@
             display: inline-block;
         }
 
-
         .item-action button {
             background-color: transparent;
             border: none;
@@ -452,7 +451,6 @@
             <button id="upload"><span>上传文件</span></button>
             <button id="new_folder"><span>新建文件夹</span></button>
         </div>
-
         <div class="list-box">
             <div id="progress-bar">
                 <div id="progress"></div>
@@ -566,7 +564,7 @@ function addFile(attr) {
     if (attr.type.toString() === ItemTypes.file) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
-    <div class="item-content" draggable="true">
+    <div class="item-content" draggable="${window.root_attr.upload}">
         <i class="item-icon"></i>
         <div class="item-info">
             <div class="item-name"><span>${attr.name}</span></div>
@@ -652,7 +650,7 @@ function addFile(attr) {
         let htmlTemplate = `
 <div class="item folder" draggable="false">
     <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
-        <div class="item-content" draggable="true">
+        <div class="item-content" draggable="${window.root_attr.upload}">
             <i class="item-icon"></i>
             <div class="item-info">
                 <div class="item-name"><span>${attr.name}</span></div>
@@ -928,6 +926,25 @@ async function _move(source, to,) {
     chdir(null);
 }
 
+async function _newFolder(name,) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({action: "new_folder", name: name,}),
+        });
+        console.log("new_folder:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
 
 function addPath(attr, parent_path) {
     if (typeof attr == "string") {
@@ -1001,7 +1018,15 @@ if (window.root_attr.upload === true) {
         console.log('Clicked:', e.target.textContent);
     });
     document.querySelector('#new_folder').addEventListener('click', function (e) {
-        console.log('Clicked:', e.target.textContent);
+        let folderName = prompt("新建文件夹：");
+        if (!folderName) {
+            return;
+        }
+        folderName = folderName.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
+        if (folderName !== "") {
+            toggleAnimation(true);
+            _newFolder(folderName);
+        }
     });
 } else {
     document.querySelector('#upload').style.display = 'none';
@@ -1032,7 +1057,7 @@ parent_path.addEventListener('drop', function (event) {
 });
 parent_path.addEventListener('dragover', function (event) {
     const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
-    if (window.root_attr.upload) {
+    if (window.root_attr.upload && getPathCount() > 0) {
         event.preventDefault();
         event.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
     } else {
