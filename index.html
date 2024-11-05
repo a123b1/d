@@ -458,7 +458,7 @@
                 <div id="progress"></div>
             </div>
             <div class="list">
-                <div class="item file">
+                <div class="item file" draggable="false">
                     <div class="item-content" draggable="true">
                         <i class="item-icon"></i>
                         <div class="item-info">
@@ -487,7 +487,7 @@
                     </div>
                 </div>
 
-                <div class="item folder">
+                <div class="item folder" draggable="false">
                     <a href="#" target="_self" onclick="event.preventDefault();" draggable="false">
                         <div class="item-content" draggable="true">
                             <i class="item-icon"></i>
@@ -559,7 +559,7 @@ function addFile(attr) {
     let _new__content;
     if (attr.type.toString() === 'file') {
         let htmlTemplate = `
-<div class="item file">
+<div class="item file" draggable="false">
     <div class="item-content" draggable="true">
         <i class="item-icon"></i>
         <div class="item-info">
@@ -644,7 +644,7 @@ function addFile(attr) {
         }
         url.pathname = url.pathname + encodeURIComponent(attr.name) + "/";
         let htmlTemplate = `
-<div class="item folder">
+<div class="item folder" draggable="false">
     <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
         <div class="item-content" draggable="true">
             <i class="item-icon"></i>
@@ -771,6 +771,7 @@ function addFile(attr) {
     });
     // console.log('initItem:', _new__content.item_attr, _new__content.parent_path.textContent,);
 }
+
 
 function getCurrentFolderShareLink(attr,) {
     let id = attr.id === "root" ? window.root_attr.id : attr.id;
