@@ -718,6 +718,7 @@ function addFile(attr) {
         _new__content.addEventListener('drop', function (e) {
             if (e.target.classList.contains('item-content')) {
                 e.preventDefault();
+                e.target.style.backgroundColor = "";
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
                 let source = findFileItem(parsedObject);
                 console.log("收到拖放数据。", source, parsedObject,);
@@ -739,13 +740,22 @@ function addFile(attr) {
                 if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
                     // console.log("允许。",);
                     e.preventDefault();
+                    e.target.style.backgroundColor = "rgba(255, 255,0 ,0.3)";
+                } else {
+                    // console.log("不允许。",);
+                    e.target.style.backgroundColor = "";
                 }
-                // console.log("不允许。",);
             }
         });
         _new__content.addEventListener('dragenter', function (e) {
             if (e.target.classList.contains('item-content')) {
                 e.preventDefault();
+            }
+        });
+        _new__content.addEventListener('dragleave', function (e) {
+            if (e.target.classList.contains('item-content')) {
+                e.preventDefault();
+                e.target.style.backgroundColor = "";
             }
         });
     }
@@ -952,7 +962,7 @@ function addPath(attr, parent_path) {
             if (window.root_attr.upload) {
                 // console.log("允许。",);
                 event.preventDefault();
-                event.target.style.backgroundColor = "rgba(255, 255,0 ,0.5)";
+                event.target.style.backgroundColor = "rgba(255, 255,0 ,0.3)";
             } else {
                 // console.log("不允许。",);
                 event.target.style.backgroundColor = "";
