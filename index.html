@@ -512,6 +512,9 @@ window.root_attr = {
     "disallowed_upload": null,
 };
 
+const Types = Object.freeze({
+    google_drive: 1,
+});
 
 function toggleAnimation(show,) {
     const progress_bar = document.getElementById("progress-bar");
@@ -691,7 +694,16 @@ function addFile(attr) {
     if (!_new__content.parent_path) {
         _new__content.parent_path = document.querySelector('#home-click');
     }
-    console.log('initItem:', _new__content.item_attr, _new__content.parent_path.textContent,);
+    // console.log('initItem:', _new__content.item_attr, _new__content.parent_path.textContent,);
+}
+
+function getCurrentFolderShareLink(attr,) {
+    if (window.root_attr.type === Types.google_drive) {
+        return `https://drive.google.com/open?id=${attr.id}`;
+    } else {
+        return ``;
+    }
+
 }
 
 function chdir(e,) {
@@ -711,8 +723,8 @@ function chdir(e,) {
     path_spans = document.querySelectorAll('.path span'); // span
     spansArray = Array.from(path_spans);
     if (e.target.classList.contains('item-content')) {
-        spansArray.push(e.target.querySelector('.item-name span'));
         addPath(e.target.item_attr, spansArray.length === 0 ? home_click : spansArray.at(-1));
+        spansArray.push(e.target.querySelector('.item-name span'));
     }
     let path = spansArray.map(element => element.textContent).join("/");
     if (path.length >= 1) {
@@ -721,7 +733,6 @@ function chdir(e,) {
     const currentUrl = new URL(window.location.href);
     currentUrl.pathname = "/" + path;
     const newUrl = currentUrl.toString();
-    console.log(newUrl !== window.location.href.toString(), newUrl, window.location.href.toString());
     if (newUrl !== window.location.href.toString()) {
         history.pushState(null, null, currentUrl.toString());
     }
@@ -745,9 +756,15 @@ async function _chdir(e,) {
         }
         let data = await response.json();
         console.log("chdir:response:json", data);
-        for (let i = 0; i < data.length; i++) {
-            addFile(data[i]);
+        if (!e.target.hasOwnProperty("item_attr")) {
+            e.target.item_attr = {};
+            e.target.item_attr["id"] = data["parent"];
         }
+        for (let i = 0; i < data["list"].length; i++) {
+            addFile(data["list"][i]);
+        }
+        document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
+
     } catch (error) {
         console.error("Error sending request:", error);
     }
@@ -772,7 +789,7 @@ function addPath(attr, parent_path) {
     let _new = container.querySelector('.path:last-child span'); // span
     _new.item_attr = attr;
     _new.parent_path = parent_path;
-    console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
+    // console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
     _new.addEventListener('click', function (event) {
         if (event.target.tagName === 'SPAN') {
             chdir(event);
@@ -780,9 +797,6 @@ function addPath(attr, parent_path) {
     });
     return _new;
 }
-
-
-document.querySelector('#open_drive').setAttribute("href", "https://127.0.0.1");
 
 
 if (window.root_attr.upload === true) {
@@ -804,14 +818,13 @@ parent_path.addEventListener('click', function (e) {
     chdir(e);
 });
 const pathList = window.location.pathname.split('/').map(decodeURIComponent).filter(part => part !== '');
-console.log('initPath:', parent_path.textContent,);
+// console.log('initPath:', parent_path.textContent,);
 for (const i of pathList) {
     parent_path = addPath(i, parent_path);
 }
 parent_path.click();
 
 window.addEventListener('popstate', function (event) {
-    console.log('前进或后退按钮被点击，当前状态:', event.state);
     location.reload();
 });
 
