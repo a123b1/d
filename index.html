@@ -698,12 +698,12 @@ function addFile(attr) {
 }
 
 function getCurrentFolderShareLink(attr,) {
+    let id = attr.id === "root" ? window.root_attr.id : attr.id;
     if (window.root_attr.type === Types.google_drive) {
-        return `https://drive.google.com/open?id=${attr.id}`;
+        return `https://drive.google.com/open?id=${id}`;
     } else {
-        return ``;
+        return `#`;
     }
-
 }
 
 if (window.root_attr.type === Types.google_drive) {
@@ -730,7 +730,8 @@ function chdir(e,) {
     path_spans = document.querySelectorAll('.path span'); // span
     spansArray = Array.from(path_spans);
     if (e.target.classList.contains('item-content')) {
-        addPath(e.target.item_attr, spansArray.length === 0 ? home_click : spansArray.at(-1));
+        const _new_path = addPath(e.target.item_attr, spansArray.length === 0 ? home_click : spansArray.at(-1));
+        document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(_new_path));
         spansArray.push(e.target.querySelector('.item-name span'));
     }
     let path = spansArray.map(element => element.textContent).join("/");
