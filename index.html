@@ -297,6 +297,12 @@
             user-select: none;
         }
 
+        .item-content a {
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+        }
+
         .item-icon {
             pointer-events: none;
         }
@@ -385,12 +391,6 @@
             gap: 2px;
 
         }
-
-        .item-info a {
-            text-decoration: none;
-            color: inherit;
-        }
-
 
         .item-name {
             font-size: 14px;
@@ -488,13 +488,13 @@
                 <div class="item folder" draggable="true">
                     <div class="item-content">
                         <i class="item-icon"></i>
-                        <div class="item-info">
-                            <a href="#" target="_self" onclick="event.preventDefault();">
+                        <a href="#" target="_self" onclick="event.preventDefault();">
+                            <div class="item-info">
                                 <div class="item-name"><span>文件夹名称</span></div>
                                 <div class="item-meta">
                                 </div>
-                            </a>
-                        </div>
+                            </div>
+                        </a>
                         <div class="item-action">
                         </div>
                     </div>
@@ -645,13 +645,13 @@ function addFile(attr) {
 <div class="item folder" draggable="true">
     <div class="item-content">
         <i class="item-icon"></i>
-        <div class="item-info">
-            <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
+        <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
+            <div class="item-info">
                 <div class="item-name"><span>${attr.name}</span></div>
                 <div class="item-meta">
                 </div>
-            </a>
-        </div>
+            </div>
+        </a>
         <div class="item-action">
         </div>
     </div>
