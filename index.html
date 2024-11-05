@@ -861,7 +861,7 @@ async function _chdir(e,) {
 
 function findFileItem(attr) {
     document.querySelectorAll('.item-content').forEach((item) => {
-        if (item.item_attr.id === attr.id) {
+        if (item.item_attr.id === attr.id.toString()) {
             return item;
         }
     });
