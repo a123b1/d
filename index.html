@@ -721,8 +721,8 @@ function chdir(e,) {
     const currentUrl = new URL(window.location.href);
     currentUrl.pathname = "/" + path;
     const newUrl = currentUrl.toString();
-    console.log(newUrl !== window.location.href,newUrl,window.location.href);
-    if (newUrl !== window.location.href) {
+    console.log(newUrl !== window.location.href.toString(),newUrl,window.location.href.toString());
+    if (newUrl !== window.location.href.toString()) {
         history.pushState(null, null, currentUrl.toString());
     }
     toggleAnimation(true);
