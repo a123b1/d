@@ -263,7 +263,6 @@
         }
 
         .item-content {
-            /*pointer-events: none;*/
             height: 100%;
             transition: transform 0.1s ease, background-color 0.1s ease;
             display: flex;
@@ -296,6 +295,10 @@
 
         .item-content span {
             user-select: none;
+        }
+
+        .item-icon {
+            pointer-events: none;
         }
 
         .file .item-icon {
@@ -373,6 +376,7 @@
         }
 
         .item-info {
+            pointer-events: none;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -562,11 +566,6 @@ function addFile(attr) {
         container.insertAdjacentHTML('beforeend', htmlTemplate);
         _new = container.querySelector('.item:last-child'); // div
         _new__content = _new.querySelector('.item-content'); // div
-        _new__content.item_attr = attr;
-        _new__content.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
-        if (!_new__content.parent_path) {
-            _new__content.parent_path = document.querySelector('#home-click');
-        }
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
@@ -638,11 +637,6 @@ function addFile(attr) {
         container.insertAdjacentHTML('beforeend', htmlTemplate);
         _new = container.querySelector('.item:last-child'); // div
         _new__content = _new.querySelector('.item-content'); // div
-        _new__content.item_attr = attr;
-        _new__content.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
-        if (!_new__content.parent_path) {
-            _new__content.parent_path = document.querySelector('#home-click');
-        }
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
@@ -690,6 +684,11 @@ function addFile(attr) {
                 chdir(e);
             }
         });
+    }
+    _new__content.item_attr = attr;
+    _new__content.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
+    if (!_new__content.parent_path) {
+        _new__content.parent_path = document.querySelector('#home-click');
     }
     console.log('initItem:', _new__content.item_attr, _new__content.parent_path.textContent,);
 }
