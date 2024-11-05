@@ -720,7 +720,7 @@ async function _chdir(e,) {
         let data = await response.json();
         console.log("chdir:response:json", data);
         for (let i = 0; i < data.length; i++) {
-            addFile(i);
+            addFile(data[i]);
         }
     } catch (error) {
         console.error("Error sending request:", error);
