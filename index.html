@@ -736,7 +736,7 @@ function addFile(attr) {
             if (e.target.classList.contains('item-content')) {
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
                 // console.log("是否允许拖入。", e.target.item_attr);
-                if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id !== e.target.item_attr.id) {
+                if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
                     // console.log("允许。",);
                     e.preventDefault();
                 }
@@ -861,7 +861,7 @@ async function _chdir(e,) {
 
 function findFileItem(attr) {
     document.querySelectorAll('.item-content').forEach((item) => {
-        if (item.item_attr.id === attr.id.toString()) {
+        if (item.item_attr.id.toString() === attr.id.toString()) {
             return item;
         }
     });
@@ -928,11 +928,30 @@ function addPath(attr, parent_path) {
     });
     _new.addEventListener('drop', function (event) {
         if (event.target.tagName === 'SPAN') {
-
+            event.preventDefault();
+            const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
+            let source = findFileItem(parsedObject);
+            console.log("收到拖放数据。", source, parsedObject,);
+            if (!source) {
+                return;
+            }
+            if (window.root_attr.upload) {
+                if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""} “${source.item_attr.name}“ 移至 “${event.target.item_attr.name}” ？`)) {
+                    toggleAnimation(true);
+                    _move(source, event.target);
+                }
+            }
         }
     });
     _new.addEventListener('dragover', function (event) {
         if (event.target.tagName === 'SPAN') {
+            const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
+            // console.log("是否允许拖入。", e.target.item_attr);
+            if (window.root_attr.upload && parsedObject.id.toString() !== event.target.item_attr.id.toString()) {
+                // console.log("允许。",);
+                event.preventDefault();
+            }
+            // console.log("不允许。",);
         }
     });
     _new.addEventListener('dragenter', function (event) {
