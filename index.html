@@ -488,7 +488,7 @@
                 <div class="item folder" draggable="true">
                     <div class="item-content">
                         <i class="item-icon"></i>
-                        <a href="#" target="_self" onclick="event.preventDefault();">
+                        <a href="#" target="_self" onclick="event.preventDefault();" draggable="false">
                             <div class="item-info">
                                 <div class="item-name"><span>文件夹名称</span></div>
                                 <div class="item-meta">
@@ -594,6 +594,7 @@ function addFile(attr) {
 </button>
 `);
             _new__action.querySelector('.item-action-download').addEventListener('click', function (e) {
+                // e.stopImmediatePropagation();
                 e.stopPropagation();
                 e.preventDefault();
                 console.log('Clicked:', e.target.textContent);
@@ -645,7 +646,7 @@ function addFile(attr) {
 <div class="item folder" draggable="true">
     <div class="item-content">
         <i class="item-icon"></i>
-        <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
+        <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
             <div class="item-info">
                 <div class="item-name"><span>${attr.name}</span></div>
                 <div class="item-meta">
@@ -736,7 +737,7 @@ if (window.root_attr.type === Types.google_drive) {
 
 
 function chdir(e,) {
-    // clearFileList();
+    clearFileList();
     let home_click = document.querySelector('#home-click'); // div
     let path_spans = document.querySelectorAll('.path span'); // span
     let spansArray = Array.from(path_spans);
