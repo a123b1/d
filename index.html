@@ -263,6 +263,7 @@
         }
 
         .item-content {
+            pointer-events: none;
             height: 100%;
             transition: transform 0.1s ease, background-color 0.1s ease;
             display: flex;
@@ -313,6 +314,10 @@
             width: 32px;
             height: 32px;
             display: inline-block;
+        }
+
+        .item-action {
+            pointer-events: auto;
         }
 
         .item-action button {
@@ -680,9 +685,10 @@ function addFile(attr) {
                 console.log('Clicked:', e.target.textContent);
             });
         }
-        _new.addEventListener('click', function (event) {
-            if (event.target.classList.contains('item')) {
-                chdir(event);
+        _new.addEventListener('click', function (e) {
+            console.log('Clicked:', e.target);
+            if (e.target.classList.contains('item')) {
+                chdir(e);
             }
         });
     }
