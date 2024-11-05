@@ -731,8 +731,10 @@ function chdir(e,) {
     spansArray = Array.from(path_spans);
     if (e.target.classList.contains('item-content')) {
         const _new_path = addPath(e.target.item_attr, spansArray.length === 0 ? home_click : spansArray.at(-1));
-        document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(_new_path));
         spansArray.push(e.target.querySelector('.item-name span'));
+    }
+    if (e.target.hasOwnProperty("item_attr")) {
+        document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
     }
     let path = spansArray.map(element => element.textContent).join("/");
     if (path.length >= 1) {
