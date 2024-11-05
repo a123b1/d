@@ -316,9 +316,6 @@
             display: inline-block;
         }
 
-        .item-action {
-            pointer-events: auto;
-        }
 
         .item-action button {
             background-color: transparent;
@@ -399,6 +396,7 @@
         }
 
         .item-action {
+            pointer-events: auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -710,7 +708,11 @@ function chdir(e,) {
         }
     }
     path_spans = document.querySelectorAll('.path span'); // span
-    history.pushState(null, null, "/" + Array.from(path_spans).map(element => element.textContent).join("/"));
+    spansArray = Array.from(path_spans)
+    if (e.target.classList.contains('item')) {
+        spansArray.push(e.querySelector('.item-name span').textContent);
+    }
+    history.pushState(null, null, "/" + spansArray.map(element => element.textContent).join("/"));
     toggleAnimation(true);
     _chdir(e);
 }
