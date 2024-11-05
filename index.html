@@ -721,7 +721,7 @@ function chdir(e,) {
     const currentUrl = new URL(window.location.href);
     currentUrl.pathname = "/" + path;
     const newUrl = currentUrl.toString();
-    console.log(newUrl !== window.location.href.toString(),newUrl,window.location.href.toString());
+    console.log(newUrl !== window.location.href.toString(), newUrl, window.location.href.toString());
     if (newUrl !== window.location.href.toString()) {
         history.pushState(null, null, currentUrl.toString());
     }
@@ -810,17 +810,10 @@ for (const i of pathList) {
 }
 parent_path.click();
 
-// const path_spans = document.querySelectorAll('.path span');
-// // const spansArray = Array.from(path_spans);
-// // const mappedArray = spansArray.map(span => span.textContent);
-// // console.log(mappedArray);
-// path_spans.forEach(span => {
-//     span.addEventListener('click', function (event) {
-//         if (event.target.tagName === 'SPAN') {
-//             console.log('Clicked:', event.target.textContent);
-//         }
-//     });
-// });
+window.addEventListener('popstate', function (event) {
+    console.log('前进或后退按钮被点击，当前状态:', event.state);
+    location.reload();
+});
 
 
 </script>
