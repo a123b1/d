@@ -706,6 +706,13 @@ function getCurrentFolderShareLink(attr,) {
 
 }
 
+if (window.root_attr.type === Types.google_drive) {
+    document.querySelector('#open_drive').setAttribute('title', "在Google网盘打开");
+} else {
+    document.querySelector('#open_drive').setAttribute('title', "");
+}
+
+
 function chdir(e,) {
     clearFileList();
     let home_click = document.querySelector('#home-click'); // div
@@ -758,8 +765,8 @@ async function _chdir(e,) {
         console.log("chdir:response:json", data);
         if (!e.target.hasOwnProperty("item_attr")) {
             e.target.item_attr = {};
-            e.target.item_attr["id"] = data["parent"];
         }
+        e.target.item_attr["id"] = data["parent"];
         for (let i = 0; i < data["list"].length; i++) {
             addFile(data["list"][i]);
         }
