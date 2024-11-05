@@ -930,6 +930,7 @@ function addPath(attr, parent_path) {
     _new.addEventListener('drop', function (event) {
         if (event.target.tagName === 'SPAN') {
             event.preventDefault();
+            event.target.style.backgroundColor = "";
             const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
             let source = findFileItem(parsedObject);
             console.log("收到拖放数据。", source, parsedObject,);
@@ -948,16 +949,25 @@ function addPath(attr, parent_path) {
         if (event.target.tagName === 'SPAN') {
             const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
             // console.log("是否允许拖入。", e.target.item_attr);
-            if (window.root_attr.upload && parsedObject.id.toString() !== event.target.item_attr.id.toString()) {
+            if (window.root_attr.upload) {
                 // console.log("允许。",);
                 event.preventDefault();
+                event.target.style.backgroundColor = "rgba(255, 255,0 ,0.5)";
+            } else {
+                // console.log("不允许。",);
+                event.target.style.backgroundColor = "";
             }
-            // console.log("不允许。",);
         }
     });
     _new.addEventListener('dragenter', function (event) {
         if (event.target.tagName === 'SPAN') {
             event.preventDefault();
+        }
+    });
+    _new.addEventListener('dragleave', function (event) {
+        if (event.target.tagName === 'SPAN') {
+            event.preventDefault();
+            event.target.style.backgroundColor = "";
         }
     });
     return _new;
