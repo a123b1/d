@@ -860,12 +860,13 @@ async function _chdir(e,) {
 }
 
 function findFileItem(attr) {
+    let di = null;
     document.querySelectorAll('.item-content').forEach((item) => {
         if (item.item_attr.id.toString() === attr.id.toString()) {
-            return item;
+            di = item;
         }
     });
-    return null;
+    return di;
 }
 
 function getFullPath(element) {
