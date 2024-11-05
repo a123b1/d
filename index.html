@@ -514,13 +514,14 @@ window.root_attr = {
 
 
 function toggleAnimation(show,) {
+    const progress_bar = document.getElementById("progress-bar");
     const progress = document.getElementById("progress");
     if (!show) {
-        progress.style.display = "none";
+        progress_bar.style.display = "none";
         progress.style.width = "0%";
         progress.style.animation = "";
     } else {
-        progress.style.display = "block";
+        progress_bar.style.display = "block";
         progress.style.width = "30%";
         progress.style.animation = "slidingBar 1200ms infinite;";
     }
@@ -573,7 +574,7 @@ function addFile(attr) {
         let _new__action = _new__content.querySelector('.item-action'); // div
         if (window.root_attr.download === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-download">
+<button class="item-action-download" title="下载">
     <i class="item-action-download-icon"></i>
 </button>
 `);
@@ -585,7 +586,7 @@ function addFile(attr) {
         }
         if (window.root_attr.upload === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-rename">
+<button class="item-action-rename" title="重命名">
     <i class="item-action-rename-icon"></i>
 </button>
 `);
@@ -597,7 +598,7 @@ function addFile(attr) {
         }
         if (window.root_attr.trash === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-trash">
+<button class="item-action-trash" title="移至回收站">
     <i class="item-action-trash-icon"></i>
 </button>
 `);
@@ -609,7 +610,7 @@ function addFile(attr) {
         }
         if (window.root_attr.delete === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-delete">
+<button class="item-action-delete" title="永久删除">
     <i class="item-action-delete-icon"></i>
 </button>
 `);
@@ -644,7 +645,7 @@ function addFile(attr) {
         let _new__action = _new__content.querySelector('.item-action'); // div
         if (window.root_attr.upload === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-rename">
+<button class="item-action-rename" title="重命名">
     <i class="item-action-rename-icon"></i>
 </button>
 `);
@@ -656,7 +657,7 @@ function addFile(attr) {
         }
         if (window.root_attr.trash === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-trash">
+<button class="item-action-trash" title="移至回收站">
     <i class="item-action-trash-icon"></i>
 </button>
 `);
@@ -668,7 +669,7 @@ function addFile(attr) {
         }
         if (window.root_attr.delete === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-delete">
+<button class="item-action-delete" title="永久删除">
     <i class="item-action-delete-icon"></i>
 </button>
 `);
@@ -694,7 +695,7 @@ function addFile(attr) {
 }
 
 function chdir(e,) {
-    clearFileList()
+    clearFileList();
     let home_click = document.querySelector('#home-click'); // div
     let path_spans = document.querySelectorAll('.path span'); // span
     let spansArray = Array.from(path_spans);
@@ -713,7 +714,13 @@ function chdir(e,) {
         spansArray.push(e.target.querySelector('.item-name span'));
         addPath(e.target.item_attr, spansArray.length === 0 ? home_click : spansArray.at(-1));
     }
-    history.pushState(null, null, "/" + spansArray.map(element => element.textContent).join("/"));
+    let path = spansArray.map(element => element.textContent).join("/");
+    if (path.length >= 1) {
+        path += "/";
+    }
+    const currentUrl = new URL(window.location.href);
+    currentUrl.pathname = "/" + path;
+    history.pushState(null, null, currentUrl.toString());
     toggleAnimation(true);
     _chdir(e);
 }
@@ -746,7 +753,6 @@ async function _chdir(e,) {
 function addPath(attr, parent_path) {
     if (typeof attr == "string") {
         const name = attr.toString();
-        console.log('initPath:name:', name);
         attr = {
             name: name,
         }
@@ -762,7 +768,7 @@ function addPath(attr, parent_path) {
     let _new = container.querySelector('.path:last-child span'); // span
     _new.item_attr = attr;
     _new.parent_path = parent_path;
-    console.log('initPath:', attr instanceof String, typeof attr, _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
+    console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
     _new.addEventListener('click', function (event) {
         if (event.target.tagName === 'SPAN') {
             chdir(event);
