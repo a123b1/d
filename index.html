@@ -10,7 +10,7 @@
         }
 
         body {
-            margin: 77px 0 0;
+            margin: 84px 0 0;
             font-family: Arial, sans-serif;
         }
 
@@ -49,7 +49,7 @@
             /*padding: 0;*/
             user-select: none;
             cursor: pointer;
-            padding: 8px 0px 8px 0px;
+            padding: 9px 0px 9px 0px;
             transition: transform 0.1s ease, background-color 0.1s ease;
         }
 
@@ -572,7 +572,7 @@ function addFile(attr) {
         }
         let _new__action = _new__content.querySelector('.item-action'); // div
         if (window.root_attr.download === true) {
-            _new__meta.insertAdjacentHTML('beforeend', `
+            _new__action.insertAdjacentHTML('beforeend', `
 <button class="item-action-download">
     <i class="item-action-download-icon"></i>
 </button>
@@ -720,7 +720,7 @@ function chdir(e,) {
 
 async function _chdir(e,) {
     const baseUrl = new URL(window.location.href.replace(/#$/, ""));
-    console.log('chdir:', e.target.textContent, baseUrl);
+    // console.log('chdir:', e.target.textContent, baseUrl);
     try {
         const response = await fetch(baseUrl.href, {
             method: "POST", headers: {
@@ -746,7 +746,7 @@ async function _chdir(e,) {
 function addPath(attr, parent_path) {
     if (attr instanceof String) {
         attr = {
-            name: attr,
+            name: attr.toString(),
         }
     }
     let container = document.querySelector('.paths')
@@ -760,7 +760,7 @@ function addPath(attr, parent_path) {
     let _new = container.querySelector('.path:last-child span'); // span
     _new.item_attr = attr;
     _new.parent_path = parent_path;
-    // console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
+    console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
     _new.addEventListener('click', function (event) {
         if (event.target.tagName === 'SPAN') {
             chdir(event);
@@ -792,7 +792,7 @@ parent_path.addEventListener('click', function (e) {
     chdir(e);
 });
 const pathList = window.location.pathname.split('/').map(decodeURIComponent).filter(part => part !== '');
-// console.log('initPath:', parent_path.textContent,);
+console.log('initPath:', parent_path.textContent,);
 for (const i of pathList) {
     parent_path = addPath(i, parent_path);
 }
