@@ -263,7 +263,7 @@
         }
 
         .item-content {
-            pointer-events: none;
+            /*pointer-events: none;*/
             height: 100%;
             transition: transform 0.1s ease, background-color 0.1s ease;
             display: flex;
@@ -542,6 +542,7 @@ function clearFileList() {
 function addFile(attr) {
     let container = document.querySelector('.list')
     let _new;
+    let _new__content;
     if (attr.type.toString() === 'file') {
         let htmlTemplate = `
 <div class="item file" draggable="true">
@@ -560,12 +561,12 @@ function addFile(attr) {
 `;
         container.insertAdjacentHTML('beforeend', htmlTemplate);
         _new = container.querySelector('.item:last-child'); // div
-        _new.item_attr = attr;
-        _new.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
-        if (!_new.parent_path) {
-            _new.parent_path = document.querySelector('#home-click');
+        _new__content = _new.querySelector('.item-content'); // div
+        _new__content.item_attr = attr;
+        _new__content.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
+        if (!_new__content.parent_path) {
+            _new__content.parent_path = document.querySelector('#home-click');
         }
-        let _new__content = _new.querySelector('.item-content'); // div
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
@@ -636,12 +637,12 @@ function addFile(attr) {
 `;
         container.insertAdjacentHTML('beforeend', htmlTemplate);
         _new = container.querySelector('.item:last-child'); // div
-        _new.item_attr = attr;
-        _new.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
-        if (!_new.parent_path) {
-            _new.parent_path = document.querySelector('#home-click');
+        _new__content = _new.querySelector('.item-content'); // div
+        _new__content.item_attr = attr;
+        _new__content.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
+        if (!_new__content.parent_path) {
+            _new__content.parent_path = document.querySelector('#home-click');
         }
-        let _new__content = _new.querySelector('.item-content'); // div
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
@@ -683,14 +684,14 @@ function addFile(attr) {
                 console.log('Clicked:', e.target.textContent);
             });
         }
-        _new.addEventListener('click', function (e) {
+        _new__content.addEventListener('click', function (e) {
             console.log('Clicked:', e.target);
-            if (e.target.classList.contains('item')) {
+            if (e.target.classList.contains('item-content')) {
                 chdir(e);
             }
         });
     }
-    console.log('initItem:', _new.item_attr, _new.parent_path.textContent,);
+    console.log('initItem:', _new__content.item_attr, _new__content.parent_path.textContent,);
 }
 
 function chdir(e,) {
@@ -709,7 +710,7 @@ function chdir(e,) {
     }
     path_spans = document.querySelectorAll('.path span'); // span
     spansArray = Array.from(path_spans)
-    if (e.target.classList.contains('item')) {
+    if (e.target.classList.contains('item-content')) {
         spansArray.push(e.target.querySelector('.item-name span'));
     }
     history.pushState(null, null, "/" + spansArray.map(element => element.textContent).join("/"));
