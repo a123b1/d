@@ -709,12 +709,66 @@ function addFile(attr) {
                 chdir(e);
             }
         });
+        _new__content.addEventListener('drop', function (e) {
+            if (e.target.classList.contains('item-content')) {
+                e.preventDefault();
+                const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
+                console.log("收到拖放数据。", parsedObject,);
+                if (window.root_attr.upload && e.target.item_attr.type.toString() === 'folder') {
+                    if (confirm(`把文件${(parsedObject.type.toString() === 'folder') ? "夹" : ""} “${parsedObject.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
+                        // var n = new XMLHttpRequest;
+                        // var r = new URL(fileUrl);
+                        // var params = new URLSearchParams(r.search);
+                        // params.set("move", "true");
+                        // params.set("source", data[0]);
+                        // params.set("to", event.currentTarget.getAttribute('resourceId'));
+                        // params.set("rootId", t.$route.query.rootId || window.props.default_root_id);
+                        // r.search = params.toString();
+                        // n.onreadystatechange = function () {
+                        //     if (n.readyState === 4) {
+                        //         t.renderPath(t.path, window.props.default_root_id);
+                        //     }
+                        // };
+                        // console.log(r.href);
+                        // n.open("PUT", r.href), localStorage.token && n.setRequestHeader("Authorization", "Basic " + localStorage.token), n.send(i)
+
+                    }
+                }
+            }
+        });
+        _new__content.addEventListener('dragover', function (e) {
+            if (e.target.classList.contains('item-content')) {
+                const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
+                console.log("是否允许拖入。", e.target.item_attr);
+                if (e.target.item_attr.type.toString() === "folder" && window.root_attr.upload && parsedObject.id !== e.target.item_attr.id) {
+                    console.log("允许。",);
+                    e.preventDefault();
+                }
+                console.log("不允许。",);
+            }
+        });
+        _new__content.addEventListener('dragenter', function (e) {
+            if (e.target.classList.contains('item-content')) {
+                e.preventDefault();
+            }
+        });
     }
     _new__content.item_attr = attr;
     _new__content.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
     if (!_new__content.parent_path) {
         _new__content.parent_path = document.querySelector('#home-click');
     }
+    _new__content.addEventListener('dragstart', function (e) {
+        if (e.target.classList.contains('item-content')) {
+            console.log("开始拖拽。", e.originalTarget, e.originalTarget.item_attr);
+            e.dataTransfer.setData("application/json", JSON.stringify(e.originalTarget.item_attr));
+            e.dataTransfer.effectAllowed = 'move';
+        }
+    });
+    _new__content.addEventListener('dragend', function (e) {
+        if (e.target.classList.contains('item-content')) {
+        }
+    });
     // console.log('initItem:', _new__content.item_attr, _new__content.parent_path.textContent,);
 }
 
@@ -827,6 +881,20 @@ function addPath(attr, parent_path) {
     _new.addEventListener('click', function (event) {
         if (event.target.tagName === 'SPAN') {
             chdir(event);
+        }
+    });
+    _new.addEventListener('drop', function (event) {
+        if (event.target.tagName === 'SPAN') {
+
+        }
+    });
+    _new.addEventListener('dragover', function (event) {
+        if (event.target.tagName === 'SPAN') {
+        }
+    });
+    _new.addEventListener('dragenter', function (event) {
+        if (event.target.tagName === 'SPAN') {
+            event.preventDefault();
         }
     });
     return _new;
