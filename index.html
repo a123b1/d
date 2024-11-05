@@ -539,7 +539,7 @@ function clearFileList() {
 function addFile(attr) {
     let container = document.querySelector('.list')
     let _new;
-    if (attr.type.toString()  === 'file') {
+    if (attr.type.toString() === 'file') {
         let htmlTemplate = `
 <div class="item file" draggable="true">
     <div class="item-content">
@@ -559,6 +559,9 @@ function addFile(attr) {
         _new = container.querySelector('.item:last-child'); // div
         _new.item_attr = attr;
         _new.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
+        if (!_new.parent_path) {
+            _new.parent_path = document.querySelector('#home-click');
+        }
         let _new__content = _new.querySelector('.item-content'); // div
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
@@ -632,6 +635,9 @@ function addFile(attr) {
         _new = container.querySelector('.item:last-child'); // div
         _new.item_attr = attr;
         _new.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
+        if (!_new.parent_path) {
+            _new.parent_path = document.querySelector('#home-click');
+        }
         let _new__content = _new.querySelector('.item-content'); // div
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
