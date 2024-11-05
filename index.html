@@ -708,9 +708,10 @@ function chdir(e,) {
         }
     }
     path_spans = document.querySelectorAll('.path span'); // span
-    spansArray = Array.from(path_spans)
+    spansArray = Array.from(path_spans);
     if (e.target.classList.contains('item-content')) {
         spansArray.push(e.target.querySelector('.item-name span'));
+        addPath(e.target.item_attr, spansArray.length === 0 ? home_click : spansArray.at(-1));
     }
     history.pushState(null, null, "/" + spansArray.map(element => element.textContent).join("/"));
     toggleAnimation(true);
@@ -742,6 +743,32 @@ async function _chdir(e,) {
     toggleAnimation(false);
 }
 
+function addPath(attr, parent_path) {
+    if (attr instanceof String) {
+        attr = {
+            name: attr,
+        }
+    }
+    let container = document.querySelector('.paths')
+    const htmlTemplate = `
+<div class="path">
+    <i class="path-icon"></i>
+    <span draggable="false">${attr.name}</span>
+</div>
+`;
+    container.insertAdjacentHTML('beforeend', htmlTemplate);
+    let _new = container.querySelector('.path:last-child span'); // span
+    _new.item_attr = attr;
+    _new.parent_path = parent_path;
+    // console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
+    _new.addEventListener('click', function (event) {
+        if (event.target.tagName === 'SPAN') {
+            chdir(event);
+        }
+    });
+    return _new;
+}
+
 
 document.querySelector('#open_drive').setAttribute("href", "https://127.0.0.1");
 
@@ -767,23 +794,7 @@ parent_path.addEventListener('click', function (e) {
 const pathList = window.location.pathname.split('/').map(decodeURIComponent).filter(part => part !== '');
 // console.log('initPath:', parent_path.textContent,);
 for (const i of pathList) {
-    let container = document.querySelector('.paths')
-    const htmlTemplate = `
-<div class="path">
-    <i class="path-icon"></i>
-    <span draggable="false">${i}</span>
-</div>
-`;
-    container.insertAdjacentHTML('beforeend', htmlTemplate);
-    let _new = container.querySelector('.path:last-child span'); // span
-    _new.parent_path = parent_path;
-    // console.log('initPath:', _new.textContent, _new.parent_path == null ? null : _new.parent_path.textContent,);
-    parent_path = _new;
-    _new.addEventListener('click', function (event) {
-        if (event.target.tagName === 'SPAN') {
-            chdir(event);
-        }
-    });
+    parent_path = addPath(i, parent_path);
 }
 parent_path.click();
 
