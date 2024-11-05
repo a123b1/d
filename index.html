@@ -458,8 +458,8 @@
                 <div id="progress"></div>
             </div>
             <div class="list">
-                <div class="item file" draggable="true">
-                    <div class="item-content">
+                <div class="item file">
+                    <div class="item-content" draggable="true">
                         <i class="item-icon"></i>
                         <div class="item-info">
                             <div class="item-name"><span>文件名称</span></div>
@@ -487,9 +487,9 @@
                     </div>
                 </div>
 
-                <div class="item folder" draggable="true">
+                <div class="item folder">
                     <a href="#" target="_self" onclick="event.preventDefault();" draggable="false">
-                        <div class="item-content">
+                        <div class="item-content" draggable="true">
                             <i class="item-icon"></i>
                             <div class="item-info">
                                 <div class="item-name"><span>文件夹名称</span></div>
@@ -559,8 +559,8 @@ function addFile(attr) {
     let _new__content;
     if (attr.type.toString() === 'file') {
         let htmlTemplate = `
-<div class="item file" draggable="true">
-    <div class="item-content">
+<div class="item file">
+    <div class="item-content" draggable="true">
         <i class="item-icon"></i>
         <div class="item-info">
             <div class="item-name"><span>${attr.name}</span></div>
@@ -644,9 +644,9 @@ function addFile(attr) {
         }
         url.pathname = url.pathname + encodeURIComponent(attr.name) + "/";
         let htmlTemplate = `
-<div class="item folder" draggable="true">
+<div class="item folder">
     <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
-        <div class="item-content">
+        <div class="item-content" draggable="true">
             <i class="item-icon"></i>
             <div class="item-info">
                 <div class="item-name"><span>${attr.name}</span></div>
