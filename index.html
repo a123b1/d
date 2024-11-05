@@ -740,7 +740,7 @@ function addFile(attr) {
                 if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
                     // console.log("允许。",);
                     e.preventDefault();
-                    e.target.style.backgroundColor = "rgba(255, 255,0 ,0.3)";
+                    e.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
                 } else {
                     // console.log("不允许。",);
                     e.target.style.backgroundColor = "";
@@ -816,7 +816,7 @@ function chdir(e,) {
     spansArray = Array.from(path_spans);
     if (e !== null && e.target.classList.contains('item-content')) {
         const _new_path = addPath(e.target.item_attr, spansArray.length === 0 ? home_click : spansArray.at(-1));
-        spansArray.push(e.target.querySelector('.item-name span'));
+        spansArray.push(_new_path);
     }
     if (e !== null && e.target.hasOwnProperty("item_attr")) {
         document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
@@ -962,7 +962,7 @@ function addPath(attr, parent_path) {
             if (window.root_attr.upload) {
                 // console.log("允许。",);
                 event.preventDefault();
-                event.target.style.backgroundColor = "rgba(255, 255,0 ,0.3)";
+                event.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
             } else {
                 // console.log("不允许。",);
                 event.target.style.backgroundColor = "";
