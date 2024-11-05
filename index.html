@@ -710,7 +710,7 @@ function chdir(e,) {
     path_spans = document.querySelectorAll('.path span'); // span
     spansArray = Array.from(path_spans)
     if (e.target.classList.contains('item')) {
-        spansArray.push(e.querySelector('.item-name span').textContent);
+        spansArray.push(e.target.querySelector('.item-name span'));
     }
     history.pushState(null, null, "/" + spansArray.map(element => element.textContent).join("/"));
     toggleAnimation(true);
