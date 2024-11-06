@@ -418,6 +418,9 @@
             pointer-events: auto;
         }
 
+        .item-action button i {
+            pointer-events: none;
+        }
 
     </style>
 </head>
@@ -601,7 +604,7 @@ function addFile(attr) {
 `);
             _new__action.querySelector('.item-action-download').addEventListener('click', function (e) {
                 console.log(e.target);
-                if (e.target.tagName === 'A') {
+                if (e.target.tagName === 'A') { // 多余
                     e.stopPropagation();
                     e.preventDefault();
                     e.target.parentNode.click();
