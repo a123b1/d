@@ -614,7 +614,7 @@ function addFile(attr) {
             _new__action.querySelector('.item-action-rename').addEventListener('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('Clicked:', e.target.textContent);
+                rename(e);
             });
         }
         if (window.root_attr.trash === true) {
@@ -626,7 +626,7 @@ function addFile(attr) {
             _new__action.querySelector('.item-action-trash').addEventListener('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('Clicked:', e.target.textContent);
+                trash(e);
             });
         }
         if (window.root_attr.delete === true) {
@@ -680,7 +680,7 @@ function addFile(attr) {
             _new__action.querySelector('.item-action-rename').addEventListener('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('Clicked:', e.target.textContent);
+                rename(e);
             });
         }
         if (window.root_attr.trash === true) {
@@ -692,7 +692,7 @@ function addFile(attr) {
             _new__action.querySelector('.item-action-trash').addEventListener('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('Clicked:', e.target.textContent);
+                trash(e);
             });
         }
         if (window.root_attr.delete === true) {
@@ -708,7 +708,6 @@ function addFile(attr) {
             });
         }
         _new__content.addEventListener('click', function (e) {
-            console.log('Clicked:', e.target);
             if (e.target.classList.contains('item-content')) {
                 chdir(e);
             }
@@ -920,6 +919,65 @@ async function _move(source, to,) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
+function rename(e,) {
+    let item = e.target.closest(".item-content");
+    let newName = prompt("重命名：", item.item_attr.name);
+    if (!newName) {
+        return;
+    }
+    newName = newName.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
+    if (newName !== "" && newName !== item.item_attr.name) {
+        toggleAnimation(true);
+        _rename(item, newName);
+    }
+}
+
+async function _rename(source, name,) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({action: "rename", name: name, source: getFullPath(source),}),
+        });
+        console.log("rename:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
+function trash(e,) {
+    let item = e.target.closest(".item-content");
+    if (confirm(`把文件${item.item_attr.type === Types.folder ? "夹" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
+        toggleAnimation(true);
+        _trash(item,);
+    }
+}
+
+async function _trash(source,) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({action: "trash", source: getFullPath(source),}),
+        });
+        console.log("trash:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
     } catch (error) {
         console.error("Error sending request:", error);
     }
