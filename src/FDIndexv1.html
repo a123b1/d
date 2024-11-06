@@ -923,13 +923,13 @@ function addFile(attr) {
         _new__content.addEventListener('dragover', function (e) {
             if (e.target.classList.contains('item-content')) {
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                console.log("是否允许拖入。", e.target.item_attr);
+                // console.log("是否允许拖入。", e.target.item_attr);
                 if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
-                    console.log("允许。",);
+                    // console.log("允许。",);
                     e.preventDefault();
                     e.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
                 } else {
-                    console.log("不允许。",);
+                    // console.log("不允许。",);
                     e.target.style.backgroundColor = "";
                 }
             }
@@ -954,7 +954,7 @@ function addFile(attr) {
     _new__content.addEventListener('dragstart', function (e) {
         if (e.target.classList.contains('item-content')) {
             draggedElement = e;
-            console.log("开始拖拽。", e.target, e.target.item_attr);
+            // console.log("开始拖拽。", e.target, e.target.item_attr);
             e.dataTransfer.setData("application/json", JSON.stringify(e.target.item_attr));
             e.dataTransfer.effectAllowed = 'move';
         }
@@ -1420,10 +1420,11 @@ function upload(file, name,) {
     xhr.upload.onprogress = function (event) {
         if (event.lengthComputable) {
             const percentComplete = Math.round((event.loaded / event.total) * 100);
-            console.log(`上传进度: ${percentComplete}%`);
             if (percentComplete === 100) {
+                console.log(`上传进度: ${percentComplete}%`);
                 toggleAnimation_upload(true);
             } else {
+                // console.log(`上传进度: ${percentComplete}%`);
                 progress.style.width = `${percentComplete}%`;
             }
         }
@@ -1447,48 +1448,6 @@ function upload(file, name,) {
     };
     xhr.send(file);
 }
-
-// function upload(file, name,) {
-//     // 创建一个 FormData 对象来构造要上传的数据
-//     const formData = new FormData();
-//     formData.append('file', file); // 添加文件
-//     const xhr = new XMLHttpRequest();
-//     const currentUrl = window.location.href.replace(/#$/, "");
-//
-//     const randomLength1 = Math.floor(Math.random() * 2) + 1;
-//     const randomLength2 = Math.floor(Math.random() * 5) + 8;
-//     const urlWithParams = new URL(currentUrl);
-//     urlWithParams.searchParams.append(generateRandomString(randomLength1), generateRandomString(randomLength2));
-//
-//     xhr.open('POST', urlWithParams.toString(), true); // 发送到指定的 URL
-//     // 添加 CSRF 令牌到请求头
-//     const csrftoken = getCookie('csrftoken');
-//     xhr.setRequestHeader('X-CSRFToken', csrftoken);
-//     // 显示进度条
-//     const progressBar = document.getElementById('progress-bar');
-//     progressBar.style.display = 'inline-block';
-//     // 监听上传进度
-//     xhr.upload.addEventListener('progress', function (event) {
-//         if (event.lengthComputable) {
-//             const percentComplete = (event.loaded / event.total) * 100;
-//             const progress = document.getElementById('progress');
-//             progress.style.width = percentComplete + '%'; // 更新进度条的宽度
-//         }
-//     });
-//     // 监听请求完成
-//     xhr.onload = function () {
-//         if (xhr.status === 200) {
-//             // alert('文件上传完成！');
-//         } else {
-//             alert('文件上传失败。');
-//         }
-//         location.reload();
-//         // 重置进度条
-//         progressBar.style.display = 'none';
-//         document.getElementById('progress').style.width = '0';
-//     };
-//     xhr.send(formData); // 发送文件
-// }
 
 function uploadFile() {
     const fileInput = document.getElementById('fileInput');
@@ -1552,6 +1511,9 @@ list_box.addEventListener('dragleave', () => {
 const dialog = document.querySelector('.dialog');
 dialog.addEventListener('dragover', (event) => {
     event.preventDefault();
+    if (document.getElementById("upload2progress").style.display !== "none") {
+        return;
+    }
     dialog.style.border = "3px dashed #2088ee";
 });
 
@@ -1562,6 +1524,9 @@ dialog.addEventListener('dragleave', () => {
 dialog.addEventListener('drop', (event) => {
     event.preventDefault();
     dialog.style.border = "3px dashed #00000000";
+    if (document.getElementById("upload2progress").style.display !== "none") {
+        return;
+    }
     const dataTransferItems = event.dataTransfer.items;
     const validFiles = [];
     for (let i = 0; i < dataTransferItems.length; i++) {
