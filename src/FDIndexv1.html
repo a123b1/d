@@ -1498,8 +1498,8 @@ function uploadFile() {
                 disallowedUploadElement = "." + disallowedUploadElement;
             }
             if (name.endsWith(disallowedUploadElement)) {
-                fileInput.value = '';
-                document.getElementById('input-upload-file-name').value = "";
+                // fileInput.value = '';
+                // document.getElementById('input-upload-file-name').value = "";
                 alert(document.getElementById('tip-disallowed-upload').textContent);
                 return;
             }
