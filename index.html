@@ -638,7 +638,7 @@ function addFile(attr) {
             _new__action.querySelector('.item-action-delete').addEventListener('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('Clicked:', e.target.textContent);
+                _delete(e);
             });
         }
     } else if (attr.type.toString() === ItemTypes.folder) {
@@ -704,7 +704,7 @@ function addFile(attr) {
             _new__action.querySelector('.item-action-delete').addEventListener('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('Clicked:', e.target.textContent);
+                _delete(e);
             });
         }
         _new__content.addEventListener('click', function (e) {
@@ -973,6 +973,33 @@ async function _trash(source,) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({action: "trash", source: getFullPath(source),}),
+        });
+        console.log("trash:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
+function _delete(e,) {
+    let item = e.target.closest(".item-content");
+    if (confirm(`永久删除文件${item.item_attr.type === Types.folder ? "夹" : ""}：“${item.item_attr.name}”？`)) {
+        toggleAnimation(true);
+        _delete2(item,);
+    }
+}
+
+async function _delete2(source,) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({action: "delete", source: getFullPath(source),}),
         });
         console.log("trash:response:", response);
         if (!response.ok) {
