@@ -232,9 +232,9 @@
             height: 100%;
             background-color: #1976D2;
             width: 0%;
-            /*animation: progressAnimation 2s infinite;*/
-            animation: slidingBar 1200ms infinite;
-            animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
+            /*!*animation: progressAnimation 2s infinite;*!*/
+            /*animation: slidingBar 1200ms infinite;*/
+            /*animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);*/
         }
 
         #progress-bar-upload {
@@ -255,15 +255,15 @@
             height: 100%;
             background-color: #1976D2;
             width: 0%;
-            /*animation: progressAnimation 2s infinite;*/
-            animation: slidingBar-upload 1200ms infinite;
-            animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
+            /*!*animation: progressAnimation 2s infinite;*!*/
+            /*animation: slidingBar-upload 1200ms infinite;*/
+            /*animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);*/
         }
 
-        /*.sliding-bar-animation {*/
-        /*    animation: slidingBar 1200ms infinite;*/
-        /*    animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);*/
-        /*}*/
+        .sliding-bar-animation {
+            animation: slidingBar 1200ms infinite;
+            animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
+        }
 
         @keyframes progressAnimation {
             0% {
@@ -708,12 +708,10 @@ function toggleAnimation(show,) {
     if (!show) {
         progress_bar.style.display = "none";
         progress.style.width = "0%";
-        progress.style.animation = "none";
         progress.classList.remove("sliding-bar-animation");
     } else {
         progress_bar.style.display = "block";
         progress.style.width = "30%";
-        progress.style.animation = "slidingBar 1200ms infinite;";
         progress.classList.add("sliding-bar-animation");
     }
 }
@@ -724,12 +722,10 @@ function toggleAnimation_upload(show,) {
     if (!show) {
         // progress_bar.style.display = "none";
         progress.style.width = "0%";
-        progress.style.animation = "none";
         progress.classList.remove("sliding-bar-animation");
     } else {
         // progress_bar.style.display = "block";
         progress.style.width = "30%";
-        progress.style.animation = "slidingBar 1200ms infinite;";
         progress.classList.add("sliding-bar-animation");
     }
 }
@@ -1449,7 +1445,8 @@ function upload(file, name,) {
         console.error("请求错误");
         document.getElementById("upload2progress").style.display = 'none';
         closeDialog({target: document.getElementById('dialogOverlay')});
-        chdir(null);
+        // chdir(null);
+        location.reload();
     };
     xhr.send(file);
 }
