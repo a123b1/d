@@ -603,7 +603,13 @@ function addFile(attr) {
                 // e.stopImmediatePropagation();
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('Clicked:', e.target.textContent);
+                const a = document.createElement('a');
+                a.href = e.target.querySelector("a").href;
+                a.download = e.target.item_attr.name;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
             });
         }
         if (window.root_attr.upload === true) {
