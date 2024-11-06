@@ -334,7 +334,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 6px 6px 6px 6px;
             transition: transform 0.1s ease, background-color 0.1s ease;
         }
 
@@ -419,8 +418,111 @@
         }
 
         .item-action button i {
+            margin: 4px;
             pointer-events: none;
         }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* flex-start*/
+            justify-content: flex-start;
+            z-index: 1001;
+            /*padding-top: 160px;*/
+        }
+
+        .dialog-margin-top {
+            width: 100%;
+            height: 26%;
+            pointer-events: none;
+        }
+
+        .dialog {
+            background-color: white;
+            padding: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            border-radius: 4px;
+            border: 2px dashed #00000000;
+            width: auto;
+            min-width: 300px;
+            max-width: 460px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            /*transform: translateY(-30%);*/
+        }
+
+        div#tipbox-disallowed-upload {
+            margin-top: 2px;
+        }
+
+        div#tipbox-disallowed-upload span {
+            font-size: 12px;
+            color: #a2a2a2;
+            text-align: left;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        div#upload-file-name {
+            margin-top: 18px;
+            gap: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-right: 26px;
+        }
+
+        label#label-upload-file-name {
+            font-size: 14px;
+        }
+
+        input#input-upload-file-name {
+            flex: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .file-input {
+            width: 100%;
+            margin-top: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .upload-btn {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            background-color: #1976D2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #2088ee;
+        }
+
+        .upload-btn:active {
+            background-color: #165ba6;
+        }
+
+        .upload-btn:disabled {
+            background-color: #959595;
+        }
+
 
     </style>
 </head>
@@ -506,19 +608,38 @@
         </div>
     </div>
 </div>
+<div class="overlay hidden" id="dialogOverlay" onclick="closeDialog(event)">
+    <div class="dialog-margin-top"></div>
+    <div class="dialog" onclick="event.stopPropagation()">
+        <input type="file" class="file-input" id="fileInput" onchange="handleFileChange(event)">
+        <div id="upload-file-name">
+            <label for="input-upload-file-name" id="label-upload-file-name">名称</label>
+            <input id="input-upload-file-name" type="text" name="keyword"
+                   value="" placeholder="" required
+                   autofocus autocomplete="off" pattern=""/>
+        </div>
+        <button class="upload-btn" id="uploadBtn" onclick="uploadFile()" disabled="">上传</button>
+        <div id="tipbox-disallowed-upload"><span id="tip-disallowed-upload"></span></div>
+    </div>
+</div>
 <script>  <!--defer-->
 
 window.root_attr = {
     "unique": true,
     "id": null,
     "type": null,
-    "upload": null,
+    "upload": true,
     "download": null,
     "trash": null,
     "delete": null,
     "btn_goto_drive": null,
-    "disallowed_upload": null,
+    "disallowed_upload": "",
 };
+
+window.root_attr.disallowed_upload = window.root_attr.disallowed_upload.split(/[；，、;\s]+/).map(decodeURIComponent).filter(i => i.trim() !== '');
+if (window.root_attr.disallowed_upload.length > 0) {
+    document.getElementById('tip-disallowed-upload').textContent = `不允许上传：${window.root_attr.disallowed_upload.join(';')}`;
+}
 
 const Types = Object.freeze({
     google_drive: 1,
@@ -603,7 +724,7 @@ function addFile(attr) {
 </button>
 `);
             _new__action.querySelector('.item-action-download').addEventListener('click', function (e) {
-                console.log(e.target);
+                // console.log(e.target);
                 if (e.target.tagName === 'A') { // 多余
                     e.stopPropagation();
                     e.preventDefault();
@@ -914,7 +1035,7 @@ function getPathIndex(element) {
 }
 
 function move(source, e, parsedObject) {
-    console.log("收到拖放数据。", source, parsedObject,);
+    // console.log("收到拖放数据。", source, parsedObject,);
     if (!source) {
         return;
     }
@@ -1113,7 +1234,7 @@ function addPath(attr, parent_path) {
 
 if (window.root_attr.upload === true) {
     document.querySelector('#upload').addEventListener('click', function (e) {
-        console.log('Clicked:', e.target.textContent);
+        openDialog();
     });
     document.querySelector('#new_folder').addEventListener('click', function (e) {
         let folderName = prompt("新建文件夹：");
@@ -1170,6 +1291,205 @@ parent_path.click();
 
 window.addEventListener('popstate', function (event) {
     location.reload();
+});
+
+
+function openDialog() {
+    document.getElementById('dialogOverlay').classList.remove('hidden');
+    document.getElementById('fileInput').value = '';
+    document.getElementById('input-upload-file-name').value = '';
+    toggleUploadButton();
+}
+
+function closeDialog(event) {
+    const overlay = document.getElementById('dialogOverlay');
+    document.getElementById('fileInput').value = '';
+    document.getElementById('input-upload-file-name').value = '';
+    if (event.target === overlay) {
+        overlay.classList.add('hidden');
+    }
+}
+
+function toggleUploadButton() {
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    // uploadBtn.disabled = fileInput.files.length <= 0;
+    uploadBtn.disabled = false;
+}
+
+function handleFileChange(event) {
+    const file = event.target.files[0];
+    toggleUploadButton();
+    document.getElementById('input-upload-file-name').value = file.name;
+}
+
+function upload(file, name,) {
+    let url = new URL(window.location.href.replace(/#$/, ""));
+    if (!url.pathname.endsWith('/')) {
+        url.pathname += "/";
+    }
+    url.pathname = url.pathname + encodeURIComponent(name);
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.setRequestHeader("Content-Type", file.type);
+    xhr.upload.onprogress = function (event) {
+        if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            console.log(`上传进度: ${percentComplete}%`);
+        }
+    };
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            console.log("文件上传成功");
+        } else {
+            console.error("文件上传失败", xhr.status, xhr.statusText);
+        }
+    };
+    xhr.onerror = function () {
+        console.error("请求错误");
+    };
+    xhr.send(file);
+}
+
+// function upload(file, name,) {
+//     // 创建一个 FormData 对象来构造要上传的数据
+//     const formData = new FormData();
+//     formData.append('file', file); // 添加文件
+//     const xhr = new XMLHttpRequest();
+//     const currentUrl = window.location.href.replace(/#$/, "");
+//
+//     const randomLength1 = Math.floor(Math.random() * 2) + 1;
+//     const randomLength2 = Math.floor(Math.random() * 5) + 8;
+//     const urlWithParams = new URL(currentUrl);
+//     urlWithParams.searchParams.append(generateRandomString(randomLength1), generateRandomString(randomLength2));
+//
+//     xhr.open('POST', urlWithParams.toString(), true); // 发送到指定的 URL
+//     // 添加 CSRF 令牌到请求头
+//     const csrftoken = getCookie('csrftoken');
+//     xhr.setRequestHeader('X-CSRFToken', csrftoken);
+//     // 显示进度条
+//     const progressBar = document.getElementById('progress-bar');
+//     progressBar.style.display = 'inline-block';
+//     // 监听上传进度
+//     xhr.upload.addEventListener('progress', function (event) {
+//         if (event.lengthComputable) {
+//             const percentComplete = (event.loaded / event.total) * 100;
+//             const progress = document.getElementById('progress');
+//             progress.style.width = percentComplete + '%'; // 更新进度条的宽度
+//         }
+//     });
+//     // 监听请求完成
+//     xhr.onload = function () {
+//         if (xhr.status === 200) {
+//             // alert('文件上传完成！');
+//         } else {
+//             alert('文件上传失败。');
+//         }
+//         location.reload();
+//         // 重置进度条
+//         progressBar.style.display = 'none';
+//         document.getElementById('progress').style.width = '0';
+//     };
+//     xhr.send(formData); // 发送文件
+// }
+
+function uploadFile() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (file) {
+        for (let disallowedUploadElement of window.root_attr.disallowed_upload) {
+            if (!disallowedUploadElement.startsWith('.')) {
+                disallowedUploadElement = "." + disallowedUploadElement;
+            }
+            if (file.name.endsWith(disallowedUploadElement)) {
+                fileInput.value = '';
+                alert(document.getElementById('tip-disallowed-upload').textContent);
+                return;
+            }
+        }
+        let label = document.getElementById('input-upload-file-name');
+        label.value = label.value.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
+        let name = label.value;
+        if (name === 0) {
+            return;
+        }
+        upload(file, name);
+        // closeDialog({target: document.getElementById('dialogOverlay')});
+    } else {
+        toggleUploadButton();
+    }
+}
+
+document.getElementById('dialogOverlay').addEventListener('dragenter', function (event) {
+    event.preventDefault();
+});
+document.getElementById('dialogOverlay').addEventListener('dragover', function (event) {
+    event.preventDefault();
+});
+document.getElementById('dialogOverlay').addEventListener('drop', function (event) {
+    event.preventDefault();
+});
+document.querySelector('body').addEventListener('dragenter', function (event) {
+    event.preventDefault();
+});
+document.querySelector('body').addEventListener('dragover', function (event) {
+    event.preventDefault();
+});
+document.querySelector('body').addEventListener('drop', function (event) {
+    event.preventDefault();
+});
+const list_box = document.querySelector('.list-box');
+list_box.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    // list_box.style.border = "2px dashed #2088ee";
+    openDialog();
+});
+
+list_box.addEventListener('dragleave', () => {
+    // list_box.style.border = "none";
+});
+
+const dialog = document.querySelector('.dialog');
+dialog.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    dialog.style.border = "2px dashed #2088ee";
+});
+
+dialog.addEventListener('dragleave', () => {
+    dialog.style.border = "2px dashed #00000000";
+});
+
+dialog.addEventListener('drop', (event) => {
+    event.preventDefault();
+    dialog.style.border = "2px dashed #00000000";
+    const dataTransferItems = event.dataTransfer.items;
+    const validFiles = [];
+    for (let i = 0; i < dataTransferItems.length; i++) {
+        const item = dataTransferItems[i];
+        const entry = item.webkitGetAsEntry && item.webkitGetAsEntry();
+        // console.log(item, entry);
+        if (entry && entry.isDirectory) {
+            continue;
+        }
+        if (item.kind === 'file') {
+            const file = item.getAsFile();
+            // console.log(file,);
+            if (file) {
+                validFiles.push(file);
+            }
+        }
+    }
+    const fileInput = document.getElementById('fileInput');
+    if (validFiles.length > 0) {
+        const dataTransfer = new DataTransfer();
+        // validFiles.forEach(file => dataTransfer.items.add(file));
+        dataTransfer.items.add(validFiles[0]);
+        fileInput.files = dataTransfer.files;
+        handleFileChange({target: fileInput});
+    } else {
+        fileInput.value = '';
+        document.getElementById('input-upload-file-name').value = "";
+    }
 });
 
 
