@@ -914,20 +914,22 @@ function addFile(attr) {
                 e.preventDefault();
                 e.target.style.backgroundColor = "";
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                let source = findFileItem(parsedObject);
-                move(source, e, parsedObject);
+                if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
+                    let source = findFileItem(parsedObject);
+                    move(source, e, parsedObject);
+                }
             }
         });
         _new__content.addEventListener('dragover', function (e) {
             if (e.target.classList.contains('item-content')) {
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                // console.log("是否允许拖入。", e.target.item_attr);
+                console.log("是否允许拖入。", e.target.item_attr);
                 if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
-                    // console.log("允许。",);
+                    console.log("允许。",);
                     e.preventDefault();
                     e.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
                 } else {
-                    // console.log("不允许。",);
+                    console.log("不允许。",);
                     e.target.style.backgroundColor = "";
                 }
             }
@@ -952,8 +954,8 @@ function addFile(attr) {
     _new__content.addEventListener('dragstart', function (e) {
         if (e.target.classList.contains('item-content')) {
             draggedElement = e;
-            // console.log("开始拖拽。", e.originalTarget, e.originalTarget.item_attr);
-            e.dataTransfer.setData("application/json", JSON.stringify(e.originalTarget.item_attr));
+            console.log("开始拖拽。", e.target, e.target.item_attr);
+            e.dataTransfer.setData("application/json", JSON.stringify(e.target.item_attr));
             e.dataTransfer.effectAllowed = 'move';
         }
     });
