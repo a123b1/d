@@ -513,6 +513,7 @@ window.root_attr = {
     "download": null,
     "trash": null,
     "delete": null,
+    "btn_goto_drive": null,
     "disallowed_upload": null,
 };
 
@@ -718,16 +719,7 @@ function addFile(attr) {
                 e.target.style.backgroundColor = "";
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
                 let source = findFileItem(parsedObject);
-                console.log("收到拖放数据。", source, parsedObject,);
-                if (!source) {
-                    return;
-                }
-                if (window.root_attr.upload && e.target.item_attr.type.toString() === ItemTypes.folder) {
-                    if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
-                        toggleAnimation(true);
-                        _move(source, e.target);
-                    }
-                }
+                move(source, e, parsedObject);
             }
         });
         _new__content.addEventListener('dragover', function (e) {
@@ -785,7 +777,7 @@ function getCurrentFolderShareLink(attr,) {
     }
 }
 
-if (window.root_attr.download !== true) {
+if (window.root_attr.btn_goto_drive !== true) {
     document.querySelector('#open_drive').style.display = 'none';
 }
 if (window.root_attr.type === Types.google_drive) {
@@ -905,6 +897,19 @@ function getPathIndex(element) {
     return pathIndex;
 }
 
+function move(source, e, parsedObject) {
+    console.log("收到拖放数据。", source, parsedObject,);
+    if (!source) {
+        return;
+    }
+    if (window.root_attr.upload && e.target.item_attr.type.toString() === ItemTypes.folder) {
+        if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
+            toggleAnimation(true);
+            _move(source, e.target);
+        }
+    }
+}
+
 async function _move(source, to,) {
     const baseUrl = new URL(window.location.href.replace(/#$/, ""));
     try {
@@ -959,7 +964,7 @@ async function _rename(source, name,) {
 
 function trash(e,) {
     let item = e.target.closest(".item-content");
-    if (confirm(`把文件${item.item_attr.type === Types.folder ? "夹" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
+    if (confirm(`把文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
         _trash(item,);
     }
@@ -986,7 +991,7 @@ async function _trash(source,) {
 
 function _delete(e,) {
     let item = e.target.closest(".item-content");
-    if (confirm(`永久删除文件${item.item_attr.type === Types.folder ? "夹" : ""}：“${item.item_attr.name}”？`)) {
+    if (confirm(`永久删除文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
         _delete2(item,);
     }
@@ -1035,7 +1040,7 @@ function addPath(attr, parent_path) {
     if (typeof attr == "string") {
         const name = attr.toString();
         attr = {
-            name: name,
+            name: name, type: ItemTypes.folder,
         }
     }
     let container = document.querySelector('.paths')
@@ -1061,15 +1066,7 @@ function addPath(attr, parent_path) {
             event.target.style.backgroundColor = "";
             const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
             let source = findFileItem(parsedObject);
-            if (!source) {
-                return;
-            }
-            if (window.root_attr.upload) {
-                if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""} “${source.item_attr.name}“ 移至 “${event.target.item_attr.name}” ？`)) {
-                    toggleAnimation(true);
-                    _move(source, event.target);
-                }
-            }
+            move(source, event, parsedObject);
         }
     });
     _new.addEventListener('dragover', function (event) {
@@ -1118,9 +1115,8 @@ if (window.root_attr.upload === true) {
     document.querySelector('#new_folder').style.display = 'none';
 }
 
-
 let parent_path = document.querySelector('#home-click'); // div
-parent_path.item_attr = {name: parent_path.textContent,};
+parent_path.item_attr = {name: parent_path.textContent, type: ItemTypes.folder,};
 parent_path.parent_path = null;
 parent_path.addEventListener('click', function (e) {
     chdir(e);
@@ -1130,15 +1126,7 @@ parent_path.addEventListener('drop', function (event) {
     event.target.style.backgroundColor = "";
     const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
     let source = findFileItem(parsedObject);
-    if (!source) {
-        return;
-    }
-    if (window.root_attr.upload) {
-        if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""} “${source.item_attr.name}“ 移至 “${event.target.item_attr.name}” ？`)) {
-            toggleAnimation(true);
-            _move(source, event.target);
-        }
-    }
+    move(source, event, parsedObject);
 });
 parent_path.addEventListener('dragover', function (event) {
     const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
