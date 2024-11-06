@@ -600,6 +600,13 @@ function addFile(attr) {
 </button>
 `);
             _new__action.querySelector('.item-action-download').addEventListener('click', function (e) {
+                console.log(e.target);
+                if (e.target.tagName === 'A') {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    e.target.parentNode.click();
+                    return;
+                }
                 // e.stopImmediatePropagation();
                 e.stopPropagation();
                 e.preventDefault();
