@@ -696,7 +696,7 @@ function toggleAnimation(show,) {
     if (!show) {
         progress_bar.style.display = "none";
         progress.style.width = "0%";
-        progress.style.animation = "";
+        progress.style.animation = "none";
     } else {
         progress_bar.style.display = "block";
         progress.style.width = "30%";
@@ -708,11 +708,11 @@ function toggleAnimation_upload(show,) {
     const progress_bar = document.getElementById("progress-bar-upload");
     const progress = document.getElementById("progress-upload");
     if (!show) {
-        progress_bar.style.display = "none";
+        // progress_bar.style.display = "none";
         progress.style.width = "0%";
-        progress.style.animation = "";
+        progress.style.animation = "none";
     } else {
-        progress_bar.style.display = "block";
+        // progress_bar.style.display = "block";
         progress.style.width = "30%";
         progress.style.animation = "slidingBar 1200ms infinite;";
     }
@@ -1415,7 +1415,6 @@ function upload(file, name,) {
             if (percentComplete === 100) {
                 toggleAnimation_upload(true);
             } else {
-                toggleAnimation_upload(false);
                 progress.style.width = `${percentComplete}%`;
             }
         }
