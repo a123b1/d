@@ -449,7 +449,7 @@
             margin-left: 20px;
             margin-right: 20px;
             border-radius: 4px;
-            border: 2px dashed #00000000;
+            border: 3px dashed #00000000;
             width: auto;
             min-width: 300px;
             max-width: 460px;
@@ -1453,16 +1453,16 @@ list_box.addEventListener('dragleave', () => {
 const dialog = document.querySelector('.dialog');
 dialog.addEventListener('dragover', (event) => {
     event.preventDefault();
-    dialog.style.border = "2px dashed #2088ee";
+    dialog.style.border = "3px dashed #2088ee";
 });
 
 dialog.addEventListener('dragleave', () => {
-    dialog.style.border = "2px dashed #00000000";
+    dialog.style.border = "3px dashed #00000000";
 });
 
 dialog.addEventListener('drop', (event) => {
     event.preventDefault();
-    dialog.style.border = "2px dashed #00000000";
+    dialog.style.border = "3px dashed #00000000";
     const dataTransferItems = event.dataTransfer.items;
     const validFiles = [];
     for (let i = 0; i < dataTransferItems.length; i++) {
