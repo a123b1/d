@@ -1221,7 +1221,7 @@ async function _delete2(source,) {
             },
             body: JSON.stringify({action: "delete", source: getFullPath(source),}),
         });
-        console.log("trash:response:", response);
+        console.log("delete:response:", response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
