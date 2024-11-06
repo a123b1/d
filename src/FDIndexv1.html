@@ -612,7 +612,7 @@ function addFile(attr) {
                 e.preventDefault();
                 const a = document.createElement('a');
                 a.href = e.target.querySelector("a").href;
-                a.download = e.target.item_attr.name;
+                a.download = e.target.closest(".item-content").item_attr.name;
                 a.style.display = 'none';
                 document.body.appendChild(a);
                 a.click();
