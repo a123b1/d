@@ -10,7 +10,7 @@
         }
 
         body {
-            margin: 84px 0 0;
+            margin: 80px 0 0;
             font-family: Arial, sans-serif;
         }
 
@@ -19,8 +19,8 @@
             align-items: center;
             background-color: #1976D2;
             color: white;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
             padding: 2px 16px 2px 6px;
 
             width: 100%;
@@ -1385,6 +1385,9 @@ window.addEventListener('popstate', function (event) {
 
 
 function openDialog() {
+    if (!root_attr.upload){
+        return;
+    }
     document.getElementById('dialogOverlay').classList.remove('hidden');
     document.getElementById('fileInput').value = '';
     document.getElementById('input-upload-file-name').value = '';
