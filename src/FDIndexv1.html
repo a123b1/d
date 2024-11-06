@@ -420,7 +420,7 @@
         }
 
         .item-name {
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .item-meta {
@@ -991,7 +991,7 @@ if (window.root_attr.type === Types.google_drive) {
 
 
 function chdir(e,) {
-    clearFileList();
+    // clearFileList();
     let home_click = document.querySelector('#home-click'); // div
     let path_spans = document.querySelectorAll('.path span'); // span
     let spansArray = Array.from(path_spans);
@@ -1480,22 +1480,22 @@ function uploadFile() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
     if (file) {
-        for (let disallowedUploadElement of window.root_attr.disallowed_upload) {
-            if (!disallowedUploadElement.startsWith('.')) {
-                disallowedUploadElement = "." + disallowedUploadElement;
-            }
-            if (file.name.endsWith(disallowedUploadElement)) {
-                fileInput.value = '';
-                document.getElementById('input-upload-file-name').value = "";
-                alert(document.getElementById('tip-disallowed-upload').textContent);
-                return;
-            }
-        }
         let label = document.getElementById('input-upload-file-name');
         label.value = label.value.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
         let name = label.value;
         if (name.length === 0) {
             return;
+        }
+        for (let disallowedUploadElement of window.root_attr.disallowed_upload) {
+            if (!disallowedUploadElement.startsWith('.')) {
+                disallowedUploadElement = "." + disallowedUploadElement;
+            }
+            if (name.endsWith(disallowedUploadElement)) {
+                fileInput.value = '';
+                document.getElementById('input-upload-file-name').value = "";
+                alert(document.getElementById('tip-disallowed-upload').textContent);
+                return;
+            }
         }
         upload(file, name);
     } else {
@@ -1523,6 +1523,9 @@ document.querySelector('body').addEventListener('drop', function (event) {
 });
 const list_box = document.querySelector('.list-box');
 list_box.addEventListener('dragenter', (event) => {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+        return;
+    }
     if (draggedElement) {
         return;
     }
