@@ -256,14 +256,14 @@
             background-color: #1976D2;
             width: 0%;
             /*animation: progressAnimation 2s infinite;*/
-            animation: slidingBar 1200ms infinite;
+            animation: slidingBar-upload 1200ms infinite;
             animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
         }
 
-        .sliding-bar-animation {
-            animation: slidingBar 1200ms infinite;
-            animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
-        }
+        /*.sliding-bar-animation {*/
+        /*    animation: slidingBar 1200ms infinite;*/
+        /*    animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);*/
+        /*}*/
 
         @keyframes progressAnimation {
             0% {
@@ -283,6 +283,14 @@
             }
         }
 
+        @keyframes slidingBar-upload {
+            0% {
+                transform: translateX(-100%); /* 从容器左边外侧开始 */
+            }
+            100% {
+                transform: translateX(333%); /* 移动到容器右边外侧 */
+            }
+        }
 
         .item {
             height: 60px;
