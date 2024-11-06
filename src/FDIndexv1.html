@@ -906,6 +906,9 @@ function addFile(attr) {
         }
         _new__content.addEventListener('click', function (e) {
             if (e.target.classList.contains('item-content')) {
+                if (document.getElementById("progress-bar").style.display !== "none") {
+                    return;
+                }
                 chdir(e);
             }
         });
@@ -1098,6 +1101,9 @@ function getPathIndex(element) {
 }
 
 function move(source, e, parsedObject) {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+        return;
+    }
     // console.log("收到拖放数据。", source, parsedObject,);
     if (!source) {
         return;
@@ -1131,6 +1137,9 @@ async function _move(source, to,) {
 }
 
 function rename(e,) {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+        return;
+    }
     let item = e.target.closest(".item-content");
     let newName = prompt("重命名：", item.item_attr.name);
     if (!newName) {
@@ -1163,6 +1172,9 @@ async function _rename(source, name,) {
 }
 
 function trash(e,) {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+        return;
+    }
     let item = e.target.closest(".item-content");
     if (confirm(`把文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
@@ -1190,6 +1202,9 @@ async function _trash(source,) {
 }
 
 function _delete(e,) {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+        return;
+    }
     let item = e.target.closest(".item-content");
     if (confirm(`永久删除文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
@@ -1257,6 +1272,9 @@ function addPath(attr, parent_path) {
     // console.log('initPath:', _new.item_attr.name, _new.parent_path == null ? null : _new.parent_path.item_attr.name,);
     _new.addEventListener('click', function (event) {
         if (event.target.tagName === 'SPAN') {
+            if (document.getElementById("progress-bar").style.display !== "none") {
+                return;
+            }
             chdir(event);
         }
     });
@@ -1297,9 +1315,15 @@ function addPath(attr, parent_path) {
 
 if (window.root_attr.upload === true) {
     document.querySelector('#upload').addEventListener('click', function (e) {
+        if (document.getElementById("progress-bar").style.display !== "none") {
+            return;
+        }
         openDialog();
     });
     document.querySelector('#new_folder').addEventListener('click', function (e) {
+        if (document.getElementById("progress-bar").style.display !== "none") {
+            return;
+        }
         let folderName = prompt("新建文件夹：");
         if (!folderName) {
             return;
@@ -1319,6 +1343,9 @@ let parent_path = document.querySelector('#home-click'); // div
 parent_path.item_attr = {name: parent_path.textContent, type: ItemTypes.folder,};
 parent_path.parent_path = null;
 parent_path.addEventListener('click', function (e) {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+        return;
+    }
     chdir(e);
 });
 parent_path.addEventListener('drop', function (event) {
