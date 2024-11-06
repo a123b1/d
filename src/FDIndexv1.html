@@ -694,7 +694,7 @@ function addFile(attr) {
         <div class="item-info">
             <div class="item-name"><span>${attr.name}</span></div>
             <div class="item-meta">
-                <div class="item-size"><span>${formatBytes(attr.size)}</span></div>
+                <div class="item-size"><span>${formatBytes(parseInt(attr.size, 10))}</span></div>
             </div>
         </div>
         <div class="item-action">
@@ -1403,6 +1403,7 @@ function uploadFile() {
             }
             if (file.name.endsWith(disallowedUploadElement)) {
                 fileInput.value = '';
+                document.getElementById('input-upload-file-name').value = "";
                 alert(document.getElementById('tip-disallowed-upload').textContent);
                 return;
             }
