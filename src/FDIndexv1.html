@@ -237,6 +237,30 @@
             animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
         }
 
+
+        #progress-bar-upload {
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 0px solid #ccc;
+            height: 8px;
+            /*display: none; */
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #progress-upload {
+            height: 100%;
+            background-color: #1976D2;
+            width: 0%;
+            /*animation: progressAnimation 2s infinite;*/
+            animation: slidingBar 1200ms infinite;
+            animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
+        }
+
         @keyframes progressAnimation {
             0% {
                 width: 0;
@@ -523,6 +547,13 @@
             background-color: #959595;
         }
 
+        #upload2progress {
+        }
+
+        #tipbox-uploading-file-name {
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
 
     </style>
 </head>
@@ -611,15 +642,23 @@
 <div class="overlay hidden" id="dialogOverlay" onclick="closeDialog(event)">
     <div class="dialog-margin-top"></div>
     <div class="dialog" onclick="event.stopPropagation()">
-        <input type="file" class="file-input" id="fileInput" onchange="handleFileChange(event)">
-        <div id="upload-file-name">
-            <label for="input-upload-file-name" id="label-upload-file-name">名称</label>
-            <input id="input-upload-file-name" type="text" name="keyword"
-                   value="" placeholder="" required
-                   autofocus autocomplete="off" pattern=""/>
+        <div id="upload2select">
+            <input type="file" class="file-input" id="fileInput" onchange="handleFileChange(event)">
+            <div id="upload-file-name">
+                <label for="input-upload-file-name" id="label-upload-file-name">名称</label>
+                <input id="input-upload-file-name" type="text" name="keyword"
+                       value="" placeholder="" required
+                       autofocus autocomplete="off" pattern=""/>
+            </div>
+            <button class="upload-btn" id="uploadBtn" onclick="uploadFile()" disabled="">上传</button>
+            <div id="tipbox-disallowed-upload"><span id="tip-disallowed-upload"></span></div>
         </div>
-        <button class="upload-btn" id="uploadBtn" onclick="uploadFile()" disabled="">上传</button>
-        <div id="tipbox-disallowed-upload"><span id="tip-disallowed-upload"></span></div>
+        <div id="upload2progress">
+            <div id="tipbox-uploading-file-name"><span id="tip-uploading-file-name"></span>filename.icc</div>
+            <div id="progress-bar-upload">
+                <div id="progress-upload"></div>
+            </div>
+        </div>
     </div>
 </div>
 <script>  <!--defer-->
@@ -665,7 +704,22 @@ function toggleAnimation(show,) {
     }
 }
 
+function toggleAnimation_upload(show,) {
+    const progress_bar = document.getElementById("progress-bar-upload");
+    const progress = document.getElementById("progress-upload");
+    if (!show) {
+        progress_bar.style.display = "none";
+        progress.style.width = "0%";
+        progress.style.animation = "";
+    } else {
+        progress_bar.style.display = "block";
+        progress.style.width = "30%";
+        progress.style.animation = "slidingBar 1200ms infinite;";
+    }
+}
+
 toggleAnimation(false);
+toggleAnimation_upload(false);
 
 function formatBytes(bytes) {
     if (bytes === 0) return "0 B";
@@ -1299,9 +1353,20 @@ function openDialog() {
     document.getElementById('fileInput').value = '';
     document.getElementById('input-upload-file-name').value = '';
     toggleUploadButton();
+    toggleAnimation_upload(false);
+    document.getElementById("tipbox-uploading-file-name").textContent = '';
+    document.getElementById("upload2progress").style.display = 'none';
+    document.getElementById("upload2select").style.display = 'block';
 }
 
 function closeDialog(event) {
+    if (document.getElementById("upload2progress").style.display !== "none") {
+        return;
+    }
+    toggleAnimation_upload(false);
+    document.getElementById("tipbox-uploading-file-name").textContent = '';
+    document.getElementById("upload2select").style.display = 'block';
+
     const overlay = document.getElementById('dialogOverlay');
     document.getElementById('fileInput').value = '';
     document.getElementById('input-upload-file-name').value = '';
@@ -1323,7 +1388,18 @@ function handleFileChange(event) {
     document.getElementById('input-upload-file-name').value = file.name;
 }
 
+
 function upload(file, name,) {
+    toggleAnimation_upload(false);
+    document.getElementById("tipbox-uploading-file-name").textContent = name;
+    document.getElementById("upload2progress").style.display = 'block';
+    document.getElementById("upload2select").style.display = 'none';
+
+    const progress_bar = document.getElementById("progress-bar-upload");
+    const progress = document.getElementById("progress-upload");
+    progress_bar.style.display = "block";
+    progress.style.width = "0%";
+
     let url = new URL(window.location.href.replace(/#$/, ""));
     if (!url.pathname.endsWith('/')) {
         url.pathname += "/";
@@ -1335,7 +1411,12 @@ function upload(file, name,) {
     xhr.upload.onprogress = function (event) {
         if (event.lengthComputable) {
             const percentComplete = Math.round((event.loaded / event.total) * 100);
-            console.log(`上传进度: ${percentComplete}%`);
+            // console.log(`上传进度: ${percentComplete}%`);
+            if (percentComplete === 100) {
+                toggleAnimation_upload(true);
+            } else {
+                progress.style.width = `${percentComplete}%`;
+            }
         }
     };
     xhr.onload = function () {
@@ -1344,9 +1425,13 @@ function upload(file, name,) {
         } else {
             console.error("文件上传失败", xhr.status, xhr.statusText);
         }
+        document.getElementById("upload2progress").style.display = 'none';
+        closeDialog({target: document.getElementById('dialogOverlay')});
     };
     xhr.onerror = function () {
         console.error("请求错误");
+        document.getElementById("upload2progress").style.display = 'none';
+        closeDialog({target: document.getElementById('dialogOverlay')});
     };
     xhr.send(file);
 }
@@ -1411,11 +1496,10 @@ function uploadFile() {
         let label = document.getElementById('input-upload-file-name');
         label.value = label.value.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
         let name = label.value;
-        if (name === 0) {
+        if (name.length === 0) {
             return;
         }
         upload(file, name);
-        // closeDialog({target: document.getElementById('dialogOverlay')});
     } else {
         toggleUploadButton();
     }
