@@ -237,7 +237,6 @@
             animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
         }
 
-
         #progress-bar-upload {
             width: 100%;
             background-color: #f3f3f3;
@@ -257,6 +256,11 @@
             background-color: #1976D2;
             width: 0%;
             /*animation: progressAnimation 2s infinite;*/
+            animation: slidingBar 1200ms infinite;
+            animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
+        }
+
+        .sliding-bar-animation {
             animation: slidingBar 1200ms infinite;
             animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
         }
@@ -589,7 +593,7 @@
         </div>
         <div class="list-box">
             <div id="progress-bar">
-                <div id="progress"></div>
+                <div id="progress" class="sliding-bar-animation"></div>
             </div>
             <div class="list">
                 <div class="item file" draggable="false">
@@ -656,7 +660,7 @@
         <div id="upload2progress">
             <div id="tipbox-uploading-file-name"><span id="tip-uploading-file-name"></span>filename.icc</div>
             <div id="progress-bar-upload">
-                <div id="progress-upload"></div>
+                <div id="progress-upload" class="sliding-bar-animation"></div>
             </div>
         </div>
     </div>
@@ -697,10 +701,12 @@ function toggleAnimation(show,) {
         progress_bar.style.display = "none";
         progress.style.width = "0%";
         progress.style.animation = "none";
+        progress.classList.remove("sliding-bar-animation");
     } else {
         progress_bar.style.display = "block";
         progress.style.width = "30%";
         progress.style.animation = "slidingBar 1200ms infinite;";
+        progress.classList.add("sliding-bar-animation");
     }
 }
 
@@ -711,10 +717,12 @@ function toggleAnimation_upload(show,) {
         // progress_bar.style.display = "none";
         progress.style.width = "0%";
         progress.style.animation = "none";
+        progress.classList.remove("sliding-bar-animation");
     } else {
         // progress_bar.style.display = "block";
         progress.style.width = "30%";
         progress.style.animation = "slidingBar 1200ms infinite;";
+        progress.classList.add("sliding-bar-animation");
     }
 }
 
