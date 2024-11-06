@@ -1411,10 +1411,11 @@ function upload(file, name,) {
     xhr.upload.onprogress = function (event) {
         if (event.lengthComputable) {
             const percentComplete = Math.round((event.loaded / event.total) * 100);
-            // console.log(`上传进度: ${percentComplete}%`);
+            console.log(`上传进度: ${percentComplete}%`);
             if (percentComplete === 100) {
                 toggleAnimation_upload(true);
             } else {
+                toggleAnimation_upload(false);
                 progress.style.width = `${percentComplete}%`;
             }
         }
@@ -1427,11 +1428,13 @@ function upload(file, name,) {
         }
         document.getElementById("upload2progress").style.display = 'none';
         closeDialog({target: document.getElementById('dialogOverlay')});
+        chdir(null);
     };
     xhr.onerror = function () {
         console.error("请求错误");
         document.getElementById("upload2progress").style.display = 'none';
         closeDialog({target: document.getElementById('dialogOverlay')});
+        chdir(null);
     };
     xhr.send(file);
 }
