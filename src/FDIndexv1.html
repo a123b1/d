@@ -693,6 +693,8 @@ const ItemTypes = Object.freeze({
     symlink: "symlink",
 });
 
+let draggedElement = null;
+
 function toggleAnimation(show,) {
     const progress_bar = document.getElementById("progress-bar");
     const progress = document.getElementById("progress");
@@ -949,6 +951,7 @@ function addFile(attr) {
     }
     _new__content.addEventListener('dragstart', function (e) {
         if (e.target.classList.contains('item-content')) {
+            draggedElement = e;
             // console.log("开始拖拽。", e.originalTarget, e.originalTarget.item_attr);
             e.dataTransfer.setData("application/json", JSON.stringify(e.originalTarget.item_attr));
             e.dataTransfer.effectAllowed = 'move';
@@ -957,6 +960,7 @@ function addFile(attr) {
     _new__content.addEventListener('dragend', function (e) {
         if (e.target.classList.contains('item-content')) {
         }
+        draggedElement = null;
     });
     // console.log('initItem:', _new__content.item_attr, _new__content.parent_path.item_attr.name,);
 }
@@ -1530,7 +1534,10 @@ document.querySelector('body').addEventListener('drop', function (event) {
     event.preventDefault();
 });
 const list_box = document.querySelector('.list-box');
-list_box.addEventListener('dragover', (event) => {
+list_box.addEventListener('dragenter', (event) => {
+    if (draggedElement) {
+        return;
+    }
     event.preventDefault();
     // list_box.style.border = "2px dashed #2088ee";
     openDialog();
