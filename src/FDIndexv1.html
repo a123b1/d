@@ -1112,7 +1112,7 @@ async function _chdir(e,) {
         console.log("chdir:response:", response);
         if (!response.ok) {
             if (response.status === 404) {
-                alert("不是有效路径。");
+                alert(`无效路径：${getFullPath(e.target)}/`,);
             }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
