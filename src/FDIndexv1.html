@@ -44,7 +44,15 @@
             /*margin: 7px 0px 7px 0px;*/
         }
 
+        .home a {
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            pointer-events: none;
+        }
+
         #home-click {
+            pointer-events: auto;
             width: 100%;
             /*padding: 0;*/
             user-select: none;
@@ -100,6 +108,13 @@
             gap: 0px;
         }
 
+        .path a {
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            pointer-events: none;
+        }
+
         .path-icon {
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='10 7 5 10'><path fill='%23FFFFFF' d='M10,17L15,12L10,7V17Z'/></svg>");
             background-repeat: no-repeat;
@@ -110,6 +125,7 @@
         }
 
         .path span {
+            pointer-events: auto;
             padding: 12px 10px 12px 10px;
             /*border: 1px solid #ffe222;*/
             user-select: none;
@@ -134,6 +150,10 @@
 
         .banner-button-right {
             height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
 
         .banner-button-right a {
@@ -216,7 +236,7 @@
 
         #progress-bar {
             width: 100%;
-            background-color: #f3f3f3;
+            background-color: #c6d8ef;
             border: 0px solid #ccc;
             height: 4px;
             /*display: none; */
@@ -485,10 +505,16 @@
         }
 
         div#tipbox-disallowed-upload {
+            width: 100%;
             margin-top: 2px;
         }
 
-        div#tipbox-disallowed-upload span {
+        div#tipbox-current-url {
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        div#tipbox-disallowed-upload span, div#tipbox-current-url span {
             font-size: 12px;
             color: #a2a2a2;
             text-align: left;
@@ -564,7 +590,9 @@
 <div class="banner">
     <div class="banner-left">
         <div class="home">
-            <div id="home-click"><span>FDIndex</span></div>
+            <a href="/" target="_self" onclick="event.preventDefault();" draggable="false">
+                <div id="home-click"><span>FDIndex</span></div>
+            </a>
         </div>
         <span class="blank"></span>
         <div class="paths">
@@ -579,6 +607,11 @@
             <a href="#" target="_self" id="open_drive">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M7.71,3.5L1.15,15L4.58,21L11.13,9.5M9.73,15L6.3,21H19.42L22.85,15M22.28,14L15.42,2H8.58L8.57,2L15.43,14H22.28Z"/>
+                </svg>
+            </a>
+            <a href="#" target="_self" id="switch_theme">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M7.5,2C5.71,3.15 4.5,5.18 4.5,7.5C4.5,9.82 5.71,11.85 7.53,13C4.46,13 2,10.54 2,7.5A5.5,5.5 0 0,1 7.5,2M19.07,3.5L20.5,4.93L4.93,20.5L3.5,19.07L19.07,3.5M12.89,5.93L11.41,5L9.97,6L10.39,4.3L9,3.24L10.75,3.12L11.33,1.47L12,3.1L13.73,3.13L12.38,4.26L12.89,5.93M9.59,9.54L8.43,8.81L7.31,9.59L7.65,8.27L6.56,7.44L7.92,7.35L8.37,6.06L8.88,7.33L10.24,7.36L9.19,8.23L9.59,9.54M19,13.5A5.5,5.5 0 0,1 13.5,19C12.28,19 11.15,18.6 10.24,17.93L17.93,10.24C18.6,11.15 19,12.28 19,13.5M14.6,20.08L17.37,18.93L17.13,22.28L14.6,20.08M18.93,17.38L20.08,14.61L22.28,17.15L18.93,17.38M20.08,12.42L18.94,9.64L22.28,9.88L20.08,12.42M9.63,18.93L12.4,20.08L9.87,22.27L9.63,18.93Z"/>
                 </svg>
             </a>
         </div>
@@ -640,6 +673,7 @@
                 </div>
             </div>
         </div>
+        <div id="tipbox-current-url"><span id="tip-current-url">11111111111</span></div>
     </div>
 </div>
 <div class="overlay hidden" id="dialogOverlay" onclick="closeDialog(event)">
@@ -666,6 +700,8 @@
 </div>
 <script>  <!--defer-->
 
+const FDIndex_version = null;
+
 window.root_attr = {
     "unique": true,
     "id": null,
@@ -682,6 +718,15 @@ window.root_attr.disallowed_upload = window.root_attr.disallowed_upload.split(/[
 if (window.root_attr.disallowed_upload.length > 0) {
     document.getElementById('tip-disallowed-upload').textContent = `不允许上传：${window.root_attr.disallowed_upload.join(';')}`;
 }
+
+const _url = new URL(window.location.href.replace(/#$/, ""));
+if (_url.searchParams.get('theme') === "dark") {
+    _url.searchParams.delete('theme');
+} else {
+    _url.searchParams.set('theme', 'dark');
+}
+document.querySelector('#switch_theme').setAttribute('title', "切换主题");
+document.querySelector('#switch_theme').setAttribute("href", _url.toString());
 
 const Types = Object.freeze({
     google_drive: 1,
@@ -970,8 +1015,10 @@ function addFile(attr) {
     // console.log('initItem:', _new__content.item_attr, _new__content.parent_path.item_attr.name,);
 }
 
-
 function getCurrentFolderShareLink(attr,) {
+    if (window.root_attr.btn_goto_drive !== true) {
+        return `#`;
+    }
     let id = attr.id === "root" ? window.root_attr.id : attr.id;
     if (window.root_attr.type === Types.google_drive) {
         return `https://drive.google.com/open?id=${id}`;
@@ -989,6 +1036,10 @@ if (window.root_attr.type === Types.google_drive) {
     document.querySelector('#open_drive').setAttribute('title', "");
 }
 
+function customEncode(str) {
+    const specialChars = /[\/?#\[\]@&=+%{}|\\^~`]/g;
+    return str.replace(specialChars, (match) => encodeURIComponent(match));
+}
 
 function chdir(e,) {
     clearFileList();
@@ -1023,6 +1074,15 @@ function chdir(e,) {
     if (newUrl !== window.location.href.toString()) {
         history.pushState(null, null, currentUrl.toString());
     }
+
+    path = spansArray.map(element => customEncode(element.item_attr.name)).join("/");
+    if (path.length >= 1) {
+        path += "/";
+    }
+    currentUrl.pathname = "/";
+    // console.log(currentUrl.toString(), path);
+    document.getElementById('tip-current-url').textContent = currentUrl.toString() + path;
+
     toggleAnimation(true);
     _chdir(e);
 }
@@ -1147,6 +1207,9 @@ function rename(e,) {
     }
     newName = newName.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
     if (newName !== "" && newName !== item.item_attr.name) {
+        if (/^\.*$/.test(newName)) {
+            return;
+        }
         toggleAnimation(true);
         _rename(item, newName);
     }
@@ -1261,14 +1324,19 @@ function addPath(attr, parent_path) {
     let container = document.querySelector('.paths')
     const htmlTemplate = `
 <div class="path">
-    <i class="path-icon"></i>
-    <span draggable="false">${attr.name}</span>
+    <a href="#" target="_self" onclick="event.preventDefault();" draggable="false">
+        <i class="path-icon"></i>
+        <span draggable="false">${attr.name}</span>
+    </a>
 </div>
 `;
     container.insertAdjacentHTML('beforeend', htmlTemplate);
     let _new = container.querySelector('.path:last-child span'); // span
     _new.item_attr = attr;
     _new.parent_path = parent_path;
+    let _new_a = container.querySelector('.path:last-child a'); // a
+    _new_a.setAttribute("href", getFullPath(_new));
+
     // console.log('initPath:', _new.item_attr.name, _new.parent_path == null ? null : _new.parent_path.item_attr.name,);
     _new.addEventListener('click', function (event) {
         if (event.target.tagName === 'SPAN') {
@@ -1332,6 +1400,9 @@ if (window.root_attr.upload === true) {
         }
         folderName = folderName.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
         if (folderName !== "") {
+            if (/^\.*$/.test(folderName)) {
+                return;
+            }
             toggleAnimation(true);
             _newFolder(folderName);
         }
@@ -1491,6 +1562,9 @@ function uploadFile() {
         label.value = label.value.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
         let name = label.value;
         if (name.length === 0) {
+            return;
+        }
+        if (/^\.*$/.test(name)) {
             return;
         }
         for (let disallowedUploadElement of window.root_attr.disallowed_upload) {
