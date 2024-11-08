@@ -1085,6 +1085,14 @@ function chdir(e,) {
     // console.log(currentUrl.toString(), path);
     document.getElementById('tip-current-url').textContent = currentUrl.toString() + path;
 
+    const _url = new URL(window.location.href.replace(/#$/, ""));
+    if (_url.searchParams.get('theme') === "dark") {
+        _url.searchParams.delete('theme');
+    } else {
+        _url.searchParams.set('theme', 'dark');
+    }
+    document.querySelector('#switch_theme').setAttribute("href", _url.toString());
+
     toggleAnimation(true);
     _chdir(e);
 }
