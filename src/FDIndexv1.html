@@ -1224,7 +1224,7 @@ function move(source, e, parsedObject) {
         return;
     }
     if (window.root_attr.upload && isFolder(e.target.item_attr, false)) {
-        if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""}${(source.item_attr.type.toString() === ItemTypes.symlink) ? "链接" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
+        if (confirm(`把文件${isFolder(source.item_attr, false) ? "夹" : ""}${isSymlink(source.item_attr,) ? "链接" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
             toggleAnimation(true);
             _move(source, e.target);
         }
@@ -1294,7 +1294,7 @@ function trash(e,) {
         return;
     }
     let item = e.target.closest(".item-content");
-    if (confirm(`把文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}${(item.item_attr.type.toString() === ItemTypes.symlink) ? "链接" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
+    if (confirm(`把文件${isFolder(item.item_attr, false) ? "夹" : ""}${isSymlink(item.item_attr,) ? "链接" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
         _trash(item,);
     }
@@ -1324,7 +1324,7 @@ function _delete(e,) {
         return;
     }
     let item = e.target.closest(".item-content");
-    if (confirm(`永久删除文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}${(item.item_attr.type.toString() === ItemTypes.symlink) ? "链接" : ""}：“${item.item_attr.name}”？`)) {
+    if (confirm(`永久删除文件${isFolder(item.item_attr, false) ? "夹" : ""}${isSymlink(item.item_attr,) ? "链接" : ""}：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
         _delete2(item,);
     }
