@@ -788,11 +788,25 @@ function clearFileList() {
     });
 }
 
+function isFile(attr, exactly) {
+    if (exactly) {
+        return attr.type.toString() === ItemTypes.file;
+    }
+    return attr.type.toString() === ItemTypes.file || attr.type.toString() === ItemTypes.symlink && attr.symlink_target.type.toString() === ItemTypes.file;
+}
+
+function isFolder(attr, exactly) {
+    if (exactly) {
+        return attr.type.toString() === ItemTypes.folder;
+    }
+    return attr.type.toString() === ItemTypes.folder || attr.type.toString() === ItemTypes.symlink && attr.symlink_target.type.toString() === ItemTypes.folder;
+}
+
 function addFile(attr) {
     let container = document.querySelector('.list')
     let _new;
     let _new__content;
-    if (attr.type.toString() === ItemTypes.file) {
+    if (isFile(attr, false)) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
     <div class="item-content" draggable="${window.root_attr.upload}">
@@ -885,7 +899,7 @@ function addFile(attr) {
                 _delete(e);
             });
         }
-    } else if (attr.type.toString() === ItemTypes.folder) {
+    } else if (isFolder(attr, false)) {
         let url = new URL(window.location.href);
         if (!url.pathname.endsWith('/')) {
             url.pathname += "/";
@@ -964,7 +978,7 @@ function addFile(attr) {
                 e.preventDefault();
                 e.target.style.backgroundColor = "";
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
+                if (isFolder(e.target.item_attr, false) && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
                     let source = findFileItem(parsedObject);
                     move(source, e, parsedObject);
                 }
@@ -974,7 +988,7 @@ function addFile(attr) {
             if (e.target.classList.contains('item-content')) {
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
                 // console.log("是否允许拖入。", e.target.item_attr);
-                if (e.target.item_attr.type.toString() === ItemTypes.folder && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
+                if (isFolder(e.target.item_attr, false) && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
                     // console.log("允许。",);
                     e.preventDefault();
                     e.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
@@ -1183,8 +1197,8 @@ function move(source, e, parsedObject) {
     if (!source) {
         return;
     }
-    if (window.root_attr.upload && e.target.item_attr.type.toString() === ItemTypes.folder) {
-        if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
+    if (window.root_attr.upload && isFolder(e.target.item_attr, false)) {
+        if (confirm(`把文件${(source.item_attr.type.toString() === ItemTypes.folder) ? "夹" : ""}${(source.item_attr.type.toString() === ItemTypes.symlink) ? "链接" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
             toggleAnimation(true);
             _move(source, e.target);
         }
@@ -1254,7 +1268,7 @@ function trash(e,) {
         return;
     }
     let item = e.target.closest(".item-content");
-    if (confirm(`把文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
+    if (confirm(`把文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}${(item.item_attr.type.toString() === ItemTypes.symlink) ? "链接" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
         _trash(item,);
     }
@@ -1284,7 +1298,7 @@ function _delete(e,) {
         return;
     }
     let item = e.target.closest(".item-content");
-    if (confirm(`永久删除文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}：“${item.item_attr.name}”？`)) {
+    if (confirm(`永久删除文件${item.item_attr.type.toString() === ItemTypes.folder ? "夹" : ""}${(item.item_attr.type.toString() === ItemTypes.symlink) ? "链接" : ""}：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
         _delete2(item,);
     }
