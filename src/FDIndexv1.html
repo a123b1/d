@@ -720,6 +720,8 @@ if (window.root_attr.disallowed_upload.length > 0) {
 }
 
 const _url = new URL(window.location.href.replace(/#$/, ""));
+_url.pathname = "";
+document.querySelector('.home a').setAttribute("href", _url.toString());
 if (_url.searchParams.get('theme') === "dark") {
     _url.searchParams.delete('theme');
 } else {
@@ -1334,8 +1336,11 @@ function addPath(attr, parent_path) {
     let _new = container.querySelector('.path:last-child span'); // span
     _new.item_attr = attr;
     _new.parent_path = parent_path;
+
     let _new_a = container.querySelector('.path:last-child a'); // a
-    _new_a.setAttribute("href", getFullPath(_new));
+    let _url = new URL(window.location.href.replace(/#$/, ""));
+    _url.pathname = getFullPath(_new) + "/";
+    _new_a.setAttribute("href", _url.toString());
 
     // console.log('initPath:', _new.item_attr.name, _new.parent_path == null ? null : _new.parent_path.item_attr.name,);
     _new.addEventListener('click', function (event) {
