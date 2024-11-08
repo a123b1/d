@@ -1079,7 +1079,6 @@ function chdir(e,) {
 
     const _url = new URL(window.location.href.replace(/#$/, ""));
 
-
     path = spansArray.map(element => customEncode(element.item_attr.name)).join("/");
     if (path.length >= 1) {
         path += "/";
@@ -1112,6 +1111,9 @@ async function _chdir(e,) {
         });
         console.log("chdir:response:", response);
         if (!response.ok) {
+            if (response.status === 404) {
+                alert("不是有效路径。");
+            }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         let data = await response.json();
