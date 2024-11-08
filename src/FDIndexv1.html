@@ -673,7 +673,7 @@
                 </div>
             </div>
         </div>
-        <div id="tipbox-current-url"><span id="tip-current-url">11111111111</span></div>
+        <div id="tipbox-current-url"><span id="tip-current-url"></span></div>
     </div>
 </div>
 <div class="overlay hidden" id="dialogOverlay" onclick="closeDialog(event)">
@@ -1077,15 +1077,18 @@ function chdir(e,) {
         history.pushState(null, null, currentUrl.toString());
     }
 
+    const _url = new URL(window.location.href.replace(/#$/, ""));
+
+
     path = spansArray.map(element => customEncode(element.item_attr.name)).join("/");
     if (path.length >= 1) {
         path += "/";
     }
     currentUrl.pathname = "/";
+    currentUrl.search = "";
     // console.log(currentUrl.toString(), path);
-    document.getElementById('tip-current-url').textContent = currentUrl.toString() + path;
+    document.getElementById('tip-current-url').textContent = currentUrl.toString() + path + _url.search;
 
-    const _url = new URL(window.location.href.replace(/#$/, ""));
     if (_url.searchParams.get('theme') === "dark") {
         _url.searchParams.delete('theme');
     } else {
