@@ -357,7 +357,16 @@
         }
 
         .file .item-icon {
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23737373' d='M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z'/></svg>");
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23737373' d='M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M15,18V16H6V18H15M18,14V12H6V14H18Z'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 34px;
+            height: 34px;
+            display: inline-block;
+        }
+
+        .file.symlink .item-icon {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23737373' d='M23 19L20 16V18H16V20H20V22L23 19M13 19C13 18.7 13 18.3 13.1 18H6V16H13.8C14.3 15.2 14.9 14.5 15.7 14H6V12H18V13.1C18.3 13 18.7 13 19 13S19.7 13 20 13.1V8L14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H13.8C13.3 21.1 13 20.1 13 19M13 3.5L18.5 9H13V3.5Z'/></svg>");
             background-repeat: no-repeat;
             background-size: contain;
             width: 34px;
@@ -936,9 +945,6 @@ function addFile(attr) {
 `;
         container.insertAdjacentHTML('beforeend', htmlTemplate);
         _new = container.querySelector('.item:last-child'); // div
-        if (isSymlink(attr)) {
-            _new.classList.add("symlink");
-        }
         _new__content = _new.querySelector('.item-content'); // div
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
@@ -1025,6 +1031,10 @@ function addFile(attr) {
                 e.target.style.backgroundColor = "";
             }
         });
+    }
+
+    if (isSymlink(attr)) {
+        _new.classList.add("symlink");
     }
     _new__content.item_attr = attr;
     _new__content.parent_path = document.querySelector('.paths').querySelector('.path:last-child span');
