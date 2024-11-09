@@ -1080,7 +1080,7 @@ if (window.root_attr.type === Types.google_drive) {
 }
 
 function customEncode(str) {
-    const specialChars = /[\/?#\[\]@&=+%{}|\\^~`]/g;
+    const specialChars = /[\/?#\[\]@&=+%{}|\\^~\s`]/g;
     return str.replace(specialChars, (match) => encodeURIComponent(match));
 }
 
