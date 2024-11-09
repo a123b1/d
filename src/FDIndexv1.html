@@ -1129,11 +1129,9 @@ function chdir(e,) {
     // console.log(currentUrl.toString(), path);
     let qsmap = [];
     for (const [key, value] of new URLSearchParams(_url.searchParams)) {
-        console.log(`${key}: ${value}`);
         qsmap.push([key, value]);
     }
-    let sqs = qsmap.map(q => [customEncode(q[0]), customEncode(q[1])]).join("&");
-    console.log(`sqs`, sqs);
+    let sqs = qsmap.map(q => `${customEncode(q[0])}=${customEncode(q[1])}`).join("&");
     if (sqs.length >= 1) {
         sqs = "?" + sqs;
     }
