@@ -1093,7 +1093,7 @@ function chdir(e,) {
     let start_rm = false;
     for (let i = 0; i < spansArray.length; i++) {
         if (start_rm) {
-            spansArray.at(i).parentElement.remove();
+            spansArray.at(i).parentElement.parentElement.remove();
         } else if (e !== null && spansArray[i] === e.target) {
             start_rm = true;
         }
