@@ -1127,7 +1127,17 @@ function chdir(e,) {
     currentUrl.pathname = "/";
     currentUrl.search = "";
     // console.log(currentUrl.toString(), path);
-    document.getElementById('tip-current-url').textContent = currentUrl.toString() + path + _url.search;
+    let qsmap = [];
+    for (const [key, value] of new URLSearchParams(_url.searchParams)) {
+        console.log(`${key}: ${value}`);
+        qsmap.push([key, value]);
+    }
+    let sqs = qsmap.map(q => [customEncode(q[0]), customEncode(q[1])]).join("&");
+    console.log(`sqs`, sqs);
+    if (sqs.length >= 1) {
+        sqs = "?" + sqs;
+    }
+    document.getElementById('tip-current-url').textContent = currentUrl.toString() + path + sqs;
 
     if (_url.searchParams.get('theme') === "dark") {
         _url.searchParams.delete('theme');
