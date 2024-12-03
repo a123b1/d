@@ -736,6 +736,7 @@ window.root_attr = {
     "disallowed_upload": "",
 
     "can_trash": null,
+    "max_upload_size": -1,
 
 };
 
@@ -756,7 +757,7 @@ document.querySelector('#switch_theme').setAttribute('title', "切换主题");
 document.querySelector('#switch_theme').setAttribute("href", _url.toString());
 
 const Types = Object.freeze({
-    google_drive: 1,
+    google_drive: 1, cf_d1_kv: 2,
 });
 
 const ItemTypes = Object.freeze({
@@ -1658,6 +1659,11 @@ function uploadFile() {
                 return;
             }
         }
+        if (root_attr.max_upload_size > 0 && file.size >= root_attr.max_upload_size * 1024 * 1024) {
+            alert(`单文件大小限制为${root_attr.max_upload_size}MB。`);
+            return;
+        }
+
         upload(file, name);
     } else {
         toggleUploadButton();
