@@ -734,6 +734,9 @@ window.root_attr = {
     "btn_goto_drive": null,
     "auto_upload_after_drop": null,
     "disallowed_upload": "",
+
+    "can_trash": null,
+
 };
 
 window.root_attr.disallowed_upload = window.root_attr.disallowed_upload.split(/[；，、;\s]+/).map(decodeURIComponent).filter(i => i.trim() !== '');
@@ -901,7 +904,7 @@ function addFile(attr) {
                 rename(e);
             });
         }
-        if (window.root_attr.trash === true) {
+        if (window.root_attr.trash === true && window.root_attr.can_trash === true) {
             _new__action.insertAdjacentHTML('beforeend', `
 <button class="item-action-trash" title="移至回收站">
     <i class="item-action-trash-icon"></i>
@@ -967,7 +970,7 @@ function addFile(attr) {
                 rename(e);
             });
         }
-        if (window.root_attr.trash === true) {
+        if (window.root_attr.trash === true && window.root_attr.can_trash === true) {
             _new__action.insertAdjacentHTML('beforeend', `
 <button class="item-action-trash" title="移至回收站">
     <i class="item-action-trash-icon"></i>
