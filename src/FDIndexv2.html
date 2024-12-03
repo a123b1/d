@@ -1739,6 +1739,11 @@ dialog.addEventListener('drop', (event) => {
         dataTransfer.items.add(validFiles[0]);
         fileInput.files = dataTransfer.files;
         handleFileChange({target: fileInput});
+
+        if (root_attr.auto_upload_after_drop) {
+            document.getElementById('uploadBtn').click();
+        }
+
     } else {
         fileInput.value = '';
         document.getElementById('input-upload-file-name').value = "";
