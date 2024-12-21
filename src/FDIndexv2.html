@@ -720,6 +720,9 @@
 <script>  <!--defer-->
 
 const FDIndex_version = null;
+const Types = Object.freeze({
+    google_drive: 1, cf_d1_kv: 2, deno_mysql: 3, // tidbcloud
+});
 
 window.root_attr = {
     "unique": true,
@@ -756,9 +759,6 @@ if (_url.searchParams.get('theme') === "dark") {
 document.querySelector('#switch_theme').setAttribute('title', "切换主题");
 document.querySelector('#switch_theme').setAttribute("href", _url.toString());
 
-const Types = Object.freeze({
-    google_drive: 1, cf_d1_kv: 2,
-});
 
 const ItemTypes = Object.freeze({
     file: "file",
