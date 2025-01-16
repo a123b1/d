@@ -844,7 +844,7 @@ function addFile(attr) {
     if (isFile(attr, false)) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
-    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
+    <a href="${url.toString().slice(0, -1)}" target="_self" onclick="event.preventDefault();" draggable="false">
         <div class="item-content" draggable="${window.root_attr.upload}">
             <i class="item-icon"></i>
             <div class="item-info">
