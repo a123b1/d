@@ -240,7 +240,7 @@
             float: left;
             width: 100%;
             height: 40px;
-            background: rgba(255, 255, 0, 0.4);
+            background: rgba(0, 0, 0, 0.1);
             /*z-index: 0;*/
             position: absolute;
         }
@@ -770,6 +770,7 @@ window.root_attr = {
     "move": null,
     "trash": null,
     "delete": null,
+    "unique_name": null,
     "btn_goto_drive": null,
     "auto_upload_after_drop": null,
     "disallowed_upload": "",
@@ -857,9 +858,12 @@ function formatBytes(bytes) {
     return `${formattedSize} ${sizes[i]}`;
 }
 
+function getFileList() {
+    return document.querySelectorAll('.list > .item'); // div
+}
+
 function clearFileList() {
-    let list_items = document.querySelectorAll('.list > .item'); // div
-    list_items.forEach(div => {
+    getFileList().forEach(div => {
         div.remove();
     });
 }
@@ -1239,7 +1243,7 @@ async function _chdir(e,) {
         for (let i = 0; i < data["list"].length; i++) {
             addFile(data["list"][i]);
         }
-        showListMsg(data["list"].length === 0 ? "此处没有文件" : "")
+        showListMsg(data["list"].length === 0 ? "此文件夹为空" : "")
         if (e !== null) {
             document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
         }
@@ -1712,6 +1716,15 @@ function uploadFile() {
         if (root_attr.max_upload_size > 0 && file.size >= root_attr.max_upload_size * 1024 * 1024) {
             alert(`单文件大小限制为${root_attr.max_upload_size}MB。`);
             return;
+        }
+
+        if (root_attr.unique_name) {
+            for (let itemElement of getFileList()) {
+                if (name === itemElement.querySelector(".item-name span").textContent) {
+                    alert(`名称重复 “${name}” 。`);
+                    return;
+                }
+            }
         }
 
         upload(file, name);
