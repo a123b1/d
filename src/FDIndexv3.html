@@ -838,6 +838,9 @@ function addFile(attr) {
     let container = document.querySelector('.list')
     let _new;
     let _new__content;
+    let url = new URL(window.location.href);
+    if (!url.pathname.endsWith('/')) url.pathname += "/";
+    url.pathname = url.pathname + encodeURIComponent(attr.name) + "/";
     if (isFile(attr, false)) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
@@ -934,11 +937,6 @@ function addFile(attr) {
             });
         }
     } else if (isFolder(attr, false)) {
-        let url = new URL(window.location.href);
-        if (!url.pathname.endsWith('/')) {
-            url.pathname += "/";
-        }
-        url.pathname = url.pathname + encodeURIComponent(attr.name) + "/";
         let htmlTemplate = `
 <div class="item folder" draggable="false">
     <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
