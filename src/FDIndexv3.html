@@ -233,6 +233,35 @@
             min-height: 400px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
             position: relative;
+
+        }
+
+        #list-msg-box {
+            float: left;
+            width: 100%;
+            height: 40px;
+            background: rgba(255, 255, 0, 0.4);
+            /*z-index: 0;*/
+            position: absolute;
+        }
+
+        #list-msg {
+            font-size: 16px;
+            font-weight: normal;
+            width: 100%;
+            height: 100%;
+            /*display: inline-block;*/
+            /*line-height: 50px;*/
+            /*text-align: center;*/
+            /*display: flex;*/
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            display: grid;
+            place-items: center;
+        }
+
+        .list {
+            /*clear: both;*/
         }
 
         #progress-bar {
@@ -646,6 +675,11 @@
             <div id="progress-bar">
                 <div id="progress" class="sliding-bar-animation"></div>
             </div>
+            <!--            <div style="overflow: hidden;">-->
+            <div id="list-msg-box">
+                <strong id="list-msg"></strong>
+            </div>
+            <!--            </div>-->
             <div class="list">
                 <div class="item file" draggable="false">
                     <a href="#" target="_self" onclick="event.preventDefault();" draggable="false">
@@ -800,6 +834,20 @@ function toggleAnimation_upload(show,) {
 
 toggleAnimation(false);
 toggleAnimation_upload(false);
+
+
+function showListMsg(s) {
+    const div = document.getElementById("list-msg-box");
+    const p = div.querySelector("#list-msg");
+    p.textContent = s
+    if (s.length > 0) {
+        div.style.display = "block";
+    } else {
+        div.style.display = "none";
+    }
+}
+
+showListMsg("")
 
 function formatBytes(bytes) {
     if (bytes === 0) return "0 B";
@@ -1099,7 +1147,7 @@ function customEncode(str) {
 }
 
 function chdir(e,) {
-    // clearFileList();
+    clearFileList();
     let home_click = document.querySelector('#home-click'); // div
     let path_spans = document.querySelectorAll('.path span'); // span
     let spansArray = Array.from(path_spans);
@@ -1191,6 +1239,7 @@ async function _chdir(e,) {
         for (let i = 0; i < data["list"].length; i++) {
             addFile(data["list"][i]);
         }
+        showListMsg(data["list"].length === 0 ? "此处没有文件" : "")
         if (e !== null) {
             document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
         }
@@ -1759,6 +1808,17 @@ dialog.addEventListener('drop', (event) => {
         document.getElementById('input-upload-file-name').value = "";
     }
 });
+
+
+let data = [
+    {"id": "FUjoqK6omL34rC", "type": "folder", "name": "111", "size": 0, "shared": false},
+    {"id": "8xPd24yJ0Ek9yn", "type": "folder", "name": "222", "size": 0, "shared": false},
+    {"id": "445kFrYDgHWKQV", "type": "folder", "name": "333", "size": 0, "shared": false},
+    {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false}
+]
+for (let i = 0; i < data.length; i++) {
+    // addFile(data[i]);
+}
 
 
 </script>
