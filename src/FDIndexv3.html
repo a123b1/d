@@ -1177,7 +1177,8 @@ async function _chdir(e,) {
         console.log("chdir:response:", response);
         if (!response.ok) {
             if (response.status === 404) {
-                alert(`无效路径：${getFullPath(e.target)}/`,);
+                const p = getFullPath(e.target);
+                alert(`无效路径：${p.endsWith("/") ? p : p + "/"}`,);
             }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
