@@ -840,11 +840,12 @@ function addFile(attr) {
     let _new__content;
     let url = new URL(window.location.href);
     if (!url.pathname.endsWith('/')) url.pathname += "/";
-    url.pathname = url.pathname + encodeURIComponent(attr.name) + "/";
+    url.pathname = url.pathname + encodeURIComponent(attr.name);
+    if (!isFile(attr, false)) url.pathname += "/";
     if (isFile(attr, false)) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
-    <a href="${url.toString().slice(0, -1)}" target="_self" onclick="event.preventDefault();" draggable="false">
+    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
         <div class="item-content" draggable="${window.root_attr.upload}">
             <i class="item-icon"></i>
             <div class="item-info">
@@ -875,7 +876,7 @@ function addFile(attr) {
             // url.pathname = url.pathname + encodeURIComponent(attr.name);
             _new__action.insertAdjacentHTML('beforeend', `
 <button class="item-action-download" title="下载">
-    <a href="${url.toString().slice(0, -1)}" target="_self" onclick="event.preventDefault();">
+    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
         <i class="item-action-download-icon"></i>
     </a>
 </button>
