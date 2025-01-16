@@ -1078,7 +1078,7 @@ function getCurrentFolderShareLink(attr,) {
     if (window.root_attr.type === Types.google_drive) {
         return `https://drive.google.com/open?id=${id}`;
     } else if (window.root_attr.type === Types.deno_mysql || window.root_attr.type === Types.cf_d1_kv) {
-        return `${id}`;
+        return `id://${id}`;
     } else {
         return `#`;
     }
