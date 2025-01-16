@@ -648,32 +648,34 @@
             </div>
             <div class="list">
                 <div class="item file" draggable="false">
-                    <div class="item-content" draggable="true">
-                        <i class="item-icon"></i>
-                        <div class="item-info">
-                            <div class="item-name"><span>文件名称</span></div>
-                            <div class="item-meta">
-                                <div class="item-size"><span>100kb</span></div>
-                                <!--                            <div class="item-shared"><span>已共享</span></div>-->
+                    <a href="#" target="_self" onclick="event.preventDefault();" draggable="false">
+                        <div class="item-content" draggable="true">
+                            <i class="item-icon"></i>
+                            <div class="item-info">
+                                <div class="item-name"><span>文件名称</span></div>
+                                <div class="item-meta">
+                                    <div class="item-size"><span>100kb</span></div>
+                                    <!--                            <div class="item-shared"><span>已共享</span></div>-->
+                                </div>
+                            </div>
+                            <div class="item-action">
+                                <button class="item-action-download">
+                                    <a href="#" target="_self" onclick="event.preventDefault();">
+                                        <i class="item-action-download-icon"></i>
+                                    </a>
+                                </button>
+                                <button class="item-action-rename">
+                                    <i class="item-action-rename-icon"></i>
+                                </button>
+                                <button class="item-action-trash">
+                                    <i class="item-action-trash-icon"></i>
+                                </button>
+                                <button class="item-action-delete">
+                                    <i class="item-action-delete-icon"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="item-action">
-                            <button class="item-action-download">
-                                <a href="#" target="_self" onclick="event.preventDefault();">
-                                    <i class="item-action-download-icon"></i>
-                                </a>
-                            </button>
-                            <button class="item-action-rename">
-                                <i class="item-action-rename-icon"></i>
-                            </button>
-                            <button class="item-action-trash">
-                                <i class="item-action-trash-icon"></i>
-                            </button>
-                            <button class="item-action-delete">
-                                <i class="item-action-delete-icon"></i>
-                            </button>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="item folder" draggable="false">
@@ -839,17 +841,19 @@ function addFile(attr) {
     if (isFile(attr, false)) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
-    <div class="item-content" draggable="${window.root_attr.upload}">
-        <i class="item-icon"></i>
-        <div class="item-info">
-            <div class="item-name"><span>${attr.name}</span></div>
-            <div class="item-meta">
-                <div class="item-size"><span>${formatBytes(parseInt(attr.size, 10))}</span></div>
+    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
+        <div class="item-content" draggable="${window.root_attr.upload}">
+            <i class="item-icon"></i>
+            <div class="item-info">
+                <div class="item-name"><span>${attr.name}</span></div>
+                <div class="item-meta">
+                    <div class="item-size"><span>${formatBytes(parseInt(attr.size, 10))}</span></div>
+                </div>
+            </div>
+            <div class="item-action">
             </div>
         </div>
-        <div class="item-action">
-        </div>
-    </div>
+    </a>
 </div>
 `;
         container.insertAdjacentHTML('beforeend', htmlTemplate);
