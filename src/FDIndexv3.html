@@ -868,14 +868,14 @@ function addFile(attr) {
         }
         let _new__action = _new__content.querySelector('.item-action'); // div
         if (window.root_attr.download === true) {
-            let url = new URL(window.location.href);
-            if (!url.pathname.endsWith('/')) {
-                url.pathname += "/";
-            }
-            url.pathname = url.pathname + encodeURIComponent(attr.name);
+            // let url = new URL(window.location.href);
+            // if (!url.pathname.endsWith('/')) {
+            //     url.pathname += "/";
+            // }
+            // url.pathname = url.pathname + encodeURIComponent(attr.name);
             _new__action.insertAdjacentHTML('beforeend', `
 <button class="item-action-download" title="下载">
-    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
+    <a href="${url.toString().slice(0, -1)}" target="_self" onclick="event.preventDefault();">
         <i class="item-action-download-icon"></i>
     </a>
 </button>
