@@ -1342,6 +1342,16 @@ function rename(e,) {
         if (/^\.*$/.test(newName)) {
             return;
         }
+
+        if (root_attr.unique_name) {
+            for (let itemElement of getFileList()) {
+                if (newName === itemElement.querySelector(".item-name span").textContent) {
+                    alert(`名称重复 “${newName}” 。`);
+                    return;
+                }
+            }
+        }
+
         toggleAnimation(true);
         _rename(item, newName);
     }
@@ -1538,6 +1548,16 @@ if (window.root_attr.upload === true) {
             if (/^\.*$/.test(folderName)) {
                 return;
             }
+
+            if (root_attr.unique_name) {
+                for (let itemElement of getFileList()) {
+                    if (folderName === itemElement.querySelector(".item-name span").textContent) {
+                        alert(`名称重复 “${folderName}” 。`);
+                        return;
+                    }
+                }
+            }
+
             toggleAnimation(true);
             _newFolder(folderName);
         }
