@@ -851,16 +851,15 @@ function showListMsg(s) {
 showListMsg("")
 
 function formatTimestamp(timestamp, format) {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp + (8 * 60 * 60 * 1000));
     const map = {
-        'YYYY': date.getFullYear(),
-        'MM': String(date.getMonth() + 1).padStart(2, '0'), // 月份从 0 开始
-        'DD': String(date.getDate()).padStart(2, '0'),
-        'HH': String(date.getHours()).padStart(2, '0'),
-        'mm': String(date.getMinutes()).padStart(2, '0'),
-        'ss': String(date.getSeconds()).padStart(2, '0')
+        'YYYY': date.getUTCFullYear(),
+        'MM': String(date.getUTCMonth() + 1).padStart(2, '0'), // 月份从 0 开始
+        'DD': String(date.getUTCDate()).padStart(2, '0'),
+        'HH': String(date.getUTCHours()).padStart(2, '0'),
+        'mm': String(date.getUTCMinutes()).padStart(2, '0'),
+        'ss': String(date.getUTCSeconds()).padStart(2, '0')
     };
-
     return format.replace(/YYYY|MM|DD|HH|mm|ss/g, matched => map[matched]);
 }
 
