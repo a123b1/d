@@ -688,8 +688,9 @@
                             <div class="item-info">
                                 <div class="item-name"><span>文件名称</span></div>
                                 <div class="item-meta">
+                                    <div class="item-modified-time"><span>2000-10-10 10:10</span></div>
                                     <div class="item-size"><span>100kb</span></div>
-                                    <!--                            <div class="item-shared"><span>已共享</span></div>-->
+                                    <div class="item-shared"><span>已共享</span></div>
                                 </div>
                             </div>
                             <div class="item-action">
@@ -917,7 +918,6 @@ function addFile(attr) {
             <div class="item-info">
                 <div class="item-name"><span>${attr.name}</span></div>
                 <div class="item-meta">
-                    <div class="item-size"><span>${formatBytes(parseInt(attr.size, 10))}</span></div>
                 </div>
             </div>
             <div class="item-action">
@@ -934,6 +934,7 @@ function addFile(attr) {
             const formattedDate = formatTimestamp(attr["modified_time"], 'YYYY-MM-DD HH:mm');
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-modified-time"><span>${formattedDate}</span></div>`);
         }
+        _new__meta.insertAdjacentHTML('beforeend', `<div class="item-size"><span>${formatBytes(parseInt(attr.size, 10))}</span></div>`);
         if (attr.shared === true) {
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
         }
