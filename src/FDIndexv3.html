@@ -851,7 +851,7 @@ function showListMsg(s) {
 showListMsg("")
 
 function formatTimestamp(timestamp, format) {
-    const date = new Date(timestamp + (8 * 60 * 60 * 1000));
+    const date = new Date((timestamp + (8 * 60 * 60)) * 1000);
     const map = {
         'YYYY': date.getUTCFullYear(),
         'MM': String(date.getUTCMonth() + 1).padStart(2, '0'), // 月份从 0 开始
