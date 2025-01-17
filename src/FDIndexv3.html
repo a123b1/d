@@ -227,6 +227,32 @@
             background-color: #165ba6;
         }
 
+        .action button.annoy-action {
+            background-color: #D27619;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+
+        .action button.annoy-action:hover {
+            background-color: #ee8820;
+        }
+
+        .action button.annoy-action:active {
+            background-color: #a65b16;
+        }
+
+        .action button.dangerous-action {
+            background-color: #D21976;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+
+        .action button.dangerous-action:hover {
+            background-color: #ee2088;
+        }
+
+        .action button.dangerous-action:active {
+            background-color: #a6165b;
+        }
+
         .list-box {
             width: 100%;
             max-width: 720px;
@@ -517,6 +543,63 @@
             pointer-events: none;
         }
 
+
+        input[type="checkbox"] {
+            display: none;
+        }
+
+        .custom-checkbox {
+            /*display: inline-flex;*/
+            /*align-items: center;*/
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+
+        .custom-checkbox:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-checkbox:active {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-checkbox > i {
+            pointer-events: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23444444' d='M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 22px;
+            height: 22px;
+            margin: 14px 8px 14px 10px;
+            display: inline-block;
+        }
+
+        input[type="checkbox"]:checked + label > i {
+            pointer-events: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23444444' d='M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.58L10,14.17L16.59,7.58L18,9'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 22px;
+            height: 22px;
+            margin: 14px 8px 14px 10px;
+            display: inline-block;
+        }
+
+        input[type="checkbox"]:indeterminate + label > i {
+            pointer-events: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23444444' d='M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,17H7V7H17V17Z'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 22px;
+            height: 22px;
+            margin: 14px 8px 14px 10px;
+            display: inline-block;
+        }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -668,8 +751,18 @@
 <div class="body">
     <div class="content">
         <div class="action">
+            <div id="wrapper-checkbox1">
+                <input type="checkbox" id="checkbox1">
+                <label class="custom-checkbox">
+                    <i></i>
+                </label>
+            </div>
             <button id="upload"><span>上传文件</span></button>
             <button id="new_folder"><span>新建文件夹</span></button>
+            <button id="copy_from"><span>转存自...</span></button>
+            <button id="batch_copy_link"><span>复制链接</span></button>
+            <button class="annoy-action" id="batch_trash"><span>移至垃圾桶</span></button>
+            <button class="dangerous-action" id="batch_delete"><span>永久删除</span></button>
         </div>
         <div class="list-box">
             <div id="progress-bar">
@@ -684,6 +777,9 @@
                 <div class="item file" draggable="false">
                     <a href="#" target="_self" onclick="event.preventDefault();" draggable="false">
                         <div class="item-content" draggable="true">
+                            <div>
+                                <input type="checkbox"><label class="custom-checkbox"><i></i></label>
+                            </div>
                             <i class="item-icon"></i>
                             <div class="item-info">
                                 <div class="item-name"><span>文件名称</span></div>
@@ -716,6 +812,9 @@
                 <div class="item folder" draggable="false">
                     <a href="#" target="_self" onclick="event.preventDefault();" draggable="false">
                         <div class="item-content" draggable="true">
+                            <div>
+                                <input type="checkbox"><label class="custom-checkbox"><i></i></label>
+                            </div>
                             <i class="item-icon"></i>
                             <div class="item-info">
                                 <div class="item-name"><span>文件夹名称</span></div>
@@ -769,14 +868,17 @@ window.root_attr = {
     "download": null,
     "rename": null,
     "move": null,
-    "trash": null,
-    "delete": null,
+    "trash": true,
+    "delete": true,
     "unique_name": null,
     "btn_goto_drive": null,
     "auto_upload_after_drop": null,
     "disallowed_upload": "",
 
-    "can_trash": null,
+    "multiple_selection": true,
+
+    "can_trash": true,
+    "can_copy": true,
     "max_upload_size": -1,
 
 };
@@ -797,6 +899,80 @@ if (_url.searchParams.get('theme') === "dark") {
 document.querySelector('#switch_theme').setAttribute('title', "切换主题");
 document.querySelector('#switch_theme').setAttribute("href", _url.toString());
 
+
+const wc1 = document.querySelector('#wrapper-checkbox1')
+const wc1_ckb = wc1.querySelector('input[type="checkbox"]')
+if (!window.root_attr.multiple_selection) {
+    wc1.style.display = "none"
+}
+wc1.querySelector('.custom-checkbox').addEventListener('click', (event) => {
+    wc1_ckb.checked = !wc1_ckb.checked
+    wc1_ckb.indeterminate = false
+    getFileList().forEach(div => {
+        div.querySelector('input[type="checkbox"]').checked = wc1_ckb.checked
+    });
+    let r = getSelectedFile()
+    if (r.selectCount === 0) {
+        wc1_ckb.checked = false
+    }
+    switchButtonGroup(r)
+});
+wc1_ckb.checked = false
+wc1_ckb.indeterminate = false
+
+function getSelectedFile() {
+    let selected = [];
+    const fli = getFileList()
+    fli.forEach(div => {
+        const e = div.querySelector('input[type="checkbox"]');
+        if (e.checked) {
+            selected.push(div)
+        }
+    });
+    return {selected, selectCount: selected.length, totalCount: fli.length,}
+}
+
+function switchButtonGroup(r) {
+    if (!r) r = getSelectedFile();
+    if (r.selectCount === 0) {
+        document.querySelector('#batch_copy_link').style.display = 'none';
+        document.querySelector('#batch_trash').style.display = 'none';
+        document.querySelector('#batch_delete').style.display = 'none';
+
+        if (window.root_attr.upload === true) {
+            document.querySelector('#upload').style.display = 'inline';
+            document.querySelector('#new_folder').style.display = 'inline';
+        } else {
+            document.querySelector('#upload').style.display = 'none';
+            document.querySelector('#new_folder').style.display = 'none';
+        }
+        if (window.root_attr.can_copy && window.root_attr.upload === true) {
+            document.querySelector('#copy_from').style.display = 'inline';
+        } else {
+            document.querySelector('#copy_from').style.display = 'none';
+        }
+    } else {
+        document.querySelector('#upload').style.display = 'none';
+        document.querySelector('#new_folder').style.display = 'none';
+        document.querySelector('#copy_from').style.display = 'none';
+
+        document.querySelector('#batch_copy_link').style.display = 'inline';
+        if (window.root_attr.can_trash && window.root_attr.trash === true) {
+            document.querySelector('#batch_trash').style.display = 'inline';
+        }
+        if (window.root_attr.delete === true) {
+            document.querySelector('#batch_delete').style.display = 'inline';
+        }
+    }
+}
+
+function resolveSelectedItems2kw(items) {
+    let path = getFullPath(items.at(0).querySelector('.item-content')).split("/");
+    path.pop()
+    path = "/" + path.join("/");
+    let names = items.map(source => getFullPath(source.querySelector('.item-content')).split("/").pop())
+    return {location: path, names,}
+}
 
 const ItemTypes = Object.freeze({
     file: "file",
@@ -855,7 +1031,7 @@ function formatTimestamp(timestamp, format) {
     const date = new Date((timestamp + (8 * 60 * 60)) * 1000);
     const map = {
         'YYYY': date.getUTCFullYear(),
-        'MM': String(date.getUTCMonth() + 1).padStart(2, '0'), // 月份从 0 开始
+        'MM': String(date.getUTCMonth() + 1).padStart(2, '0'),
         'DD': String(date.getUTCDate()).padStart(2, '0'),
         'HH': String(date.getUTCHours()).padStart(2, '0'),
         'mm': String(date.getUTCMinutes()).padStart(2, '0'),
@@ -882,6 +1058,9 @@ function clearFileList() {
     getFileList().forEach(div => {
         div.remove();
     });
+    wc1_ckb.checked = false
+    wc1_ckb.indeterminate = false
+    switchButtonGroup()
 }
 
 function isFile(attr, exactly) {
@@ -902,6 +1081,7 @@ function isSymlink(attr,) {
     return attr.type.toString() === ItemTypes.symlink;
 }
 
+
 function addFile(attr) {
     let container = document.querySelector('.list')
     let _new;
@@ -910,6 +1090,17 @@ function addFile(attr) {
     if (!url.pathname.endsWith('/')) url.pathname += "/";
     url.pathname = url.pathname + encodeURIComponent(attr.name);
     if (!isFile(attr, false)) url.pathname += "/";
+
+    const HT_checkBox_id = crypto.randomUUID().replace(/-/g, ""); // for="${HT_checkBox_id}"
+    let HT_checkBox = `
+<div>
+    <input type="checkbox" id="${HT_checkBox_id}">
+    <label class="custom-checkbox">
+        <i></i>
+    </label>
+</div>
+`;
+
     if (isFile(attr, false)) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
@@ -930,6 +1121,26 @@ function addFile(attr) {
         container.insertAdjacentHTML('beforeend', htmlTemplate);
         _new = container.querySelector('.item:last-child'); // div
         _new__content = _new.querySelector('.item-content'); // div
+        if (root_attr.multiple_selection) {
+            _new__content.style.padding = "0px 14px 0px 6px";
+            _new__content.insertAdjacentHTML('afterbegin', HT_checkBox);
+            _new__content.querySelector('.custom-checkbox').addEventListener('click', (event) => {
+                const ckb = document.getElementById(HT_checkBox_id)
+                ckb.checked = !ckb.checked
+                let r = getSelectedFile();
+                if (r.selectCount === 0) {
+                    wc1_ckb.checked = false
+                    wc1_ckb.indeterminate = false
+                } else if (r.selectCount > 0 && r.selectCount !== r.totalCount) {
+                    wc1_ckb.checked = false
+                    wc1_ckb.indeterminate = true
+                } else if (r.selectCount > 0 && r.selectCount === r.totalCount) {
+                    wc1_ckb.checked = true
+                    wc1_ckb.indeterminate = false
+                }
+                switchButtonGroup(r)
+            });
+        }
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr["modified_time"]) {
             const formattedDate = formatTimestamp(attr["modified_time"], 'YYYY-MM-DD HH:mm');
@@ -982,7 +1193,7 @@ function addFile(attr) {
         }
         if (window.root_attr.trash === true && window.root_attr.can_trash === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-trash" title="移至回收站">
+<button class="item-action-trash" title="移至垃圾桶">
     <i class="item-action-trash-icon"></i>
 </button>
 `);
@@ -1024,6 +1235,26 @@ function addFile(attr) {
         container.insertAdjacentHTML('beforeend', htmlTemplate);
         _new = container.querySelector('.item:last-child'); // div
         _new__content = _new.querySelector('.item-content'); // div
+        if (root_attr.multiple_selection) {
+            _new__content.style.padding = "0px 14px 0px 6px";
+            _new__content.insertAdjacentHTML('afterbegin', HT_checkBox);
+            _new__content.querySelector('.custom-checkbox').addEventListener('click', (event) => {
+                const ckb = document.getElementById(HT_checkBox_id)
+                ckb.checked = !ckb.checked
+                let r = getSelectedFile();
+                if (r.selectCount === 0) {
+                    wc1_ckb.checked = false
+                    wc1_ckb.indeterminate = false
+                } else if (r.selectCount > 0 && r.selectCount !== r.totalCount) {
+                    wc1_ckb.checked = false
+                    wc1_ckb.indeterminate = true
+                } else if (r.selectCount > 0 && r.selectCount === r.totalCount) {
+                    wc1_ckb.checked = true
+                    wc1_ckb.indeterminate = false
+                }
+                switchButtonGroup(r)
+            });
+        }
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr["modified_time"]) {
             const formattedDate = formatTimestamp(attr["modified_time"], 'YYYY-MM-DD HH:mm');
@@ -1047,7 +1278,7 @@ function addFile(attr) {
         }
         if (window.root_attr.trash === true && window.root_attr.can_trash === true) {
             _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-trash" title="移至回收站">
+<button class="item-action-trash" title="移至垃圾桶">
     <i class="item-action-trash-icon"></i>
 </button>
 `);
@@ -1431,6 +1662,27 @@ async function _trash(source,) {
     chdir(null);
 }
 
+async function _trashSelected(sources) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                action: "trash_selected", ...resolveSelectedItems2kw(sources),
+            }),
+        });
+        console.log("trash_selected:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
 function _delete(e,) {
     if (document.getElementById("progress-bar").style.display !== "none") {
         return;
@@ -1452,6 +1704,27 @@ async function _delete2(source,) {
             body: JSON.stringify({action: "delete", source: getFullPath(source),}),
         });
         console.log("delete:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
+async function _delete2Selected(sources) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                action: "delete_selected", ...resolveSelectedItems2kw(sources),
+            }),
+        });
+        console.log("delete_selectd:response:", response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -1588,9 +1861,68 @@ if (window.root_attr.upload === true) {
         }
     });
 } else {
-    document.querySelector('#upload').style.display = 'none';
-    document.querySelector('#new_folder').style.display = 'none';
 }
+if (window.root_attr.can_copy && window.root_attr.upload === true) {
+    document.querySelector('#copy_from').addEventListener('click', function (e) {
+        if (document.getElementById("progress-bar").style.display !== "none") {
+            return;
+        }
+        let url = prompt("从此网址转存：");
+        if (!url) {
+            return;
+        }
+        url = url.replace(/[\r\n\t\f]|^[\s]+|[\s]+$/g, '');
+        if (url !== "") {
+            toggleAnimation(true);
+            // _newFolder(folderName);
+        }
+    });
+} else {
+}
+if (window.root_attr.multiple_selection) {
+    document.querySelector('#batch_copy_link').addEventListener('click', function (e) {
+        if (document.getElementById("progress-bar").style.display !== "none") {
+            return;
+        }
+        const tli = getSelectedFile().selected.map(element => {
+            return element.querySelector("a").href
+        })
+        navigator.clipboard.writeText(tli.join("\n")).then(() => {
+            console.log('复制成功',);
+        }).catch(err => {
+            console.error('复制失败:', err);
+        });
+    });
+    if (window.root_attr.can_trash && window.root_attr.trash === true) {
+        document.querySelector('#batch_trash').addEventListener('click', function (e) {
+            if (document.getElementById("progress-bar").style.display !== "none") {
+                return;
+            }
+            let items = getSelectedFile().selected;
+            if (items.length === 0) return;
+            if (confirm(`把${items.length}个项目移至垃圾桶？`)) {
+                toggleAnimation(true);
+                _trashSelected(items,);
+            }
+        });
+    }
+    if (window.root_attr.delete === true) {
+        document.querySelector('#batch_delete').addEventListener('click', function (e) {
+            if (document.getElementById("progress-bar").style.display !== "none") {
+                return;
+            }
+            let items = getSelectedFile().selected;
+            if (items.length === 0) return;
+            if (confirm(`永久删除${items.length}个项目？`)) {
+                toggleAnimation(true);
+                _delete2Selected(items,);
+            }
+        });
+    }
+} else {
+}
+switchButtonGroup()
+
 
 let parent_path = document.querySelector('#home-click'); // div
 parent_path.item_attr = {name: parent_path.textContent, type: ItemTypes.folder,};
@@ -1869,13 +2201,13 @@ dialog.addEventListener('drop', (event) => {
 
 
 let data = [
-    {"id": "FUjoqK6omL34rC", "type": "folder", "name": "111", "size": 0, "shared": false},
-    {"id": "8xPd24yJ0Ek9yn", "type": "folder", "name": "222", "size": 0, "shared": false},
-    {"id": "445kFrYDgHWKQV", "type": "folder", "name": "333", "size": 0, "shared": false},
-    {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false}
+    {"id": "FUjoqK6omL34rC", "type": "folder", "name": "111", "size": 0, "shared": false, modified_time: null,},
+    {"id": "8xPd24yJ0Ek9yn", "type": "folder", "name": "222", "size": 0, "shared": false, modified_time: null,},
+    {"id": "445kFrYDgHWKQV", "type": "folder", "name": "333", "size": 0, "shared": false, modified_time: null,},
+    {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    // addFile(data[i]);
+    addFile(data[i]);
 }
 
 
