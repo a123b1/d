@@ -869,7 +869,8 @@ function formatBytes(bytes) {
     if (bytes === 0) return "0 B";
     const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    const formattedSize = (bytes / Math.pow(1024, i)).toFixed(1);
+    let formattedSize = (bytes / Math.pow(1024, i)).toFixed(1);
+    if (formattedSize % 1 === 0) formattedSize = parseInt(formattedSize);
     return `${formattedSize} ${sizes[i]}`;
 }
 
