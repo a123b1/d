@@ -240,7 +240,7 @@
             float: left;
             width: 100%;
             height: 40px;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.04);
             /*z-index: 0;*/
             position: absolute;
         }
@@ -930,7 +930,7 @@ function addFile(attr) {
         _new = container.querySelector('.item:last-child'); // div
         _new__content = _new.querySelector('.item-content'); // div
         let _new__meta = _new__content.querySelector('.item-meta'); // div
-        if (true) {
+        if (attr["modified_time"]) {
             const formattedDate = formatTimestamp(attr["modified_time"], 'YYYY-MM-DD HH:mm');
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-modified-time"><span>${formattedDate}</span></div>`);
         }
@@ -1023,7 +1023,7 @@ function addFile(attr) {
         _new = container.querySelector('.item:last-child'); // div
         _new__content = _new.querySelector('.item-content'); // div
         let _new__meta = _new__content.querySelector('.item-meta'); // div
-        if (true) {
+        if (attr["modified_time"]) {
             const formattedDate = formatTimestamp(attr["modified_time"], 'YYYY-MM-DD HH:mm');
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-modified-time"><span>${formattedDate}</span></div>`);
         }
