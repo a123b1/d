@@ -850,6 +850,21 @@ function showListMsg(s) {
 
 showListMsg("")
 
+function formatTimestamp(timestamp, format) {
+    const date = new Date(timestamp);
+    const map = {
+        'YYYY': date.getFullYear(),
+        'MM': String(date.getMonth() + 1).padStart(2, '0'), // 月份从 0 开始
+        'DD': String(date.getDate()).padStart(2, '0'),
+        'HH': String(date.getHours()).padStart(2, '0'),
+        'mm': String(date.getMinutes()).padStart(2, '0'),
+        'ss': String(date.getSeconds()).padStart(2, '0')
+    };
+
+    return format.replace(/YYYY|MM|DD|HH|mm|ss/g, matched => map[matched]);
+}
+
+
 function formatBytes(bytes) {
     if (bytes === 0) return "0 B";
     const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -918,6 +933,10 @@ function addFile(attr) {
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
+        }
+        if (true) {
+            const formattedDate = formatTimestamp(attr["modified_time"], 'YYYY-MM-DD HH:mm');
+            _new__meta.insertAdjacentHTML('beforeend', `<div class="item-modified-time"><span>${formattedDate}</span></div>`);
         }
         let _new__action = _new__content.querySelector('.item-action'); // div
         if (window.root_attr.download === true) {
@@ -1007,6 +1026,10 @@ function addFile(attr) {
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         if (attr.shared === true) {
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
+        }
+        if (true) {
+            const formattedDate = formatTimestamp(attr["modified_time"], 'YYYY-MM-DD HH:mm');
+            _new__meta.insertAdjacentHTML('beforeend', `<div class="item-modified-time"><span>${formattedDate}</span></div>`);
         }
         let _new__action = _new__content.querySelector('.item-action'); // div
         if (window.root_attr.rename === true) {
