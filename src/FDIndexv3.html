@@ -759,6 +759,7 @@
             </div>
             <button id="upload"><span>上传文件</span></button>
             <button id="new_folder"><span>新建文件夹</span></button>
+            <button id="new_shortcut"><span>创建捷径</span></button>
             <button id="copy_from"><span>转存自...</span></button>
             <button id="batch_copy_link"><span>复制链接</span></button>
             <button class="annoy-action" id="batch_trash"><span>移至垃圾桶</span></button>
@@ -879,6 +880,7 @@ window.root_attr = {
 
     "can_trash": true,
     "can_copy": true,
+    "can_shortcut": true,
     "max_upload_size": -1,
 
 };
@@ -949,15 +951,22 @@ function switchButtonGroup(r) {
             document.querySelector('#upload').style.display = 'none';
             document.querySelector('#new_folder').style.display = 'none';
         }
+        if (window.root_attr.can_shortcut && window.root_attr.upload === true) {
+            document.querySelector('#new_shortcut').style.display = 'inline';
+        } else {
+            document.querySelector('#new_shortcut').style.display = 'none';
+        }
         if (window.root_attr.can_copy && window.root_attr.upload === true) {
             document.querySelector('#copy_from').style.display = 'inline';
         } else {
             document.querySelector('#copy_from').style.display = 'none';
         }
+
     } else {
         document.querySelector('#upload').style.display = 'none';
         document.querySelector('#new_folder').style.display = 'none';
         document.querySelector('#copy_from').style.display = 'none';
+        document.querySelector('#new_shortcut').style.display = 'none';
 
         document.querySelector('#batch_copy_link').style.display = 'inline';
         if (window.root_attr.can_trash && window.root_attr.trash === true) {
@@ -1785,7 +1794,7 @@ async function _resolveTree(source) {
         data = await response.json();
         console.log("resolve_tree:response:json", data);
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     // chdir(null);
     toggleAnimation(false);
@@ -1796,6 +1805,29 @@ async function _resolveTree(source) {
             copy_from(data);
         }
     }
+}
+
+async function _newShortcut(source) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                action: "new_shortcut", source: source,
+            }),
+        });
+        console.log("new_shortcut:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        let data = await response.json();
+        console.log("new_shortcut:response:json", data);
+    } catch (error) {
+        console.error("Error:", error);
+    }
+    chdir(null);
 }
 
 function addPath(attr, parent_path) {
@@ -1902,6 +1934,24 @@ if (window.root_attr.upload === true) {
 
             toggleAnimation(true);
             _newFolder(folderName);
+        }
+    });
+} else {
+}
+if (window.root_attr.can_shortcut && window.root_attr.upload === true) {
+    document.querySelector('#new_shortcut').addEventListener('click', function (e) {
+        if (document.getElementById("progress-bar").style.display !== "none") {
+            return;
+        }
+        let url = prompt("为此链接创建捷径：");
+        if (!url) {
+            return;
+        }
+        let rr = url.match(/(?:id=|folders\/|file\/d\/)([a-zA-Z0-9_-]+)/)
+        if (!rr) rr = url.match(/^([a-zA-Z0-9_-]+)$/)
+        if (rr) {
+            toggleAnimation(true);
+            _newShortcut(rr[1]);
         }
     });
 } else {
@@ -2224,7 +2274,7 @@ async function _copy_from(trees, summary, url, progress_bar, progress,) {
     for (const folder of folders) {
         const baseUrl = new URL(url.href.replace(/#$/, ""));
         if (!baseUrl.pathname.endsWith('/')) baseUrl.pathname += "/";
-        baseUrl.pathname = baseUrl.pathname + encodeURIComponent(folder["name"]);
+        baseUrl.pathname = baseUrl.pathname + encodeURIComponent(folder["name"]) + "/";
         await _copy_from(folder["children"], summary, baseUrl, progress_bar, progress,);
         _copy_from_upprogress(summary, progress_bar, progress,);
     }
@@ -2341,7 +2391,7 @@ let data = [
     {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    // addFile(data[i]);
+    addFile(data[i]);
 }
 
 
