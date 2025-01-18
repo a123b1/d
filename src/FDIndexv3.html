@@ -1767,6 +1767,7 @@ async function _newFolder(name,) {
 }
 
 async function _resolveTree(source) {
+    let data;
     const baseUrl = new URL(window.location.href.replace(/#$/, ""));
     try {
         const response = await fetch(baseUrl.href, {
@@ -1781,13 +1782,18 @@ async function _resolveTree(source) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        let data = await response.json();
+        data = await response.json();
         console.log("resolve_tree:response:json", data);
     } catch (error) {
         console.error("Error sending request:", error);
     }
     // chdir(null);
     toggleAnimation(false);
+    if (data.summary.fileCount > 0) {
+        if (confirm(`${data.summary.fileCount}个文件，${data.summary.folderCount > 0 ? `${data.summary.folderCount}个文件夹，` : ""}总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始转存？`)) {
+            toggleAnimation(true);
+        }
+    }
 }
 
 function addPath(attr, parent_path) {
@@ -1907,7 +1913,7 @@ if (window.root_attr.can_copy && window.root_attr.upload === true) {
         if (!url) {
             return;
         }
-        let rr = url.match(/(?:id=|folders\/|file\/d\/)([a-zA-Z0-9_-]+)/)
+        let rr = url.match(/(?:id=|folders\/|file\/d\/)?([a-zA-Z0-9_-]+)/)
         if (rr) {
             toggleAnimation(true);
             _resolveTree(rr[1]);
