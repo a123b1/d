@@ -2203,13 +2203,13 @@ async function _copy_from(trees, summary, url, progress_bar, progress,) {
         summary["finishedCount"] += files.length;
         _copy_from_upprogress(summary, progress_bar, progress,);
     }
-    for (const folder of folders) {
+    if (folders.length > 0) {
         try {
             const response = await fetch(url.href, {
                 method: "POST", headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({action: "new_folder", name: folder["name"],}),
+                body: JSON.stringify({action: "new_folder", names: folders.map(e => e.name),}),
             });
             console.log("new_folder:response:", response);
             if (!response.ok) {
@@ -2218,12 +2218,15 @@ async function _copy_from(trees, summary, url, progress_bar, progress,) {
         } catch (error) {
             console.error("Error:", error);
         }
-        summary["finishedCount"]++;
+        summary["finishedCount"] += folders.length;
         _copy_from_upprogress(summary, progress_bar, progress,);
+    }
+    for (const folder of folders) {
         const baseUrl = new URL(url.href.replace(/#$/, ""));
         if (!baseUrl.pathname.endsWith('/')) baseUrl.pathname += "/";
         baseUrl.pathname = baseUrl.pathname + encodeURIComponent(folder["name"]);
         await _copy_from(folder["children"], summary, baseUrl, progress_bar, progress,);
+        _copy_from_upprogress(summary, progress_bar, progress,);
     }
 
 }
