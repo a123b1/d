@@ -2235,8 +2235,9 @@ function _copy_from_upprogress(summary, progress_bar, progress,) {
     const percentComplete = Math.round((summary.finishedCount / (summary.fileCount + summary.folderCount)) * 100);
     console.log(`转存进度: ${percentComplete}%`, summary.finishedCount, (summary.fileCount + summary.folderCount));
     progress.style.width = `${percentComplete}%`;
-    document.getElementById("tipbox-uploading-file-name").textContent = `转存进度：${summary.finishedCount}/${summary.fileCount + summary.folderCount}`;
-    if (summary.finishedCount === summary.fileCount + summary.folderCount) {
+    document.getElementById("tipbox-uploading-file-name").textContent = `转存进度：${summary.finishedCount} / ${summary.fileCount + summary.folderCount}`;
+    if (!summary.end && summary.finishedCount === summary.fileCount + summary.folderCount) {
+        summary.end = true;
         document.getElementById("upload2progress").style.display = 'none';
         closeDialog({target: document.getElementById('dialogOverlay')});
         chdir(null);
@@ -2340,7 +2341,7 @@ let data = [
     {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    addFile(data[i]);
+    // addFile(data[i]);
 }
 
 
