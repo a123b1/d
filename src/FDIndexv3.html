@@ -906,6 +906,9 @@ if (!window.root_attr.multiple_selection) {
     wc1.style.display = "none"
 }
 wc1.querySelector('.custom-checkbox').addEventListener('click', (event) => {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+        return;
+    }
     wc1_ckb.checked = !wc1_ckb.checked
     wc1_ckb.indeterminate = false
     getFileList().forEach(div => {
@@ -1125,6 +1128,9 @@ function addFile(attr) {
             _new__content.style.padding = "0px 14px 0px 6px";
             _new__content.insertAdjacentHTML('afterbegin', HT_checkBox);
             _new__content.querySelector('.custom-checkbox').addEventListener('click', (event) => {
+                if (document.getElementById("progress-bar").style.display !== "none") {
+                    return;
+                }
                 const ckb = document.getElementById(HT_checkBox_id)
                 ckb.checked = !ckb.checked
                 let r = getSelectedFile();
@@ -1239,6 +1245,9 @@ function addFile(attr) {
             _new__content.style.padding = "0px 14px 0px 6px";
             _new__content.insertAdjacentHTML('afterbegin', HT_checkBox);
             _new__content.querySelector('.custom-checkbox').addEventListener('click', (event) => {
+                if (document.getElementById("progress-bar").style.display !== "none") {
+                    return;
+                }
                 const ckb = document.getElementById(HT_checkBox_id)
                 ckb.checked = !ckb.checked
                 let r = getSelectedFile();
