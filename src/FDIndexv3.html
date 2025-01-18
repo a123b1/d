@@ -2216,14 +2216,13 @@ async function _copy_from(trees, summary, url, progress_bar, progress,) {
 
 function _copy_from_upprogress(summary, progress_bar, progress,) {
     const percentComplete = Math.round((summary.finishedCount / (summary.fileCount + summary.folderCount)) * 100);
-    console.log(`转存进度: ${percentComplete}%`);
+    console.log(`转存进度: ${percentComplete}%`, summary.finishedCount, (summary.fileCount + summary.folderCount));
     progress.style.width = `${percentComplete}%`;
     document.getElementById("tipbox-uploading-file-name").textContent = `转存进度：${summary.finishedCount}/${summary.fileCount + summary.folderCount}`;
     if (summary.finishedCount === summary.fileCount + summary.folderCount) {
-        // document.getElementById("upload2progress").style.display = 'none';
-        // closeDialog({target: document.getElementById('dialogOverlay')});
-        // chdir(null);
-        console.log(22222222)
+        document.getElementById("upload2progress").style.display = 'none';
+        closeDialog({target: document.getElementById('dialogOverlay')});
+        chdir(null);
     }
 }
 
