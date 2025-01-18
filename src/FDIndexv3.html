@@ -970,7 +970,7 @@ function resolveSelectedItems2kw(items) {
     let path = getFullPath(items.at(0).querySelector('.item-content')).split("/");
     path.pop()
     path = path.join("/");
-    let names = items.map(source => getFullPath(source.querySelector('.item-content')).split("/").pop())
+    let names = items.map(source => getFullPath(source.querySelector('.item-content')).split("/").pop()).map(name => decodeURIComponent(name))
     return {location: path, names,}
 }
 
