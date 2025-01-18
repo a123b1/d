@@ -1791,7 +1791,9 @@ async function _resolveTree(source) {
     toggleAnimation(false);
     if (data.summary.fileCount > 0) {
         if (confirm(`${data.summary.fileCount}个文件，${data.summary.folderCount > 0 ? `${data.summary.folderCount}个文件夹，` : ""}总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始转存？`)) {
-            toggleAnimation(true);
+            // toggleAnimation(true);
+            openDialog();
+            copy_from(data);
         }
     }
 }
@@ -1914,7 +1916,7 @@ if (window.root_attr.can_copy && window.root_attr.upload === true) {
             return;
         }
         let rr = url.match(/(?:id=|folders\/|file\/d\/)([a-zA-Z0-9_-]+)/)
-        if (!rr) rr = url.match(/([a-zA-Z0-9_-]+)/)
+        if (!rr) rr = url.match(/^([a-zA-Z0-9_-]+)$/)
         if (rr) {
             toggleAnimation(true);
             _resolveTree(rr[1]);
@@ -2149,6 +2151,79 @@ function uploadFile() {
         upload(file, name);
     } else {
         toggleUploadButton();
+    }
+}
+
+async function copy_from({tree, summary}) {
+    toggleAnimation_upload(false);
+    document.getElementById("tipbox-uploading-file-name").textContent = "";
+    document.getElementById("upload2progress").style.display = 'block';
+    document.getElementById("upload2select").style.display = 'none';
+
+    const progress_bar = document.getElementById("progress-bar-upload");
+    const progress = document.getElementById("progress-upload");
+    progress_bar.style.display = "block";
+    progress.style.width = "0%";
+
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    summary["finishedCount"] = 0
+    _copy_from_upprogress(summary, progress_bar, progress,);
+    _copy_from([tree,], summary, baseUrl, progress_bar, progress,);
+}
+
+
+async function _copy_from(trees, summary, url, progress_bar, progress,) {
+    let files = [], folders = [];
+    for (const tree of trees) {
+        if (isFolder(tree, false)) {
+            folders.push(tree)
+        } else if (isFile(tree, false)) {
+            files.push(tree)
+        }
+    }
+    if (files.length > 0) {
+        try {
+            const response = await fetch(url.href, {
+                method: "POST", headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action: "copy_from", sources: files.map(e => ({id: e.id, name: e.name})),
+                }),
+            });
+            console.log("copy_from-file:response:", response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            let data = await response.json();
+            console.log("copy_from-file:response:json", data);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+        summary["finishedCount"] += files.length;
+        _copy_from_upprogress(summary, progress_bar, progress,);
+    }
+    // for (const folder of folders) {
+    //     summary["finishedCount"]++;
+    //     _copy_from_upprogress(summary, progress_bar, progress,);
+    //     const baseUrl = new URL(url.href.replace(/#$/, ""));
+    //     if (!baseUrl.pathname.endsWith('/')) baseUrl.pathname += "/";
+    //     baseUrl.pathname = baseUrl.pathname + encodeURIComponent(folder["name"]);
+    //     await _copy_from(folder["children"], summary, baseUrl, progress_bar, progress,);
+    // }
+
+}
+
+function _copy_from_upprogress(summary, progress_bar, progress,) {
+    const percentComplete = Math.round((summary.finishedCount / (summary.fileCount + summary.folderCount)) * 100);
+    console.log(`转存进度: ${percentComplete}%`);
+    progress.style.width = `${percentComplete}%`;
+    document.getElementById("tipbox-uploading-file-name").textContent = `转存进度：${summary.finishedCount}/${summary.fileCount + summary.folderCount}`;
+    if (summary.finishedCount === summary.fileCount + summary.folderCount) {
+        // document.getElementById("upload2progress").style.display = 'none';
+        // closeDialog({target: document.getElementById('dialogOverlay')});
+        // chdir(null);
+        console.log(22222222)
     }
 }
 
