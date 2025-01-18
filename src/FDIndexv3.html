@@ -867,6 +867,9 @@ window.root_attr = {
     "type": null,
     "upload": true,
     "download": null,
+    "new_folder": null,
+    "new_shortcut": null,
+    "copy_from": null,
     "rename": null,
     "move": null,
     "trash": true,
@@ -946,17 +949,20 @@ function switchButtonGroup(r) {
 
         if (window.root_attr.upload === true) {
             document.querySelector('#upload').style.display = 'inline';
-            document.querySelector('#new_folder').style.display = 'inline';
         } else {
             document.querySelector('#upload').style.display = 'none';
+        }
+        if (window.root_attr.new_folder === true) {
+            document.querySelector('#new_folder').style.display = 'inline';
+        } else {
             document.querySelector('#new_folder').style.display = 'none';
         }
-        if (window.root_attr.can_shortcut && window.root_attr.upload === true) {
+        if (window.root_attr.can_shortcut && window.root_attr.new_shortcut === true) {
             document.querySelector('#new_shortcut').style.display = 'inline';
         } else {
             document.querySelector('#new_shortcut').style.display = 'none';
         }
-        if (window.root_attr.can_copy && window.root_attr.upload === true) {
+        if (window.root_attr.can_copy && window.root_attr.copy_from === true) {
             document.querySelector('#copy_from').style.display = 'inline';
         } else {
             document.querySelector('#copy_from').style.display = 'none';
@@ -1909,6 +1915,9 @@ if (window.root_attr.upload === true) {
         }
         openDialog();
     });
+} else {
+}
+if (window.root_attr.new_folder === true) {
     document.querySelector('#new_folder').addEventListener('click', function (e) {
         if (document.getElementById("progress-bar").style.display !== "none") {
             return;
@@ -1938,7 +1947,7 @@ if (window.root_attr.upload === true) {
     });
 } else {
 }
-if (window.root_attr.can_shortcut && window.root_attr.upload === true) {
+if (window.root_attr.can_shortcut && window.root_attr.new_shortcut === true) {
     document.querySelector('#new_shortcut').addEventListener('click', function (e) {
         if (document.getElementById("progress-bar").style.display !== "none") {
             return;
@@ -1956,7 +1965,7 @@ if (window.root_attr.can_shortcut && window.root_attr.upload === true) {
     });
 } else {
 }
-if (window.root_attr.can_copy && window.root_attr.upload === true) {
+if (window.root_attr.can_copy && window.root_attr.copy_from === true) {
     document.querySelector('#copy_from').addEventListener('click', function (e) {
         if (document.getElementById("progress-bar").style.display !== "none") {
             return;
