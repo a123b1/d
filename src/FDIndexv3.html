@@ -1913,7 +1913,8 @@ if (window.root_attr.can_copy && window.root_attr.upload === true) {
         if (!url) {
             return;
         }
-        let rr = url.match(/(?:id=|folders\/|file\/d\/)?([a-zA-Z0-9_-]+)/)
+        let rr = url.match(/(?:id=|folders\/|file\/d\/)([a-zA-Z0-9_-]+)/)
+        if (!rr) rr = url.match(/([a-zA-Z0-9_-]+)/)
         if (rr) {
             toggleAnimation(true);
             _resolveTree(rr[1]);
