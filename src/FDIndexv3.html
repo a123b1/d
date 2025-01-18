@@ -2238,7 +2238,13 @@ async function _copy_from(trees, summary, url, progress_bar, progress,) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    action: "copy_from", sources: files.map(e => ({id: e.id, name: e.name})),
+                    action: "copy_from", sources: files.map(e => {
+                        if (isSymlink(e,)) {
+                            return {id: e.symlink_target.id, name: e.name}
+                        } else {
+                            return {id: e.id, name: e.name}
+                        }
+                    }),
                 }),
             });
             console.log("copy_from-file:response:", response);
