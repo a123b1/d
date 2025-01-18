@@ -1911,7 +1911,7 @@ if (window.root_attr.can_copy && window.root_attr.upload === true) {
         if (document.getElementById("progress-bar").style.display !== "none") {
             return;
         }
-        let url = prompt("从此网址转存：");
+        let url = prompt("转存此链接：");
         if (!url) {
             return;
         }
@@ -2203,14 +2203,28 @@ async function _copy_from(trees, summary, url, progress_bar, progress,) {
         summary["finishedCount"] += files.length;
         _copy_from_upprogress(summary, progress_bar, progress,);
     }
-    // for (const folder of folders) {
-    //     summary["finishedCount"]++;
-    //     _copy_from_upprogress(summary, progress_bar, progress,);
-    //     const baseUrl = new URL(url.href.replace(/#$/, ""));
-    //     if (!baseUrl.pathname.endsWith('/')) baseUrl.pathname += "/";
-    //     baseUrl.pathname = baseUrl.pathname + encodeURIComponent(folder["name"]);
-    //     await _copy_from(folder["children"], summary, baseUrl, progress_bar, progress,);
-    // }
+    for (const folder of folders) {
+        try {
+            const response = await fetch(url.href, {
+                method: "POST", headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({action: "new_folder", name: folder["name"],}),
+            });
+            console.log("new_folder:response:", response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+        summary["finishedCount"]++;
+        _copy_from_upprogress(summary, progress_bar, progress,);
+        const baseUrl = new URL(url.href.replace(/#$/, ""));
+        if (!baseUrl.pathname.endsWith('/')) baseUrl.pathname += "/";
+        baseUrl.pathname = baseUrl.pathname + encodeURIComponent(folder["name"]);
+        await _copy_from(folder["children"], summary, baseUrl, progress_bar, progress,);
+    }
 
 }
 
