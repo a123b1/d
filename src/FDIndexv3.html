@@ -962,9 +962,13 @@ function switchButtonGroup(r) {
         document.querySelector('#batch_copy_link').style.display = 'inline';
         if (window.root_attr.can_trash && window.root_attr.trash === true) {
             document.querySelector('#batch_trash').style.display = 'inline';
+        } else {
+            document.querySelector('#batch_trash').style.display = 'none';
         }
         if (window.root_attr.delete === true) {
             document.querySelector('#batch_delete').style.display = 'inline';
+        } else {
+            document.querySelector('#batch_delete').style.display = 'none';
         }
     }
 }
@@ -1722,7 +1726,7 @@ async function _delete2(source,) {
     chdir(null);
 }
 
-async function _delete2Selected(sources) {
+async function _deleteSelected(sources) {
     const baseUrl = new URL(window.location.href.replace(/#$/, ""));
     try {
         const response = await fetch(baseUrl.href, {
@@ -1762,6 +1766,29 @@ async function _newFolder(name,) {
     chdir(null);
 }
 
+async function _resolveTree(source) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                action: "resolve_tree", source: source,
+            }),
+        });
+        console.log("resolve_tree:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        let data = await response.json();
+        console.log("resolve_tree:response:json", data);
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    // chdir(null);
+    toggleAnimation(false);
+}
 
 function addPath(attr, parent_path) {
     if (typeof attr == "string") {
@@ -1880,10 +1907,10 @@ if (window.root_attr.can_copy && window.root_attr.upload === true) {
         if (!url) {
             return;
         }
-        url = url.replace(/[\r\n\t\f]|^[\s]+|[\s]+$/g, '');
-        if (url !== "") {
+        let rr = url.match(/(?:id=|folders\/|file\/d\/)([a-zA-Z0-9_-]+)/)
+        if (rr) {
             toggleAnimation(true);
-            // _newFolder(folderName);
+            _resolveTree(rr[1]);
         }
     });
 } else {
@@ -1897,7 +1924,6 @@ if (window.root_attr.multiple_selection) {
             return element.querySelector("a").href
         })
         navigator.clipboard.writeText(tli.join("\n")).then(() => {
-            console.log('复制成功',);
         }).catch(err => {
             console.error('复制失败:', err);
         });
@@ -1924,7 +1950,7 @@ if (window.root_attr.multiple_selection) {
             if (items.length === 0) return;
             if (confirm(`永久删除${items.length}个项目？`)) {
                 toggleAnimation(true);
-                _delete2Selected(items,);
+                _deleteSelected(items,);
             }
         });
     }
