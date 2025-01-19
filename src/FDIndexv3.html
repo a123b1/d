@@ -1292,6 +1292,9 @@ function addFile(attr) {
                     e.target.parentNode.click();
                     return;
                 }
+                if (!fetchingStatusBar.overlay.classList.contains("hidden")) {
+                    return;
+                }
                 // e.stopImmediatePropagation();
                 e.stopPropagation();
                 e.preventDefault();
