@@ -466,8 +466,17 @@
             background-color: rgba(0, 0, 0, 0.3);
         }
 
-        .item-action-download-icon {
+        .file .item-action-download-icon {
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%232196F3' d='M14,2H6C4.89,2 4,2.89 4,4V20C4,21.11 4.89,22 6,22H18C19.11,22 20,21.11 20,20V8L14,2M12,19L8,15H10.5V12H13.5V15H16L12,19M13,9V3.5L18.5,9H13Z'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 22px;
+            height: 22px;
+            display: inline-block;
+        }
+
+        .folder .item-action-download-icon {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%232196F3' d='M10,2H14A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8V19A2,2 0 0,1 20,21H4C2.89,21 2,20.1 2,19V8C2,6.89 2.89,6 4,6H8V4C8,2.89 8.89,2 10,2M14,6V4H10V6H14M12,19L17,14H14V10H10V14H7L12,19Z'/></svg>");
             background-repeat: no-repeat;
             background-size: contain;
             width: 22px;
