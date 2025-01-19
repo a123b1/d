@@ -1954,10 +1954,11 @@ async function _zipping_request(e, source,) {
         a.click();
         document.body.removeChild(a);
         fetchingStatusBar.displayInfo("已发起下载请求...", -1, 4000);
+    } else {
+        fetchingStatusBar.displayInfo("打包失败...", 0, 4000);
     }
     // chdir(null);
     toggleAnimation(false);
-    fetchingStatusBar.displayInfo();
 
 }
 
