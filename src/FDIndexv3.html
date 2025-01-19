@@ -1093,6 +1093,7 @@ class FetchingStatusBar {
         this.progress_bar = this.overlay.querySelector("#progress-bar-fetch");
         this.progress = this.overlay.querySelector("#progress-fetch");
         // this.fetch2progress.style.display = 'block';
+        this.timeoutTimer = null;
     }
 
     toggleAnimation(show,) {
@@ -1105,7 +1106,11 @@ class FetchingStatusBar {
         }
     }
 
-    displayInfo(str = "", process = -1) {
+    displayInfo(str = "", process = -1, timeout = -1) {
+        if (this.timeoutTimer !== null) {
+            clearTimeout(this.timeoutTimer)
+            this.timeoutTimer = null;
+        }
         this.tip_fetching_status_name.textContent = str;
         if (str.length > 0) {
             this.overlay.classList.remove('hidden');
@@ -1115,6 +1120,11 @@ class FetchingStatusBar {
                 this.toggleAnimation(false)
                 this.progress_bar.style.display = "block";
                 this.progress.style.width = `${process}%`;
+            }
+            if (timeout > 0) {
+                this.timeoutTimer = setTimeout(() => {
+                    this.displayInfo()
+                }, timeout,);
             }
         } else {
             this.overlay.classList.add('hidden');
