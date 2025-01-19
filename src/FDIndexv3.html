@@ -1835,7 +1835,7 @@ async function _zipping_request(e, source,) {
     }
     if (data && data.status === 0) {
         const a = document.createElement('a');
-        let url = e.target.querySelector("a").href;
+        let url = new URL(e.target.querySelector("a").href);
         if (url.pathname.endsWith('/')) url.pathname.slice(0, -1);
         url.searchParams.set('zip', data.id);
         a.href = url.toString();
