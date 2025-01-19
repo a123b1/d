@@ -890,7 +890,7 @@
         </div>
     </div>
 </div>
-<div class="overlay2 hidden" id="dialogOverlay2" onclick="closeDialog(event)">
+<div class="overlay2 hidden" id="dialogOverlay2" onclick="">
     <div class="dialog2" onclick="event.stopPropagation()">
         <div id="fetch2progress">
             <div id="tipbox-fetching-status-name"><span id="tip-fetching-status-name">正在加载内容...</span></div>
@@ -1837,7 +1837,7 @@ async function _trashSelected(sources) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     chdir(null);
 }
@@ -1889,7 +1889,7 @@ async function _deleteSelected(sources) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     chdir(null);
 }
@@ -1955,7 +1955,7 @@ async function _zipping_request(e, source,) {
         document.body.removeChild(a);
         fetchingStatusBar.displayInfo("已发起下载请求...", -1, 4000);
     } else {
-        fetchingStatusBar.displayInfo("打包失败...", 0, 4000);
+        fetchingStatusBar.displayInfo("打包失败...", 0, 6000);
     }
     // chdir(null);
     toggleAnimation(false);
@@ -2584,6 +2584,7 @@ dialog.addEventListener('drop', (event) => {
         document.getElementById('input-upload-file-name').value = "";
     }
 });
+
 
 let data = [
     {"id": "FUjoqK6omL34rC", "type": "folder", "name": "111", "size": 0, "shared": false, modified_time: null,},
