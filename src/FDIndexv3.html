@@ -1305,7 +1305,7 @@ function addFile(attr) {
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                fetchingStatusBar.displayInfo("已发起下载请求...", -1, 4000);
+                fetchingStatusBar.displayInfo("已发起下载请求...", -1, 5000);
             });
         }
         if (window.root_attr.rename === true) {
@@ -1953,7 +1953,7 @@ async function _zipping_request(e, source,) {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        fetchingStatusBar.displayInfo("已发起下载请求...", -1, 4000);
+        fetchingStatusBar.displayInfo("已发起下载请求...", -1, 5000);
     } else {
         fetchingStatusBar.displayInfo("打包失败...", 0, 6000);
     }
