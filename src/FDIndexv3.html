@@ -313,7 +313,7 @@
             /*animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);*/
         }
 
-        #progress-bar-upload {
+        #progress-bar-upload, #progress-bar-fetch {
             width: 100%;
             background-color: #f3f3f3;
             border: 0px solid #ccc;
@@ -327,7 +327,7 @@
             position: relative;
         }
 
-        #progress-upload {
+        #progress-upload, #progress-fetch {
             height: 100%;
             background-color: #1976D2;
             width: 0%;
@@ -624,6 +624,15 @@
             /*padding-top: 160px;*/
         }
 
+        .overlay2 {
+            /*position: fixed;*/
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
         .dialog-margin-top {
             width: 100%;
             height: 26%;
@@ -642,6 +651,24 @@
             max-width: 460px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
             /*transform: translateY(-30%);*/
+        }
+
+        .dialog2 {
+            background-color: #CEEACA;
+            padding: 16px;
+            margin-left: 20px;
+            margin-right: 30px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            border: 3px dashed #00000000;
+            width: auto;
+            min-width: 230px;
+            max-width: 400px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            /*transform: translateY(-30%);*/
+            position: fixed;
+            bottom: 0;
+            right: 0;
         }
 
         div#tipbox-disallowed-upload {
@@ -719,7 +746,7 @@
         #upload2progress {
         }
 
-        #tipbox-uploading-file-name {
+        #tipbox-uploading-file-name, #tipbox-fetching-status-name {
             margin-bottom: 6px;
             font-size: 14px;
         }
@@ -856,9 +883,19 @@
             <div id="tipbox-disallowed-upload"><span id="tip-disallowed-upload"></span></div>
         </div>
         <div id="upload2progress">
-            <div id="tipbox-uploading-file-name"><span id="tip-uploading-file-name"></span>filename.icc</div>
+            <div id="tipbox-uploading-file-name"><span id="tip-uploading-file-name">filename.icc</span></div>
             <div id="progress-bar-upload">
                 <div id="progress-upload" class="sliding-bar-animation"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="overlay2 hidden" id="dialogOverlay2" onclick="closeDialog(event)">
+    <div class="dialog2" onclick="event.stopPropagation()">
+        <div id="fetch2progress">
+            <div id="tipbox-fetching-status-name"><span id="tip-fetching-status-name">正在加载内容...</span></div>
+            <div id="progress-bar-fetch">
+                <div id="progress-fetch" class="sliding-bar-animation"></div>
             </div>
         </div>
     </div>
@@ -1045,6 +1082,48 @@ function toggleAnimation_upload(show,) {
 
 toggleAnimation(false);
 toggleAnimation_upload(false);
+
+
+// 右下角进度条
+class FetchingStatusBar {
+    constructor() {
+        this.overlay = document.querySelector('#dialogOverlay2');
+        this.fetch2progress = this.overlay.querySelector("#fetch2progress");
+        this.tip_fetching_status_name = this.overlay.querySelector("#tip-fetching-status-name");
+        this.progress_bar = this.overlay.querySelector("#progress-bar-fetch");
+        this.progress = this.overlay.querySelector("#progress-fetch");
+        // this.fetch2progress.style.display = 'block';
+    }
+
+    toggleAnimation(show,) {
+        if (!show) {
+            this.progress.style.width = "0%";
+            this.progress.classList.remove("sliding-bar-animation");
+        } else {
+            this.progress.style.width = "30%";
+            this.progress.classList.add("sliding-bar-animation");
+        }
+    }
+
+    displayInfo(str = "", process = -1) {
+        this.tip_fetching_status_name.textContent = str;
+        if (str.length > 0) {
+            this.overlay.classList.remove('hidden');
+            if (process === -1) {
+                this.toggleAnimation(true)
+            } else {
+                this.toggleAnimation(false)
+                this.progress_bar.style.display = "block";
+                this.progress.style.width = `${process}%`;
+            }
+        } else {
+            this.overlay.classList.add('hidden');
+            this.toggleAnimation(false)
+        }
+    }
+}
+
+const fetchingStatusBar = new FetchingStatusBar();
 
 
 function showListMsg(s) {
@@ -1528,6 +1607,7 @@ function chdir(e,) {
     document.querySelector('#switch_theme').setAttribute("href", _url.toString());
 
     toggleAnimation(true);
+    fetchingStatusBar.displayInfo("正在获取文件列表...");
     _chdir(e);
 }
 
@@ -1568,6 +1648,7 @@ async function _chdir(e,) {
         console.error("Error sending request:", error);
     }
     toggleAnimation(false);
+    fetchingStatusBar.displayInfo();
 }
 
 function findFileItem(attr) {
@@ -1620,6 +1701,7 @@ function move(source, e, parsedObject) {
     if (window.root_attr.upload && isFolder(e.target.item_attr, false)) {
         if (confirm(`把文件${isFolder(source.item_attr, false) ? "夹" : ""}${isSymlink(source.item_attr,) ? "链接" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
             toggleAnimation(true);
+            fetchingStatusBar.displayInfo("正在移动...");
             _move(source, e.target);
         }
     }
@@ -1670,6 +1752,7 @@ function rename(e,) {
         }
 
         toggleAnimation(true);
+        fetchingStatusBar.displayInfo("正在重命名...");
         _rename(item, newName);
     }
 }
@@ -1700,6 +1783,7 @@ function trash(e,) {
     let item = e.target.closest(".item-content");
     if (confirm(`把文件${isFolder(item.item_attr, false) ? "夹" : ""}${isSymlink(item.item_attr,) ? "链接" : ""}移至垃圾桶：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
+        fetchingStatusBar.displayInfo("正在移至垃圾桶...");
         _trash(item,);
     }
 }
@@ -1751,6 +1835,7 @@ function _delete(e,) {
     let item = e.target.closest(".item-content");
     if (confirm(`永久删除文件${isFolder(item.item_attr, false) ? "夹" : ""}${isSymlink(item.item_attr,) ? "链接" : ""}：“${item.item_attr.name}”？`)) {
         toggleAnimation(true);
+        fetchingStatusBar.displayInfo("正在永久删除...");
         _delete2(item,);
     }
 }
@@ -1820,6 +1905,7 @@ async function zipping_request(e,) {
     }
     let item = e.target.closest(".item-content");
     toggleAnimation(true);
+    fetchingStatusBar.displayInfo("正在打包文件夹...");
     _zipping_request(e, item,);
 }
 
@@ -1856,6 +1942,7 @@ async function _zipping_request(e, source,) {
     }
     // chdir(null);
     toggleAnimation(false);
+    fetchingStatusBar.displayInfo();
 
 }
 
@@ -1882,6 +1969,7 @@ async function _resolveTree(source) {
     }
     // chdir(null);
     toggleAnimation(false);
+    fetchingStatusBar.displayInfo();
     if (data.summary.fileCount > 0) {
         if (confirm(`${data.summary.fileCount}个文件，${data.summary.folderCount > 0 ? `${data.summary.folderCount}个文件夹，` : ""}总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始转存？`)) {
             // toggleAnimation(true);
@@ -2020,6 +2108,7 @@ if (window.root_attr.new_folder === true) {
             }
 
             toggleAnimation(true);
+            fetchingStatusBar.displayInfo("正在新建文件夹...");
             _newFolder(folderName);
         }
     });
@@ -2038,6 +2127,7 @@ if (window.root_attr.can_shortcut && window.root_attr.new_shortcut === true) {
         if (!rr) rr = url.match(/^([a-zA-Z0-9_-]+)$/)
         if (rr) {
             toggleAnimation(true);
+            fetchingStatusBar.displayInfo("正在创建捷径...");
             _newShortcut(rr[1]);
         }
     });
@@ -2056,6 +2146,7 @@ if (window.root_attr.can_copy && window.root_attr.copy_from === true) {
         if (!rr) rr = url.match(/^([a-zA-Z0-9_-]+)$/)
         if (rr) {
             toggleAnimation(true);
+            fetchingStatusBar.displayInfo("正在获取信息...");
             _resolveTree(rr[1]);
         }
     });
@@ -2083,6 +2174,7 @@ if (window.root_attr.multiple_selection) {
             if (items.length === 0) return;
             if (confirm(`把${items.length}个项目移至垃圾桶？`)) {
                 toggleAnimation(true);
+                fetchingStatusBar.displayInfo("正在移至垃圾桶...");
                 _trashSelected(items,);
             }
         });
@@ -2096,6 +2188,7 @@ if (window.root_attr.multiple_selection) {
             if (items.length === 0) return;
             if (confirm(`永久删除${items.length}个项目？`)) {
                 toggleAnimation(true);
+                fetchingStatusBar.displayInfo("正在永久删除...");
                 _deleteSelected(items,);
             }
         });
@@ -2161,7 +2254,7 @@ function openDialog() {
     document.getElementById('input-upload-file-name').value = '';
     toggleUploadButton();
     toggleAnimation_upload(false);
-    document.getElementById("tipbox-uploading-file-name").textContent = '';
+    document.getElementById("tip-uploading-file-name").textContent = '';
     document.getElementById("upload2progress").style.display = 'none';
     document.getElementById("upload2select").style.display = 'block';
 }
@@ -2171,7 +2264,7 @@ function closeDialog(event) {
         return;
     }
     toggleAnimation_upload(false);
-    document.getElementById("tipbox-uploading-file-name").textContent = '';
+    document.getElementById("tip-uploading-file-name").textContent = '';
     document.getElementById("upload2select").style.display = 'block';
 
     const overlay = document.getElementById('dialogOverlay');
@@ -2198,7 +2291,7 @@ function handleFileChange(event) {
 
 function upload(file, name,) {
     toggleAnimation_upload(false);
-    document.getElementById("tipbox-uploading-file-name").textContent = name;
+    document.getElementById("tip-uploading-file-name").textContent = name;
     document.getElementById("upload2progress").style.display = 'block';
     document.getElementById("upload2select").style.display = 'none';
 
@@ -2293,7 +2386,7 @@ function uploadFile() {
 
 async function copy_from({tree, summary}) {
     toggleAnimation_upload(false);
-    document.getElementById("tipbox-uploading-file-name").textContent = "";
+    document.getElementById("tip-uploading-file-name").textContent = "";
     document.getElementById("upload2progress").style.display = 'block';
     document.getElementById("upload2select").style.display = 'none';
 
@@ -2378,7 +2471,7 @@ function _copy_from_upprogress(summary, progress_bar, progress,) {
     const percentComplete = Math.round((summary.finishedCount / (summary.fileCount + summary.folderCount)) * 100);
     console.log(`转存进度: ${percentComplete}%`, summary.finishedCount, (summary.fileCount + summary.folderCount));
     progress.style.width = `${percentComplete}%`;
-    document.getElementById("tipbox-uploading-file-name").textContent = `转存进度：${summary.finishedCount} / ${summary.fileCount + summary.folderCount}`;
+    document.getElementById("tip-uploading-file-name").textContent = `转存进度：${summary.finishedCount} / ${summary.fileCount + summary.folderCount}`;
     if (!summary.end && summary.finishedCount === summary.fileCount + summary.folderCount) {
         summary.end = true;
         document.getElementById("upload2progress").style.display = 'none';
@@ -2476,7 +2569,6 @@ dialog.addEventListener('drop', (event) => {
     }
 });
 
-
 let data = [
     {"id": "FUjoqK6omL34rC", "type": "folder", "name": "111", "size": 0, "shared": false, modified_time: null,},
     {"id": "8xPd24yJ0Ek9yn", "type": "folder", "name": "222", "size": 0, "shared": false, modified_time: null,},
@@ -2484,7 +2576,7 @@ let data = [
     {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    addFile(data[i]);
+    // addFile(data[i]);
 }
 
 
