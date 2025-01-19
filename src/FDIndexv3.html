@@ -867,6 +867,7 @@ window.root_attr = {
     "type": null,
     "upload": true,
     "download": null,
+    "download_as_zip": null,
     "new_folder": null,
     "new_shortcut": null,
     "copy_from": null,
@@ -884,6 +885,7 @@ window.root_attr = {
     "can_trash": true,
     "can_copy": true,
     "can_shortcut": true,
+    "can_zip": true,
     "max_upload_size": -1,
 
 };
@@ -1292,6 +1294,28 @@ function addFile(attr) {
             _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
         }
         let _new__action = _new__content.querySelector('.item-action'); // div
+        if (window.root_attr.download_as_zip === true && window.root_attr.can_zip === true) {
+            _new__action.insertAdjacentHTML('beforeend', `
+<button class="item-action-download" title="打包下载">
+    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
+        <i class="item-action-download-icon"></i>
+    </a>
+</button>
+`);
+            _new__action.querySelector('.item-action-download').addEventListener('click', function (e) {
+                // console.log(e.target);
+                if (e.target.tagName === 'A') { // 多余
+                    e.stopPropagation();
+                    e.preventDefault();
+                    e.target.parentNode.click();
+                    return;
+                }
+                // e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+                zipping_request(e);
+            });
+        }
         if (window.root_attr.rename === true) {
             _new__action.insertAdjacentHTML('beforeend', `
 <button class="item-action-rename" title="重命名">
@@ -1777,6 +1801,41 @@ async function _newFolder(name,) {
         }
     } catch (error) {
         console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
+async function zipping_request(e,) {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+        return;
+    }
+    let item = e.target.closest(".item-content");
+    toggleAnimation(true);
+    _zipping_request(item,);
+    // const a = document.createElement('a');
+    // a.href = e.target.querySelector("a").href;
+    // a.download = e.target.closest(".item-content").item_attr.name;
+    // a.style.display = 'none';
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
+}
+
+async function _zipping_request(source,) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({action: "zip", source: getFullPath(source),}),
+        });
+        console.log("zip:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error:", error);
     }
     chdir(null);
 }
