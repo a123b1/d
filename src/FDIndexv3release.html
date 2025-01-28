@@ -2122,7 +2122,7 @@ function addPath(attr, parent_path) {
     _new_a.setAttribute("href", _url.toString());
 
     // console.log('initPath:', _new.item_attr.name, _new.parent_path == null ? null : _new.parent_path.item_attr.name,);
-    if (attr.type === ItemTypes.drive) {
+    if (isDrive(_new.item_attr)) {
         _new_a.removeAttribute("onclick")
     } else {
         _new.addEventListener('click', function (event) {
@@ -2139,7 +2139,7 @@ function addPath(attr, parent_path) {
             event.preventDefault();
             event.target.style.backgroundColor = "";
             const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
-            if (window.root_attr.upload && getPathIndex(event.target.parentNode.parentNode) + 1 !== getPathCount()) {
+            if (window.root_attr.upload && getPathIndex(event.target.parentNode.parentNode) + 1 !== getPathCount() && !isDrive(event.target.item_attr)) {
                 let source = findFileItem(parsedObject);
                 move(source, event, parsedObject);
             }
@@ -2148,7 +2148,7 @@ function addPath(attr, parent_path) {
     _new.addEventListener('dragover', function (event) {
         if (event.target.tagName === 'SPAN') {
             const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
-            if (window.root_attr.upload && getPathIndex(event.target.parentNode.parentNode) + 1 !== getPathCount()) {
+            if (window.root_attr.upload && getPathIndex(event.target.parentNode.parentNode) + 1 !== getPathCount() && !isDrive(event.target.item_attr)) {
                 event.preventDefault();
                 event.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
             } else {
