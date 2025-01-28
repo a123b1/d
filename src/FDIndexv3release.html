@@ -2336,7 +2336,17 @@ const pathList = window.location.pathname.split('/').map(decodeURIComponent).fil
 for (const i of pathList) {
     parent_path = addPath(i, parent_path,);
 }
-parent_path.click();
+if (root_attr.first_layer_as_drive) {
+    if (document.getElementById("progress-bar").style.display !== "none") {
+    } else {
+        chdir({
+            target: parent_path,
+        });
+    }
+} else {
+    parent_path.click();
+
+}
 
 
 window.addEventListener('popstate', function (event) {
