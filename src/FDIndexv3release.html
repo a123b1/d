@@ -2136,19 +2136,18 @@ function addPath(attr, parent_path) {
     _url.pathname = getFullPath(_new) + "/";
     _new_a.setAttribute("href", _url.toString());
 
-    // console.log('initPath:', _new.item_attr.name, _new.parent_path == null ? null : _new.parent_path.item_attr.name,);
-    if (isDrive(_new.item_attr)) {
-        _new_a.removeAttribute("onclick")
-    } else {
-        _new.addEventListener('click', function (event) {
-            if (event.target.tagName === 'SPAN') {
-                if (document.getElementById("progress-bar").style.display !== "none") {
-                    return;
-                }
-                chdir(event);
+    // if (isDrive(_new.item_attr)) { // 不必
+    //     _new_a.removeAttribute("onclick")
+    // } else {
+    _new.addEventListener('click', function (event) {
+        if (event.target.tagName === 'SPAN') {
+            if (document.getElementById("progress-bar").style.display !== "none") {
+                return;
             }
-        });
-    }
+            chdir(event);
+        }
+    });
+    // }
     _new.addEventListener('drop', function (event) {
         if (event.target.tagName === 'SPAN') {
             event.preventDefault();
