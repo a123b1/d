@@ -1728,7 +1728,11 @@ async function _chdir(e,) {
         for (let i = 0; i < data["list"].length; i++) {
             addFile(data["list"][i]);
         }
-        showListMsg(data["list"].length === 0 ? "此文件夹为空" : "")
+        if (root_attr.first_layer_as_drive && e !== null && e.target === first_parent_path) {
+            showListMsg(data["list"].length === 0 ? "没有网盘" : "")
+        } else {
+            showListMsg(data["list"].length === 0 ? "此文件夹为空" : "")
+        }
         if (e !== null) {
             document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
         }
