@@ -1195,7 +1195,10 @@ function isFolder(attr, exactly) {
     if (exactly) {
         return attr.type.toString() === ItemTypes.folder;
     }
-    return attr.type.toString() === ItemTypes.folder || attr.type.toString() === ItemTypes.symlink && attr.symlink_target.type.toString() === ItemTypes.folder;
+    if (attr.type.toString() === ItemTypes.folder || attr.type.toString() === ItemTypes.symlink && attr.symlink_target.type.toString() === ItemTypes.folder) {
+        return true;
+    }
+    return false;
 }
 
 function isDrive(attr,) {
@@ -1470,7 +1473,7 @@ function addFile(attr) {
                 e.preventDefault();
                 e.target.style.backgroundColor = "";
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                if (isFolder(e.target.item_attr, false) && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
+                if ((isFolder(e.target.item_attr, false) || isDrive(e.target.item_attr)) && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
                     let source = findFileItem(parsedObject);
                     move(source, e, parsedObject);
                 }
@@ -1480,7 +1483,7 @@ function addFile(attr) {
             if (e.target.classList.contains('item-content')) {
                 const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
                 // console.log("是否允许拖入。", e.target.item_attr);
-                if (isFolder(e.target.item_attr, false) && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
+                if ((isFolder(e.target.item_attr, false) || isDrive(e.target.item_attr)) && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
                     // console.log("允许。",);
                     e.preventDefault();
                     e.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
@@ -1798,7 +1801,7 @@ function move(source, e, parsedObject) {
     if (!source) {
         return;
     }
-    if (window.root_attr.upload && isFolder(e.target.item_attr, false)) {
+    if (window.root_attr.upload && (isFolder(e.target.item_attr, false) || isDrive(e.target.item_attr))) {
         if (confirm(`把文件${isFolder(source.item_attr, false) ? "夹" : ""}${isSymlink(source.item_attr,) ? "链接" : ""} “${source.item_attr.name}“ 移至 “${e.target.item_attr.name}” ？`)) {
             toggleAnimation(true);
             fetchingStatusBar.displayInfo("正在移动...");
