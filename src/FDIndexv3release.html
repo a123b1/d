@@ -1504,7 +1504,7 @@ function addFile(attr) {
     } else if (isDrive(attr,)) {
         let htmlTemplate = `
 <div class="item folder" draggable="false">
-    <a href="${url.toString()}" target="_self" draggable="false">
+    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
         <div class="item-content" draggable="${window.root_attr.upload}">
             <i class="item-icon"></i>
             <div class="item-info">
@@ -1546,6 +1546,14 @@ function addFile(attr) {
         }
         let _new__meta = _new__content.querySelector('.item-meta'); // div
         let _new__action = _new__content.querySelector('.item-action'); // div
+        _new__content.addEventListener('click', function (e) {
+            if (e.target.classList.contains('item-content')) {
+                if (document.getElementById("progress-bar").style.display !== "none") {
+                    return;
+                }
+                window.url.href = _new__content.closest("a").href
+            }
+        });
         _new__content.addEventListener('drop', function (e) {
             if (e.target.classList.contains('item-content')) {
                 e.preventDefault();
