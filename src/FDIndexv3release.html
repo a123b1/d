@@ -1504,7 +1504,7 @@ function addFile(attr) {
     } else if (isDrive(attr, false)) {
         let htmlTemplate = `
 <div class="item folder" draggable="false">
-    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
+    <a href="${url.toString()}" target="_self" draggable="false">
         <div class="item-content" draggable="${window.root_attr.upload}">
             <i class="item-icon"></i>
             <div class="item-info">
@@ -1545,103 +1545,16 @@ function addFile(attr) {
             });
         }
         let _new__meta = _new__content.querySelector('.item-meta'); // div
-        if (attr["modified_time"]) {
-            const formattedDate = formatTimestamp(attr["modified_time"], 'YYYY-MM-DD HH:mm');
-            _new__meta.insertAdjacentHTML('beforeend', `<div class="item-modified-time"><span>${formattedDate}</span></div>`);
-        }
-        if (attr.shared === true) {
-            _new__meta.insertAdjacentHTML('beforeend', `<div class="item-shared"><span>已共享</span></div>`);
-        }
         let _new__action = _new__content.querySelector('.item-action'); // div
-        if (window.root_attr.download_as_zip === true && window.root_attr.can_zip === true) {
-            _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-download" title="打包下载">
-    <a href="${url.toString()}" target="_self" onclick="event.preventDefault();">
-        <i class="item-action-download-icon"></i>
-    </a>
-</button>
-`);
-            _new__action.querySelector('.item-action-download').addEventListener('click', function (e) {
-                // console.log(e.target);
-                if (e.target.tagName === 'A') { // 多余
-                    e.stopPropagation();
-                    e.preventDefault();
-                    e.target.parentNode.click();
-                    return;
-                }
-                // e.stopImmediatePropagation();
-                e.stopPropagation();
-                e.preventDefault();
-                zipping_request(e);
-            });
-        }
-        if (window.root_attr.rename === true) {
-            _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-rename" title="重命名">
-    <i class="item-action-rename-icon"></i>
-</button>
-`);
-            _new__action.querySelector('.item-action-rename').addEventListener('click', function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-                rename(e);
-            });
-        }
-        if (window.root_attr.trash === true && window.root_attr.can_trash === true) {
-            _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-trash" title="移至垃圾桶">
-    <i class="item-action-trash-icon"></i>
-</button>
-`);
-            _new__action.querySelector('.item-action-trash').addEventListener('click', function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-                trash(e);
-            });
-        }
-        if (window.root_attr.delete === true) {
-            _new__action.insertAdjacentHTML('beforeend', `
-<button class="item-action-delete" title="永久删除">
-    <i class="item-action-delete-icon"></i>
-</button>
-`);
-            _new__action.querySelector('.item-action-delete').addEventListener('click', function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-                _delete(e);
-            });
-        }
-        _new__content.addEventListener('click', function (e) {
-            if (e.target.classList.contains('item-content')) {
-                if (document.getElementById("progress-bar").style.display !== "none") {
-                    return;
-                }
-                chdir(e);
-            }
-        });
         _new__content.addEventListener('drop', function (e) {
             if (e.target.classList.contains('item-content')) {
                 e.preventDefault();
                 e.target.style.backgroundColor = "";
-                const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                if (isFolder(e.target.item_attr, false) && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
-                    let source = findFileItem(parsedObject);
-                    move(source, e, parsedObject);
-                }
             }
         });
         _new__content.addEventListener('dragover', function (e) {
             if (e.target.classList.contains('item-content')) {
-                const parsedObject = JSON.parse(e.dataTransfer.getData("application/json"));
-                // console.log("是否允许拖入。", e.target.item_attr);
-                if (isFolder(e.target.item_attr, false) && window.root_attr.upload && parsedObject.id.toString() !== e.target.item_attr.id.toString()) {
-                    // console.log("允许。",);
-                    e.preventDefault();
-                    e.target.style.backgroundColor = "rgba(255, 255,0 ,0.4)";
-                } else {
-                    // console.log("不允许。",);
-                    e.target.style.backgroundColor = "";
-                }
+                e.target.style.backgroundColor = "";
             }
         });
         _new__content.addEventListener('dragenter', function (e) {
@@ -2179,7 +2092,7 @@ function addPath(attr, parent_path) {
     if (typeof attr == "string") {
         const name = attr.toString();
         attr = {
-            name: name, type: ItemTypes.folder,
+            name: name, type: root_attr.first_layer_as_drive ? ItemTypes.drive : ItemTypes.folder,
         }
     }
     let container = document.querySelector('.paths')
