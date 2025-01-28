@@ -1501,7 +1501,7 @@ function addFile(attr) {
                 e.target.style.backgroundColor = "";
             }
         });
-    } else if (isDrive(attr, false)) {
+    } else if (isDrive(attr,)) {
         let htmlTemplate = `
 <div class="item folder" draggable="false">
     <a href="${url.toString()}" target="_self" draggable="false">
@@ -2092,7 +2092,10 @@ function addPath(attr, parent_path) {
     if (typeof attr == "string") {
         const name = attr.toString();
         attr = {
-            name: name, type: root_attr.first_layer_as_drive ? ItemTypes.drive : ItemTypes.folder,
+            name: name, type: ItemTypes.folder,
+        }
+        if (root_attr.first_layer_as_drive && parent_path === first_parent_path) {
+            attr.type = ItemTypes.drive
         }
     }
     let container = document.querySelector('.paths')
@@ -2115,14 +2118,18 @@ function addPath(attr, parent_path) {
     _new_a.setAttribute("href", _url.toString());
 
     // console.log('initPath:', _new.item_attr.name, _new.parent_path == null ? null : _new.parent_path.item_attr.name,);
-    _new.addEventListener('click', function (event) {
-        if (event.target.tagName === 'SPAN') {
-            if (document.getElementById("progress-bar").style.display !== "none") {
-                return;
+    if (attr.type === ItemTypes.drive) {
+        _new_a.removeAttribute("onclick")
+    } else {
+        _new.addEventListener('click', function (event) {
+            if (event.target.tagName === 'SPAN') {
+                if (document.getElementById("progress-bar").style.display !== "none") {
+                    return;
+                }
+                chdir(event);
             }
-            chdir(event);
-        }
-    });
+        });
+    }
     _new.addEventListener('drop', function (event) {
         if (event.target.tagName === 'SPAN') {
             event.preventDefault();
@@ -2285,14 +2292,20 @@ switchButtonGroup()
 
 
 let parent_path = document.querySelector('#home-click'); // div
+let first_parent_path = parent_path;
 parent_path.item_attr = {name: parent_path.textContent, type: ItemTypes.folder,};
 parent_path.parent_path = null;
-parent_path.addEventListener('click', function (e) {
-    if (document.getElementById("progress-bar").style.display !== "none") {
-        return;
-    }
-    chdir(e);
-});
+if (root_attr.first_layer_as_drive) {
+    parent_path.closest("a").removeAttribute("onclick")
+} else {
+    parent_path.addEventListener('click', function (e) {
+        if (document.getElementById("progress-bar").style.display !== "none") {
+            return;
+        }
+        chdir(e);
+    });
+}
+
 parent_path.addEventListener('drop', function (event) {
     event.preventDefault();
     event.target.style.backgroundColor = "";
@@ -2321,7 +2334,7 @@ parent_path.addEventListener('dragleave', function (event) {
 const pathList = window.location.pathname.split('/').map(decodeURIComponent).filter(part => part !== '');
 // console.log('initPath:', parent_path.item_attr.name,);
 for (const i of pathList) {
-    parent_path = addPath(i, parent_path);
+    parent_path = addPath(i, parent_path,);
 }
 parent_path.click();
 
