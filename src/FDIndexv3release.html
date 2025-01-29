@@ -1964,7 +1964,7 @@ function share(e,) {
     <button id="dl-share-btn-no">取消</button>
 </div>
 <div class="dl-share-bottom-textbox">
-    <span class="dl-share-bottom-text"></span>
+    <a class="dl-share-bottom-a" href="#"><span class="dl-share-bottom-text"></span></a>
 </div>
 </div>
 <style>
@@ -2009,6 +2009,8 @@ function share(e,) {
     });
     const urlspan = es.content.querySelector("span.dl-share-bottom-text");
     urlspan.textContent = getCurrentFolderShareLink(item.item_attr)
+    const urla = es.content.querySelector("a.dl-share-bottom-a");
+    urla.href = urlspan.textContent;
 
 }
 
