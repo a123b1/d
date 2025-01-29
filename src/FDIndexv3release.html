@@ -690,7 +690,7 @@
             margin-top: 4px;
         }
 
-        div#tipbox-disallowed-upload span, div#tipbox-current-url span {
+        div#tipbox-disallowed-upload span, div#tipbox-current-url span, div#dl-share-bottom-textbox span {
             font-size: 12px;
             color: #a2a2a2;
             text-align: left;
@@ -1655,6 +1655,9 @@ function getCurrentFolderShareLink(attr,) {
     }
     let id = attr.id === "root" ? window.root_attr.id : attr.id;
     if (window.root_attr.type === Types.google_drive) {
+        // if (isFile(attr, false)) {
+        //     return `https://drive.google.com/open?id=${id}`;
+        // }
         return `https://drive.google.com/open?id=${id}`;
     } else if (window.root_attr.type === Types.deno_mysql || window.root_attr.type === Types.cf_d1_kv) {
         return `did://${id}`;
@@ -1959,6 +1962,9 @@ function share(e,) {
     <button id="dl-share-btn-yes">确定</button>
     <button id="dl-share-btn-no">取消</button>
 </div>
+<div class="dl-share-bottom-textbox">
+    <span class="dl-share-bottom-text"></span>
+</div>
 </div>
 <style>
 .dl-share-column{
@@ -1998,6 +2004,9 @@ function share(e,) {
     btn_no.addEventListener("click", (event) => {
         es.overlay.remove()
     });
+    const urlspan = es.content.querySelector("span#dl-share-bottom-text");
+    urlspan.textContent = getCurrentFolderShareLink(item)
+
 }
 
 async function _share(source, data,) {
@@ -2843,7 +2852,7 @@ let data = [
     {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    addFile(data[i]);
+    // addFile(data[i]);
 }
 
 
