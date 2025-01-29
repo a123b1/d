@@ -762,7 +762,6 @@
         }
 
     </style>
-    <link rel="stylesheet" href="../../Documents/w3c-note2501/w3c-note/main/app/static/css/index.css">
 </head>
 <body>
 <div class="banner">
@@ -1656,9 +1655,6 @@ function getCurrentFolderShareLink(attr,) {
     }
     let id = attr.id === "root" ? window.root_attr.id : attr.id;
     if (window.root_attr.type === Types.google_drive) {
-        // if (isFile(attr, false)) {
-        //     return `https://drive.google.com/open?id=${id}`;
-        // }
         return `https://drive.google.com/open?id=${id}`;
     } else if (window.root_attr.type === Types.deno_mysql || window.root_attr.type === Types.cf_d1_kv) {
         return `did://${id}`;
@@ -2000,6 +1996,8 @@ function share(e,) {
         const st1 = es.content.querySelector("select#dl-share-input-st1");
         const st2 = es.content.querySelector("select#dl-share-input-st2");
         // console.log(st1, st1.options.selectedIndex)
+        toggleAnimation(true);
+        fetchingStatusBar.displayInfo("正在修改共享...");
         _share(item, {
             type: st1.querySelectorAll("option")[st1.options.selectedIndex].getAttribute("value"),
             role: st2.querySelectorAll("option")[st2.options.selectedIndex].getAttribute("value"),
@@ -2015,7 +2013,7 @@ function share(e,) {
     const urla = es.content.querySelector("a.dl-share-bottom-a");
     urla.href = urlspan.textContent;
     urla.style.textDecoration = "none";
-    urla.style.pointerEvents = "none";
+    // urla.style.pointerEvents = "none";
 
 }
 
