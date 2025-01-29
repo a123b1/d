@@ -690,7 +690,7 @@
             margin-top: 4px;
         }
 
-        div#tipbox-disallowed-upload span, div#tipbox-current-url span, div#dl-share-bottom-textbox span {
+        div#tipbox-disallowed-upload span, div#tipbox-current-url span, div.dl-share-bottom-textbox span {
             font-size: 12px;
             color: #a2a2a2;
             text-align: left;
@@ -2004,7 +2004,7 @@ function share(e,) {
     btn_no.addEventListener("click", (event) => {
         es.overlay.remove()
     });
-    const urlspan = es.content.querySelector("span#dl-share-bottom-text");
+    const urlspan = es.content.querySelector("span.dl-share-bottom-text");
     urlspan.textContent = getCurrentFolderShareLink(item)
 
 }
@@ -2852,7 +2852,7 @@ let data = [
     {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    // addFile(data[i]);
+    addFile(data[i]);
 }
 
 
