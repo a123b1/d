@@ -2011,6 +2011,7 @@ function share(e,) {
     urlspan.textContent = getCurrentFolderShareLink(item.item_attr)
     const urla = es.content.querySelector("a.dl-share-bottom-a");
     urla.href = urlspan.textContent;
+    urla.style.textDecoration = "none";
 
 }
 
@@ -2857,7 +2858,7 @@ let data = [
     {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    addFile(data[i]);
+    // addFile(data[i]);
 }
 
 
