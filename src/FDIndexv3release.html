@@ -208,7 +208,7 @@
             gap: 10px;
         }
 
-        .action button {
+        .action button, .buttongroup button {
             color: white;
             background-color: #1976D2;
             border: none;
@@ -219,11 +219,11 @@
             box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
         }
 
-        .action button:hover {
+        .action button:hover, .buttongroup button:hover {
             background-color: #2088ee;
         }
 
-        .action button:active {
+        .action button:active, .buttongroup button:active {
             background-color: #165ba6;
         }
 
@@ -493,6 +493,15 @@
             display: inline-block;
         }
 
+        .item-action-share-icon {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23E68920' d='M18 16.08C17.24 16.08 16.56 16.38 16.04 16.85L8.91 12.7C8.96 12.47 9 12.24 9 12S8.96 11.53 8.91 11.3L15.96 7.19C16.5 7.69 17.21 8 18 8C19.66 8 21 6.66 21 5S19.66 2 18 2 15 3.34 15 5C15 5.24 15.04 5.47 15.09 5.7L8.04 9.81C7.5 9.31 6.79 9 6 9C4.34 9 3 10.34 3 12S4.34 15 6 15C6.79 15 7.5 14.69 8.04 14.19L15.16 18.34C15.11 18.55 15.08 18.77 15.08 19C15.08 20.61 16.39 21.91 18 21.91S20.92 20.61 20.92 19C20.92 17.39 19.61 16.08 18 16.08M18 4C18.55 4 19 4.45 19 5S18.55 6 18 6 17 5.55 17 5 17.45 4 18 4M6 13C5.45 13 5 12.55 5 12S5.45 11 6 11 7 11.45 7 12 6.55 13 6 13M18 20C17.45 20 17 19.55 17 19S17.45 18 18 18 19 18.45 19 19 18.55 20 18 20Z'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 22px;
+            height: 22px;
+            display: inline-block;
+        }
+
         .item-action-trash-icon {
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23F44336' d='M15 13H16.5V15.82L18.94 17.23L18.19 18.53L15 16.69V13M23 16C23 19.87 19.87 23 16 23C14.09 23 12.36 22.24 11.1 21H8C6.9 21 6 20.1 6 19V7H18V9.29C20.89 10.15 23 12.83 23 16M16 11C13.24 11 11 13.24 11 16C11 18.76 13.24 21 16 21C18.76 21 21 18.76 21 16C21 13.24 18.76 11 16 11M19 4V6H5V4H8.5L9.5 3H14.5L15.5 4H19Z'/></svg>");
             background-repeat: no-repeat;
@@ -700,7 +709,7 @@
             margin-right: 26px;
         }
 
-        label#label-upload-file-name {
+        label#label-upload-file-name, label.dialog-item-label {
             font-size: 14px;
         }
 
@@ -752,6 +761,7 @@
         }
 
     </style>
+    <link rel="stylesheet" href="../../Documents/w3c-note2501/w3c-note/main/app/static/css/index.css">
 </head>
 <body>
 <div class="banner">
@@ -835,6 +845,9 @@
                                 <button class="item-action-rename">
                                     <i class="item-action-rename-icon"></i>
                                 </button>
+                                <button class="item-action-share">
+                                    <i class="item-action-share-icon"></i>
+                                </button>
                                 <button class="item-action-trash">
                                     <i class="item-action-trash-icon"></i>
                                 </button>
@@ -912,12 +925,13 @@ window.root_attr = {
     "id": null,
     "type": null,
     "upload": true,
-    "download": null,
+    "download": true,
     "download_as_zip": null,
     "new_folder": null,
     "new_shortcut": null,
     "copy_from": null,
-    "rename": null,
+    "rename": true,
+    "share": true,
     "move": null,
     "trash": true,
     "delete": true,
@@ -930,6 +944,7 @@ window.root_attr = {
     "first_layer_as_drive": true,
 
     "can_trash": true,
+    "can_share": true,
     "can_copy": true,
     "can_shortcut": true,
     "can_zip": true,
@@ -1326,6 +1341,18 @@ function addFile(attr) {
                 rename(e);
             });
         }
+        if (window.root_attr.share === true && window.root_attr.can_share === true) {
+            _new__action.insertAdjacentHTML('beforeend', `
+<button class="item-action-share" title="共享设置">
+    <i class="item-action-share-icon"></i>
+</button>
+`);
+            _new__action.querySelector('.item-action-share').addEventListener('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                share(e);
+            });
+        }
         if (window.root_attr.trash === true && window.root_attr.can_trash === true) {
             _new__action.insertAdjacentHTML('beforeend', `
 <button class="item-action-trash" title="移至垃圾桶">
@@ -1434,6 +1461,18 @@ function addFile(attr) {
                 e.stopPropagation();
                 e.preventDefault();
                 rename(e);
+            });
+        }
+        if (window.root_attr.share === true && window.root_attr.can_share === true) {
+            _new__action.insertAdjacentHTML('beforeend', `
+<button class="item-action-share" title="共享设置">
+    <i class="item-action-share-icon"></i>
+</button>
+`);
+            _new__action.querySelector('.item-action-share').addEventListener('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                share(e);
             });
         }
         if (window.root_attr.trash === true && window.root_attr.can_trash === true) {
@@ -1622,6 +1661,24 @@ function getCurrentFolderShareLink(attr,) {
     } else {
         return `#`;
     }
+}
+
+
+function addDialog(cht) {
+    let htmlTemplate = `
+<div class="overlay">
+    <div class="dialog-margin-top"></div>
+    <div class="dialog" onclick="event.stopPropagation()">
+    </div>
+</div>
+`;
+    let container = document.querySelector('body')
+    container.insertAdjacentHTML('beforeend', htmlTemplate);
+    let overlay = container.querySelector('.overlay:last-child,.overlay2:last-child'); // div
+    let dialog = overlay.querySelector(".dialog");
+    dialog.insertAdjacentHTML('beforeend', cht);
+    let content = dialog.querySelector("div");
+    return {container, overlay, dialog, content}
 }
 
 if (window.root_attr.btn_goto_drive !== true) {
@@ -1870,6 +1927,89 @@ async function _rename(source, name,) {
             body: JSON.stringify({action: "rename", name: name, source: getFullPath(source),}),
         });
         console.log("rename:response:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error sending request:", error);
+    }
+    chdir(null);
+}
+
+function share(e,) {
+    let item = e.target.closest(".item-content");
+    let es = addDialog(`
+<div class="dl-share-column">
+<div class="dl-share-row">
+<label class="dialog-item-label">类型</label>
+<select id="dl-share-input-st1">
+    <option value="anyone" selected>共享给知道链接的任何人</option>
+    <option value="no">不公开</option>
+</select>
+</div>
+<div class="dl-share-row">
+<label class="dialog-item-label">权限</label>
+<select id="dl-share-input-st2">
+    <option value="reader" selected>检视者</option>
+    <option value="writer">编辑者</option>
+</select>
+</div>
+<div class="dl-share-buttongroup buttongroup">
+    <div class="dl-share-buttongroup-leftspace"></div>
+    <button id="dl-share-btn-yes">确定</button>
+    <button id="dl-share-btn-no">取消</button>
+</div>
+</div>
+<style>
+.dl-share-column{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.dl-share-row{
+    display: flex;
+    gap: 6px;
+}
+.dl-share-buttongroup{
+    display: flex;
+    gap: 10px;
+}
+.dl-share-buttongroup-leftspace{
+    display: inline-block;
+    flex:1;
+}
+</style>
+`);
+    es.overlay.addEventListener("click", (event) => {
+        es.overlay.remove()
+    });
+    const btn_yes = es.content.querySelector("button#dl-share-btn-yes");
+    btn_yes.addEventListener("click", (event) => {
+        const st1 = es.content.querySelector("select#dl-share-input-st1");
+        const st2 = es.content.querySelector("select#dl-share-input-st2");
+        // console.log(st1, st1.options.selectedIndex)
+        _share(item, {
+            type: st1.querySelectorAll("option")[st1.options.selectedIndex].getAttribute("value"),
+            role: st2.querySelectorAll("option")[st2.options.selectedIndex].getAttribute("value"),
+        })
+        es.overlay.remove()
+    });
+    const btn_no = es.content.querySelector("button#dl-share-btn-no");
+    btn_no.addEventListener("click", (event) => {
+        es.overlay.remove()
+    });
+}
+
+async function _share(source, data,) {
+    const baseUrl = new URL(window.location.href.replace(/#$/, ""));
+    try {
+        const response = await fetch(baseUrl.href, {
+            method: "POST", headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({action: "share", type: data.type, role: data.role, source: getFullPath(source),}),
+        });
+        console.log("share:response:", response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -2703,7 +2843,7 @@ let data = [
     {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    // addFile(data[i]);
+    addFile(data[i]);
 }
 
 
