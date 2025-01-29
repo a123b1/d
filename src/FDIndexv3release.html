@@ -698,6 +698,7 @@
             /*white-space: nowrap;*/
             overflow: hidden;
             text-overflow: ellipsis;
+            word-break: break-all;
         }
 
         div#upload-file-name {
@@ -1986,6 +1987,8 @@ function share(e,) {
 }
 </style>
 `);
+    es.dialog.style.minWidth = "280px";
+    es.dialog.style.maxWidth = "320px";
     es.overlay.addEventListener("click", (event) => {
         es.overlay.remove()
     });
