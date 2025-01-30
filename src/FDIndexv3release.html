@@ -1589,9 +1589,9 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
 };
 cbr.udt.switchShowRetryBtn = function (ti,) {
     if (ti.udti_attr.istatus === cbr.udt.istatus.failed) {
-        ti.querySelector(".dl-cbr-ti-action-retry").style.display = "none"
-    } else {
         ti.querySelector(".dl-cbr-ti-action-retry").style.display = "inline"
+    } else {
+        ti.querySelector(".dl-cbr-ti-action-retry").style.display = "none"
     }
 }
 cbr.udt.upItem = function (ti,) {
