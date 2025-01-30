@@ -1409,8 +1409,10 @@ cbr.upnumber = () => {
     }
     if (count === 0) {
         cbr.ct.textContent = ";";
+        cbr.ct.style.fontSize = "16px"
         return;
     }
+    cbr.ct.style.fontSize = "14px"
     cbr.ct.textContent = count.toString()
 };
 cbr.tabbtn_getcurrent = () => {
@@ -1504,7 +1506,7 @@ cbr.udt.addTask = function () {
 }
 cbr.udt.startOtherTask = function (itype = 0) {
     for (const ti of cbr.udt.getAllTask(itype)) {
-        if (ti.istatus === cbr.udt.istatus.waiting) {
+        if (ti.udti_attr.istatus === cbr.udt.istatus.waiting) {
             cbr.udt.core_upload(ti)
             return ti;
         }
@@ -1513,7 +1515,7 @@ cbr.udt.startOtherTask = function (itype = 0) {
 }
 cbr.udt.isUploading = function () {
     for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.upload)) {
-        if (ti.istatus === cbr.udt.istatus.processing || ti.istatus === cbr.udt.istatus.finalizing) {
+        if (ti.udti_attr.istatus === cbr.udt.istatus.processing || ti.udti_attr.istatus === cbr.udt.istatus.finalizing) {
             return ti;
         }
     }
