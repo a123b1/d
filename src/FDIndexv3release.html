@@ -1528,20 +1528,20 @@ cbr.udt.upItem = function (ti,) {
         cbr.udt.toggleAnimation(ti, false)
         status.textContent = ti.udti_attr.istatus
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
-            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+            upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
         }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.finalizing) {
         cbr.udt.toggleAnimation(ti, true)
         status.textContent = ti.udti_attr.istatus
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
-            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+            upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
             toggleAnimation_upload(true);
         }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.failed) {
         cbr.udt.toggleAnimation(ti, false)
         status.textContent = ti.udti_attr.istatus
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
-            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+            upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
             toggleAnimation_upload(false);
             // upload2progress.style.display = 'none';
             // closeDialog({target: document.getElementById('dialogOverlay')});
@@ -1553,7 +1553,7 @@ cbr.udt.upItem = function (ti,) {
         ti.udti_attr.ui_progress_bar.style.display = "none"
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
             current_upload_pturl = null;
-            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+            upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
             upload2progress.style.display = 'none';
             closeDialog({target: document.getElementById('dialogOverlay')});
             chdir(null);
@@ -1561,14 +1561,14 @@ cbr.udt.upItem = function (ti,) {
         cbr.udt.startOtherTask()
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.processing) {
         if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
-            status.textContent = `正在上传...${0}`
+            status.textContent = `正在上传... ${ti.udti_attr.progress}%`
         } else if (ti.udti_attr.itype === cbr.udt.itypes.download) {
-            status.textContent = `正在下载...${0}`
+            status.textContent = `正在下载... ${ti.udti_attr.progress}%`
         }
         ti.udti_attr.ui_progress.style.width = `${ti.udti_attr.progress}%`;
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
-            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
-            upload2progress.getElementById("progress-upload").style.width = ti.udti_attr.ui_progress.style.width;
+            upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
+            upload2progress.querySelector("#progress-upload").style.width = ti.udti_attr.ui_progress.style.width;
         }
     }
 
