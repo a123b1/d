@@ -1632,7 +1632,7 @@ cbr.udt.upItem = function (ti,) {
             closeDialog({target: document.getElementById('dialogOverlay')});
             chdir(null);
         }
-        cbr.udt.startOtherTask()
+        cbr.udt.startOtherTask(cbr.udt.itypes.upload)
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.processing) {
         if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
             status.textContent = `正在上传... ${ti.udti_attr.progress}%`
