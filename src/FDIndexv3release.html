@@ -767,6 +767,49 @@
             font-size: 14px;
         }
 
+        #tipbox-uploading-bottomdiv {
+            display: flex;
+            /*justify-content: flex-end;*/
+            /*align-items: center;*/
+            justify-content: flex-start;
+            padding-top: 0px;
+            padding-right: 6px;
+            font-size: 14px;
+        }
+
+        #tip-uploading-status {
+            margin-top: 2px;
+            font-size: 12px;
+            color: #666666;
+        }
+
+        #tipbox-uploading-bottomdiv-bfb {
+            flex: 1;
+        }
+
+        #tipbox-uploading-bottomdiv button {
+            margin-top: 4px;
+            display: inline-block;
+            padding: 4px 10px;
+            color: #1976D2;
+            background: transparent;
+            border: 0px solid #3498db;
+            border-radius: 0px;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        #tipbox-uploading-bottomdiv button:hover {
+            background: rgba(0, 0, 0, 0.07);
+        }
+
+        #tipbox-uploading-bottomdiv button:active {
+            background: rgba(0, 0, 0, 0.16);
+        }
+
     </style>
     <style>
         .circle {
@@ -832,7 +875,7 @@
             display: inline-block;
             padding: 10px 20px;
             font-size: 16px;
-            color: #1976D2;
+            color: #1976D1;
             background: transparent;
             border: 0px solid #3498db;
             border-radius: 0px;
@@ -981,7 +1024,7 @@
         </div>
     </div>
 </div>
-<div class="overlay hidden" id="dialogOverlay" onclick="closeDialog(event)">
+<div class="overlay " id="dialogOverlay" onclick="closeDialog(event)">
     <div class="dialog-margin-top"></div>
     <div class="dialog" onclick="event.stopPropagation()">
         <div id="upload2select">
@@ -999,6 +1042,11 @@
             <div id="tipbox-uploading-file-name"><span id="tip-uploading-file-name">filename.icc</span></div>
             <div id="progress-bar-upload">
                 <div id="progress-upload" class="sliding-bar-animation"></div>
+            </div>
+            <div id="tipbox-uploading-bottomdiv">
+                <span id="tip-uploading-status">正在排队...</span>
+                <div id="tipbox-uploading-bottomdiv-bfb"></div>
+                <button id="tipbox-uploading-put2bg">最小化</button>
             </div>
         </div>
     </div>
@@ -1196,6 +1244,8 @@ function toggleAnimation_upload(show,) {
 toggleAnimation(false);
 toggleAnimation_upload(false);
 
+const upload2progress = document.getElementById("upload2progress");
+let current_upload_pturl = null;
 
 function addDialog(cht) {
     let htmlTemplate = `
@@ -1256,7 +1306,7 @@ cbr.es = addDialog(`
 .dl-cbr-tabbottomline{
     width: 100%;
     height: 1px;
-    background: #1976D2;
+    background: #1976D1;
 }
 .dl-cbr-tabbutton{
     padding-top: 8px;
@@ -1477,16 +1527,37 @@ cbr.udt.upItem = function (ti,) {
     if (ti.udti_attr.istatus === cbr.udt.istatus.waiting) {
         cbr.udt.toggleAnimation(ti, false)
         status.textContent = ti.udti_attr.istatus
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
+            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+        }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.finalizing) {
         cbr.udt.toggleAnimation(ti, true)
         status.textContent = ti.udti_attr.istatus
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
+            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+            toggleAnimation_upload(true);
+        }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.failed) {
         cbr.udt.toggleAnimation(ti, false)
         status.textContent = ti.udti_attr.istatus
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
+            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+            toggleAnimation_upload(false);
+            // upload2progress.style.display = 'none';
+            // closeDialog({target: document.getElementById('dialogOverlay')});
+            // chdir(null);
+        }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.finished) {
         cbr.udt.toggleAnimation(ti, false)
         status.textContent = ti.udti_attr.istatus
         ti.udti_attr.ui_progress_bar.style.display = "none"
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
+            current_upload_pturl = null;
+            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+            upload2progress.style.display = 'none';
+            closeDialog({target: document.getElementById('dialogOverlay')});
+            chdir(null);
+        }
         cbr.udt.startOtherTask()
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.processing) {
         if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
@@ -1495,7 +1566,12 @@ cbr.udt.upItem = function (ti,) {
             status.textContent = `正在下载...${0}`
         }
         ti.udti_attr.ui_progress.style.width = `${ti.udti_attr.progress}%`;
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
+            upload2progress.getElementById("tip-uploading-status").textContent = status.textContent;
+            upload2progress.getElementById("progress-upload").style.width = ti.udti_attr.ui_progress.style.width;
+        }
     }
+
 }
 cbr.udt.toggleAnimation = function (ti, show,) {
     if (!show) {
@@ -1518,8 +1594,8 @@ cbr.udt.core_upload = function (ti,) {
             ti.udti_attr.total = event.total
             ti.udti_attr.curr = event.loaded
             ti.udti_attr.progress = percentComplete
+            console.log(`上传进度: ${percentComplete}%`);
             if (percentComplete === 100) {
-                console.log(`上传进度: ${percentComplete}%`);
                 ti.udti_attr.istatus = cbr.udt.istatus.finalizing
             }
             cbr.udt.upItem(ti)
@@ -3104,6 +3180,7 @@ function uploadFile() {
         const progress = document.getElementById("progress-upload");
         progress_bar.style.display = "block";
         progress.style.width = "0%";
+        current_upload_pturl = url;
         cbr.udt.addUploadTask(url, file, name);
     } else {
         toggleUploadButton();
