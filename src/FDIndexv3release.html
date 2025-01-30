@@ -1345,8 +1345,7 @@ cbr.es = addDialog(`
 }
 
 .dl-cbr-ti-container {
-    display: block;
-    padding: 6px 10px;
+    /*display: block;*/
     font-size: 16px;
     color: black;
     background: transparent;
@@ -1354,6 +1353,13 @@ cbr.es = addDialog(`
     transition: all 0.1s ease-in-out;
     text-align: left;
     text-decoration: none;
+    /*width: 100%;*/
+    align-items: center;
+    justify-content: flex-start;
+    padding: 6px 10px;
+}
+.dl-cbr-ti-container2 {
+    flex:1;
 }
 
 .dl-cbr-ti-container:hover {
@@ -1382,11 +1388,36 @@ cbr.es = addDialog(`
 .dl-cbr-ti-file-name {
     margin-bottom: 2px;
     font-size: 14px;
+    word-break: break-all;
 }
 .dl-cbr-ti-status {
     margin-bottom: 2px;
     font-size: 12px;
     color: #666666;
+}
+button.dl-cbr-ti-action-retry {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, background-color 0.1s ease;
+    padding: 6px 6px;
+}
+button.dl-cbr-ti-action-retry:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+button.dl-cbr-ti-action-retry:active {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.dl-cbr-ti-action-retry-icon {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%232196F3' d='M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 22px;
+    height: 22px;
+    display: inline-block;
 }
 </style>
 `);
@@ -1492,12 +1523,19 @@ cbr.udt.getAllTask = function (itype = 0) {
 cbr.udt.addTask = function () {
     const htmlTemplate = `
 <li>
-<div class="dl-cbr-column dl-cbr-ti-container">
-    <div class="dl-cbr-ti-file-name"><span class="dl-cbr-ti-tip-file-name"></span></div>
-    <div class="dl-cbr-ti-progress-bar">
-        <div class="dl-cbr-ti-progress sliding-bar-animation"></div>
+<div class="dl-cbr-row dl-cbr-ti-container">
+    <div class="dl-cbr-column dl-cbr-column--no-gap dl-cbr-ti-container2">
+        <div class="dl-cbr-ti-file-name"><span class="dl-cbr-ti-tip-file-name"></span></div>
+        <div class="dl-cbr-ti-progress-bar">
+            <div class="dl-cbr-ti-progress sliding-bar-animation"></div>
+        </div>
+        <div class="dl-cbr-ti-status"><span class="dl-cbr-ti-tip-status"></span></div>
     </div>
-    <div class="dl-cbr-ti-status"><span class="dl-cbr-ti-tip-status"></span></div>
+    <div class="dl-cbr-column">
+        <button class="dl-cbr-ti-action-retry">
+        <i class="dl-cbr-ti-action-retry-icon"></i>
+        </button>
+    </div>
 </div>
 </li>
 `;
@@ -1539,8 +1577,23 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
     if (!cbr.udt.isUploading()) { // 开始上传
         cbr.udt.core_upload(ti)
     }
+    ti.querySelector(".dl-cbr-ti-action-retry").addEventListener("click", (event) => {
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload && ti.udti_attr.istatus === cbr.udt.istatus.failed) {
+            if (!cbr.udt.isUploading()) {
+                cbr.udt.core_upload(ti)
+            }
+        } else if (ti.udti_attr.itype === cbr.udt.itypes.download && ti.udti_attr.istatus === cbr.udt.istatus.failed) {
+        }
+    })
     return ti;
 };
+cbr.udt.switchShowRetryBtn = function (ti,) {
+    if (ti.udti_attr.istatus === cbr.udt.istatus.failed) {
+        ti.querySelector(".dl-cbr-ti-action-retry").style.display = "none"
+    } else {
+        ti.querySelector(".dl-cbr-ti-action-retry").style.display = "inline"
+    }
+}
 cbr.udt.upItem = function (ti,) {
     const name = ti.querySelector(".dl-cbr-ti-tip-file-name");
     name.textContent = ti.udti_attr.name
@@ -1592,6 +1645,7 @@ cbr.udt.upItem = function (ti,) {
             upload2progress.querySelector("#progress-upload").style.width = ti.udti_attr.ui_progress.style.width;
         }
     }
+    cbr.udt.switchShowRetryBtn(ti)
     cbr.upnumber();
 }
 cbr.udt.toggleAnimation = function (ti, show,) {
@@ -1605,6 +1659,8 @@ cbr.udt.toggleAnimation = function (ti, show,) {
 }
 cbr.udt.core_upload = function (ti,) {
     ti.udti_attr.istatus = cbr.udt.istatus.processing
+    ti.udti_attr.progress = 0
+    cbr.udt.upItem(ti)
 
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", ti.udti_attr.pturl, true);
@@ -3067,7 +3123,7 @@ function openDialog() {
     toggleAnimation_upload(false);
     document.getElementById("tip-uploading-file-name").textContent = '';
     document.getElementById("upload2progress").style.display = 'none';
-    upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "inline-block";
+    upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "flex";
     document.getElementById("upload2select").style.display = 'block';
 }
 
