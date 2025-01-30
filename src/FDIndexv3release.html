@@ -784,6 +784,7 @@
         }
 
         #tipbox-uploading-bottomdiv-bfb {
+            display: inline-block;
             flex: 1;
         }
 
@@ -3064,7 +3065,7 @@ function openDialog() {
     toggleAnimation_upload(false);
     document.getElementById("tip-uploading-file-name").textContent = '';
     document.getElementById("upload2progress").style.display = 'none';
-    upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "block";
+    upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "inline-block";
     document.getElementById("upload2select").style.display = 'block';
 }
 
