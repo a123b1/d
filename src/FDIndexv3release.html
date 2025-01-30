@@ -1246,6 +1246,11 @@ toggleAnimation_upload(false);
 
 const upload2progress = document.getElementById("upload2progress");
 let current_upload_pturl = null;
+upload2progress.querySelector("#tipbox-uploading-put2bg").addEventListener("click", (event) => {
+    current_upload_pturl = null;
+    upload2progress.style.display = 'none';
+    closeDialog({target: document.getElementById('dialogOverlay')});
+})
 
 function addDialog(cht) {
     let htmlTemplate = `
