@@ -1399,6 +1399,19 @@ cbr.tabbtn_task_download = cbr.es.content.querySelector("#dl-cbr-tabbtn-task-dow
 cbr.tabbtn_setting = cbr.es.content.querySelector("#dl-cbr-tabbtn-setting");
 cbr.content_tasklist = cbr.es.content.querySelector(".dl-cbr-tasklist-container"); // tab内容
 cbr.content_settings = cbr.es.content.querySelector(".dl-cbr-settings-container");
+cbr.upnumber = () => {
+    let count = 0;
+    for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.upload | cbr.udt.itypes.download)) {
+        if (ti.udti_attr.istatus === cbr.udt.istatus.waiting || ti.udti_attr.istatus === cbr.udt.istatus.processing || ti.udti_attr.istatus === cbr.udt.istatus.finalizing || ti.udti_attr.istatus === cbr.udt.istatus.failed) {
+            count++;
+        }
+    }
+    if (count === 0) {
+        cbr.ct.textContent = ";";
+        return;
+    }
+    cbr.ct.textContent = count.toString()
+};
 cbr.tabbtn_getcurrent = () => {
     for (const tabbtn of cbr.es.content.querySelectorAll(".dl-cbr-tabbutton")) {
         if (tabbtn.classList.contains("dl-cbr-tabbutton-selected")) {
@@ -1486,6 +1499,7 @@ cbr.udt.addTask = function () {
 </li>
 `;
     cbr.udt.insertAdjacentHTML('beforeend', htmlTemplate);
+    cbr.upnumber();
     return cbr.udt.querySelector("li:last-child div.dl-cbr-ti-container");
 }
 cbr.udt.startOtherTask = function (itype = 0) {
@@ -1576,7 +1590,7 @@ cbr.udt.upItem = function (ti,) {
             upload2progress.querySelector("#progress-upload").style.width = ti.udti_attr.ui_progress.style.width;
         }
     }
-
+    cbr.upnumber();
 }
 cbr.udt.toggleAnimation = function (ti, show,) {
     if (!show) {
