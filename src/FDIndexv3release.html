@@ -1409,11 +1409,11 @@ cbr.upnumber = () => {
     }
     if (count === 0) {
         cbr.ct.textContent = ";";
-        cbr.ct.style.fontSize = "16px"
+        cbr.ct.style.fontSize = "14px"
         return;
     }
-    cbr.ct.style.fontSize = "14px"
     cbr.ct.textContent = count.toString()
+    cbr.ct.style.fontSize = "16px"
 };
 cbr.tabbtn_getcurrent = () => {
     for (const tabbtn of cbr.es.content.querySelectorAll(".dl-cbr-tabbutton")) {
@@ -1516,7 +1516,7 @@ cbr.udt.startOtherTask = function (itype = 0) {
 cbr.udt.isUploading = function () {
     for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.upload)) {
         if (ti.udti_attr.istatus === cbr.udt.istatus.processing || ti.udti_attr.istatus === cbr.udt.istatus.finalizing) {
-            return ti;
+            return true;
         }
     }
     return false;
