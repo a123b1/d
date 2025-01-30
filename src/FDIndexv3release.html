@@ -791,7 +791,7 @@
             margin-top: 4px;
             display: inline-block;
             padding: 4px 10px;
-            color: #1976D2;
+            color: #1976D1;
             background: transparent;
             border: 0px solid #3498db;
             border-radius: 0px;
@@ -1024,7 +1024,7 @@
         </div>
     </div>
 </div>
-<div class="overlay " id="dialogOverlay" onclick="closeDialog(event)">
+<div class="overlay hidden" id="dialogOverlay" onclick="closeDialog(event)">
     <div class="dialog-margin-top"></div>
     <div class="dialog" onclick="event.stopPropagation()">
         <div id="upload2select">
@@ -3065,6 +3065,7 @@ function openDialog() {
     toggleAnimation_upload(false);
     document.getElementById("tip-uploading-file-name").textContent = '';
     document.getElementById("upload2progress").style.display = 'none';
+    upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "block";
     document.getElementById("upload2select").style.display = 'block';
 }
 
@@ -3209,6 +3210,7 @@ function uploadFile() {
 async function copy_from({tree, summary}) {
     toggleAnimation_upload(false);
     document.getElementById("tip-uploading-file-name").textContent = "";
+    upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "none";
     document.getElementById("upload2progress").style.display = 'block';
     document.getElementById("upload2select").style.display = 'none';
 
