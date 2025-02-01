@@ -1101,7 +1101,7 @@
                     <button id="tipbox-uploading-put2bg">最小化</button>
                 </div>
             </div>
-            <div class="layout-column">
+            <div class="layout-column" id="upload2progress-retry">
                 <button class="ti-action-retry">
                     <i class="ti-action-retry-icon"></i>
                 </button>
@@ -1303,6 +1303,7 @@ toggleAnimation(false);
 toggleAnimation_upload(false);
 
 const upload2progress = document.getElementById("upload2progress");
+const upload2progress_retry = document.getElementById("upload2progress-retry");
 let current_upload_pturl = null;
 upload2progress.querySelector("#tipbox-uploading-put2bg").addEventListener("click", (event) => {
     current_upload_pturl = null;
@@ -3166,6 +3167,7 @@ function openDialog() {
     document.getElementById("tip-uploading-file-name").textContent = '';
     document.getElementById("upload2progress").style.display = 'none';
     upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "flex";
+    upload2progress_retry.style.display = "flex";
     document.getElementById("upload2select").style.display = 'block';
 }
 
@@ -3311,6 +3313,7 @@ async function copy_from({tree, summary}) {
     toggleAnimation_upload(false);
     document.getElementById("tip-uploading-file-name").textContent = "";
     upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "none";
+    upload2progress_retry.style.display = "none";
     document.getElementById("upload2progress").style.display = 'block';
     document.getElementById("upload2select").style.display = 'none';
 
