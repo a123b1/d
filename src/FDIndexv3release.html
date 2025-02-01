@@ -1310,6 +1310,13 @@ upload2progress.querySelector("#tipbox-uploading-put2bg").addEventListener("clic
     upload2progress.style.display = 'none';
     closeDialog({target: document.getElementById('dialogOverlay')});
 })
+upload2progress_retry.addEventListener("click", (event) => {
+    for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.upload)) {
+        if (ti.udti_attr.pturl === current_upload_pturl) {
+            ti.querySelector(".ti-action-retry").click()
+        }
+    }
+})
 
 function addDialog(cht) {
     let htmlTemplate = `
@@ -1641,6 +1648,7 @@ cbr.udt.upItem = function (ti,) {
         status.textContent = ti.udti_attr.istatus
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
             upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
+            upload2progress_retry.style.display = "none";
             toggleAnimation_upload(false);
         }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.finalizing) {
@@ -1648,6 +1656,7 @@ cbr.udt.upItem = function (ti,) {
         status.textContent = ti.udti_attr.istatus
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
             upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
+            upload2progress_retry.style.display = "none";
             toggleAnimation_upload(true);
         }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.failed) {
@@ -1656,6 +1665,7 @@ cbr.udt.upItem = function (ti,) {
         if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
             if (current_upload_pturl === ti.udti_attr.pturl) {
                 upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
+                upload2progress_retry.style.display = "flex";
                 toggleAnimation_upload(false);
                 // upload2progress.style.display = 'none';
                 // closeDialog({target: document.getElementById('dialogOverlay')});
@@ -1685,6 +1695,7 @@ cbr.udt.upItem = function (ti,) {
         ti.udti_attr.ui_progress.style.width = `${ti.udti_attr.progress}%`;
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
             upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
+            upload2progress_retry.style.display = "none";
             upload2progress.querySelector("#progress-upload").style.width = ti.udti_attr.ui_progress.style.width;
         }
     }
@@ -3167,7 +3178,7 @@ function openDialog() {
     document.getElementById("tip-uploading-file-name").textContent = '';
     document.getElementById("upload2progress").style.display = 'none';
     upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "flex";
-    upload2progress_retry.style.display = "flex";
+    upload2progress_retry.style.display = "none";
     document.getElementById("upload2select").style.display = 'block';
 }
 
