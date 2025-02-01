@@ -760,6 +760,11 @@
         }
 
         #upload2progress {
+            align-items: center;
+        }
+
+        .upload2progress-left {
+            flex: 1;
         }
 
         #tipbox-uploading-file-name, #tipbox-fetching-status-name {
@@ -870,6 +875,34 @@
             display: inline-block;
             user-select: none;
         }
+
+        button.ti-action-retry {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+            padding: 6px 6px;
+        }
+
+        button.ti-action-retry:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        button.ti-action-retry:active {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .ti-action-retry-icon {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%232196F3' d='M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 22px;
+            height: 22px;
+            display: inline-block;
+        }
     </style>
     <style>
         .flat-button {
@@ -898,6 +931,23 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+    </style>
+    <style>
+        .layout-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .layout-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .layout-column--no-gap, .layout-row--no-gap {
+            gap: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -1039,15 +1089,22 @@
             <button class="upload-btn" id="uploadBtn" onclick="uploadFile()" disabled="">上传</button>
             <div id="tipbox-disallowed-upload"><span id="tip-disallowed-upload"></span></div>
         </div>
-        <div id="upload2progress">
-            <div id="tipbox-uploading-file-name"><span id="tip-uploading-file-name">filename.icc</span></div>
-            <div id="progress-bar-upload">
-                <div id="progress-upload" class="sliding-bar-animation"></div>
+        <div id="upload2progress" class="layout-row">
+            <div class="layout-column layout-column--no-gap upload2progress-left">
+                <div id="tipbox-uploading-file-name"><span id="tip-uploading-file-name">filename.icc</span></div>
+                <div id="progress-bar-upload">
+                    <div id="progress-upload" class="sliding-bar-animation"></div>
+                </div>
+                <div id="tipbox-uploading-bottomdiv">
+                    <span id="tip-uploading-status">正在排队...</span>
+                    <div id="tipbox-uploading-bottomdiv-bfb"></div>
+                    <button id="tipbox-uploading-put2bg">最小化</button>
+                </div>
             </div>
-            <div id="tipbox-uploading-bottomdiv">
-                <span id="tip-uploading-status">正在排队...</span>
-                <div id="tipbox-uploading-bottomdiv-bfb"></div>
-                <button id="tipbox-uploading-put2bg">最小化</button>
+            <div class="layout-column">
+                <button class="ti-action-retry">
+                    <i class="ti-action-retry-icon"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -1395,30 +1452,7 @@ cbr.es = addDialog(`
     font-size: 12px;
     color: #666666;
 }
-button.dl-cbr-ti-action-retry {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.1s ease, background-color 0.1s ease;
-    padding: 6px 6px;
-}
-button.dl-cbr-ti-action-retry:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-}
-button.dl-cbr-ti-action-retry:active {
-    background-color: rgba(0, 0, 0, 0.3);
-}
-.dl-cbr-ti-action-retry-icon {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%232196F3' d='M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z'/></svg>");
-    background-repeat: no-repeat;
-    background-size: contain;
-    width: 22px;
-    height: 22px;
-    display: inline-block;
-}
+
 </style>
 `);
 cbr.es.overlay.style.display = "none"
@@ -1532,8 +1566,8 @@ cbr.udt.addTask = function () {
         <div class="dl-cbr-ti-status"><span class="dl-cbr-ti-tip-status"></span></div>
     </div>
     <div class="dl-cbr-column">
-        <button class="dl-cbr-ti-action-retry">
-        <i class="dl-cbr-ti-action-retry-icon"></i>
+        <button class="ti-action-retry">
+        <i class="ti-action-retry-icon"></i>
         </button>
     </div>
 </div>
@@ -1577,10 +1611,13 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
     if (!cbr.udt.isUploading()) { // 开始上传
         cbr.udt.core_upload(ti)
     }
-    ti.querySelector(".dl-cbr-ti-action-retry").addEventListener("click", (event) => {
+    ti.querySelector(".ti-action-retry").addEventListener("click", (event) => {
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && ti.udti_attr.istatus === cbr.udt.istatus.failed) {
             if (!cbr.udt.isUploading()) {
                 cbr.udt.core_upload(ti)
+            } else {
+                ti.udti_attr.istatus = cbr.udt.istatus.waiting
+                cbr.udt.upItem(ti)
             }
         } else if (ti.udti_attr.itype === cbr.udt.itypes.download && ti.udti_attr.istatus === cbr.udt.istatus.failed) {
         }
@@ -1589,9 +1626,9 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
 };
 cbr.udt.switchShowRetryBtn = function (ti,) {
     if (ti.udti_attr.istatus === cbr.udt.istatus.failed) {
-        ti.querySelector(".dl-cbr-ti-action-retry").style.display = "inline"
+        ti.querySelector(".ti-action-retry").style.display = "inline"
     } else {
-        ti.querySelector(".dl-cbr-ti-action-retry").style.display = "none"
+        ti.querySelector(".ti-action-retry").style.display = "none"
     }
 }
 cbr.udt.upItem = function (ti,) {
@@ -1603,6 +1640,7 @@ cbr.udt.upItem = function (ti,) {
         status.textContent = ti.udti_attr.istatus
         if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
             upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
+            toggleAnimation_upload(false);
         }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.finalizing) {
         cbr.udt.toggleAnimation(ti, true)
@@ -1614,12 +1652,16 @@ cbr.udt.upItem = function (ti,) {
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.failed) {
         cbr.udt.toggleAnimation(ti, false)
         status.textContent = ti.udti_attr.istatus
-        if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
-            upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
-            toggleAnimation_upload(false);
-            // upload2progress.style.display = 'none';
-            // closeDialog({target: document.getElementById('dialogOverlay')});
-            // chdir(null);
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
+            if (current_upload_pturl === ti.udti_attr.pturl) {
+                upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
+                toggleAnimation_upload(false);
+                // upload2progress.style.display = 'none';
+                // closeDialog({target: document.getElementById('dialogOverlay')});
+                // chdir(null);
+            } else {
+                cbr.udt.startOtherTask(cbr.udt.itypes.upload)
+            }
         }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.finished) {
         cbr.udt.toggleAnimation(ti, false)
