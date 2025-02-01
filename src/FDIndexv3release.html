@@ -3204,7 +3204,7 @@ function handleFileChange(event) {
 function upload(file, name,) {
     toggleAnimation_upload(false);
     document.getElementById("tip-uploading-file-name").textContent = name;
-    document.getElementById("upload2progress").style.display = 'block';
+    document.getElementById("upload2progress").style.display = 'flex';
     document.getElementById("upload2select").style.display = 'none';
 
     const progress_bar = document.getElementById("progress-bar-upload");
@@ -3296,7 +3296,7 @@ function uploadFile() {
         url.pathname = url.pathname + encodeURIComponent(name);
         toggleAnimation_upload(false);
         document.getElementById("tip-uploading-file-name").textContent = name;
-        document.getElementById("upload2progress").style.display = 'block';
+        document.getElementById("upload2progress").style.display = 'flex';
         document.getElementById("upload2select").style.display = 'none';
         const progress_bar = document.getElementById("progress-bar-upload");
         const progress = document.getElementById("progress-upload");
@@ -3314,7 +3314,7 @@ async function copy_from({tree, summary}) {
     document.getElementById("tip-uploading-file-name").textContent = "";
     upload2progress.querySelector("#tipbox-uploading-bottomdiv").style.display = "none";
     upload2progress_retry.style.display = "none";
-    document.getElementById("upload2progress").style.display = 'block';
+    document.getElementById("upload2progress").style.display = 'flex';
     document.getElementById("upload2select").style.display = 'none';
 
     const progress_bar = document.getElementById("progress-bar-upload");
