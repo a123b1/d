@@ -1678,12 +1678,30 @@ cbr.udt.upItem = function (ti,) {
         cbr.udt.toggleAnimation(ti, false)
         status.textContent = ti.udti_attr.istatus
         ti.udti_attr.ui_progress_bar.style.display = "none"
-        if (ti.udti_attr.itype === cbr.udt.itypes.upload && current_upload_pturl === ti.udti_attr.pturl) {
-            current_upload_pturl = null;
-            upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
-            upload2progress.style.display = 'none';
-            closeDialog({target: document.getElementById('dialogOverlay')});
-            chdir(null);
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
+            if (current_upload_pturl === ti.udti_attr.pturl) {
+                current_upload_pturl = null;
+                upload2progress.querySelector("#tip-uploading-status").textContent = status.textContent;
+                upload2progress.style.display = 'none';
+                closeDialog({target: document.getElementById('dialogOverlay')});
+                chdir(null);
+            } else {
+                const put_path = ti.udti_attr.pturl.pathname.split("/");
+                const cur_path = new URL(window.location.href).pathname.split("/");
+                console.log(put_path, cur_path)
+                if (cur_path.length > 0 && cur_path.length === put_path.length && cur_path[cur_path.length - 1].length === 0) {
+                    let sm = true;
+                    for (let i = 0; i < cur_path.length - 1; i++) {
+                        if (put_path[i] !== cur_path[i]) {
+                            sm = false
+                            break;
+                        }
+                    }
+                    if (sm) {
+                        chdir(null);
+                    }
+                }
+            }
         }
         cbr.udt.startOtherTask(cbr.udt.itypes.upload)
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.processing) {
