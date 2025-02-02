@@ -1856,58 +1856,106 @@ cbr.udt.core_upload = function (ti,) {
     };
     xhr.send(ti.udti_attr.file);
 }
-cbr.udt.core_download = function (ti,) {
+cbr.udt.core_download = async function (ti,) {
     ti.udti_attr.istatus = cbr.udt.istatus.processing
     ti.udti_attr.progress = 0
     cbr.udt.upItem(ti)
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", ti.udti_attr.gturl, true);
-    xhr.responseType = "arraybuffer";
-    xhr.setRequestHeader("Range", `bytes=${ti.udti_attr.curr}-`);
-    xhr.onprogress = function (event) {
-        console.log(xhr.response, event)
-        if (xhr.response) {
-            let chunk = new Uint8Array(xhr.response);
-            ti.udti_attr.curr += chunk.length;
-            console.log(formatBytes(chunk.length), formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total))
-            ti.udti_attr.chunks.push(chunk);
-        }
-        if (event.lengthComputable) {
-            const percentComplete = Math.round((ti.udti_attr.curr / ti.udti_attr.total) * 100);
-            ti.udti_attr.progress = percentComplete
-            console.log(`下载进度: ${percentComplete}%`);
-            console.log(formatBytes(event.loaded), formatBytes(ti.udti_attr.curr))
-            if (percentComplete === 100) {
-                ti.udti_attr.istatus = cbr.udt.istatus.finalizing
-            }
-            cbr.udt.upItem(ti)
-        }
-    };
-    xhr.onload = function () {
-        if (xhr.status === 206 || xhr.status === 200) {
-            console.log("下载成功",);
-            // ti.udti_attr.istatus = cbr.udt.istatus.finished
-            // let blob = xhr.response;
-            // let a = document.createElement("a");
-            // a.href = URL.createObjectURL(blob);
-            // a.download = ti.udti_attr.name;
-            // a.click();
-            // URL.revokeObjectURL(a.href);
-        } else {
-            console.error("下载失败", xhr.status, xhr.statusText);
-            ti.udti_attr.istatus = cbr.udt.istatus.failed
-        }
-        console.log(xhr.response)
-        cbr.udt.upItem(ti)
-    };
-    xhr.onerror = function () {
-        console.error("请求错误");
+    // const xhr = new XMLHttpRequest();
+    // xhr.open("GET", ti.udti_attr.gturl, true);
+    // xhr.responseType = "arraybuffer";
+    // xhr.setRequestHeader("Range", `bytes=${ti.udti_attr.curr}-`);
+    // xhr.onprogress = function (event) {
+    //     console.log(xhr.response, event)
+    //     if (xhr.response) {
+    //         let chunk = new Uint8Array(xhr.response);
+    //         ti.udti_attr.curr += chunk.length;
+    //         console.log(formatBytes(chunk.length), formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total))
+    //         ti.udti_attr.chunks.push(chunk);
+    //     }
+    //     if (event.lengthComputable) {
+    //         const percentComplete = Math.round((ti.udti_attr.curr / ti.udti_attr.total) * 100);
+    //         ti.udti_attr.progress = percentComplete
+    //         console.log(`下载进度: ${percentComplete}%`);
+    //         console.log(formatBytes(event.loaded), formatBytes(ti.udti_attr.curr))
+    //         if (percentComplete === 100) {
+    //             ti.udti_attr.istatus = cbr.udt.istatus.finalizing
+    //         }
+    //         cbr.udt.upItem(ti)
+    //     }
+    // };
+    // xhr.onload = function () {
+    //     if (xhr.status === 206 || xhr.status === 200) {
+    //         console.log("下载成功",);
+    //         // ti.udti_attr.istatus = cbr.udt.istatus.finished
+    //         // let blob = xhr.response;
+    //         // let a = document.createElement("a");
+    //         // a.href = URL.createObjectURL(blob);
+    //         // a.download = ti.udti_attr.name;
+    //         // a.click();
+    //         // URL.revokeObjectURL(a.href);
+    //     } else {
+    //         console.error("下载失败", xhr.status, xhr.statusText);
+    //         ti.udti_attr.istatus = cbr.udt.istatus.failed
+    //     }
+    //     console.log(xhr.response)
+    //     cbr.udt.upItem(ti)
+    // };
+    // xhr.onerror = function () {
+    //     console.error("请求错误");
+    //     ti.udti_attr.istatus = cbr.udt.istatus.failed
+    //     cbr.udt.upItem(ti)
+    //     console.log(xhr.response)
+    // };
+    // xhr.send();
+
+    let controller = new AbortController();
+    // controller.abort();
+    let response = await fetch(ti.udti_attr.gturl, {
+        method: "GET",
+        headers: {"Range": `bytes=${ti.udti_attr.curr}-`},
+        signal: controller.signal
+    });
+    if (!response.ok && response.status !== 206) {
+        console.error("响应错误");
         ti.udti_attr.istatus = cbr.udt.istatus.failed
         cbr.udt.upItem(ti)
-        console.log(xhr.response)
-    };
-    xhr.send();
+        return;
+    }
+    let reader = response.body.getReader();
+    let contentLength = Number(response.headers.get("Content-Length")) || ti.udti_attr.total;
+    console.log(`预计下载大小: ${formatBytes(contentLength)}`);
+
+    while (true) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        ti.udti_attr.chunks.push(value);
+        ti.udti_attr.curr += value.length;
+        let percentComplete = Math.round((ti.udti_attr.curr / ti.udti_attr.total) * 100);
+        ti.udti_attr.progress = percentComplete
+        console.log(`下载进度: ${percentComplete}%`);
+        if (percentComplete === 100) {
+            ti.udti_attr.istatus = cbr.udt.istatus.finalizing
+        }
+        cbr.udt.upItem(ti)
+    }
+    console.log(`下载完成`, formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total));
+    let totalArray = new Uint8Array(ti.udti_attr.curr);
+    let offset = 0;
+    for (let chunk of ti.udti_attr.chunks) {
+        totalArray.set(chunk, offset);
+        offset += chunk.length;
+    }
+
+    let blob = new Blob([totalArray]);
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = ti.udti_attr.name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    console.log("下载成功", a.href);
+    ti.udti_attr.istatus = cbr.udt.istatus.finished
+    cbr.udt.upItem(ti)
 }
 
 // 右下角进度条
