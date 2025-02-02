@@ -1866,6 +1866,7 @@ cbr.udt.core_download = function (ti,) {
     xhr.responseType = "arraybuffer";
     xhr.setRequestHeader("Range", `bytes=${ti.udti_attr.curr}-`);
     xhr.onprogress = function (event) {
+        console.log(xhr.response)
         if (xhr.response) {
             let chunk = new Uint8Array(xhr.response);
             ti.udti_attr.curr += chunk.length;
@@ -1886,6 +1887,7 @@ cbr.udt.core_download = function (ti,) {
     xhr.onload = function () {
         if (xhr.status === 206 || xhr.status === 200) {
             console.log("下载成功",);
+            console.log(xhr.response)
             // ti.udti_attr.istatus = cbr.udt.istatus.finished
             // let blob = xhr.response;
             // let a = document.createElement("a");
