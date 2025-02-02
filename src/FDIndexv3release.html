@@ -1973,7 +1973,7 @@ cbr.udt.core_download = async function (ti,) {
     a.click();
     URL.revokeObjectURL(a.href);
     console.log("下载成功",);
-    ti.udti_attr.chunks.clear();
+    ti.udti_attr.chunks.length = 0;
     ti.udti_attr.curr = 0;
     ti.udti_attr.istatus = cbr.udt.istatus.finished
     cbr.udt.upItem(ti)
