@@ -1968,7 +1968,7 @@ cbr.udt.core_download = async function (ti,) {
         }
         cbr.udt.upItem(ti)
     }
-    console.log(`已读完`, formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total), ti.udti_attr.curr === ti.udti_attr.total, ti.udti_attr.curr === contentLength);
+    console.log(`已读完`, formatBytes(ti.udti_attr.curr), formatBytes(contentLength), formatBytes(ti.udti_attr.total), ti.udti_attr.curr === ti.udti_attr.total, ti.udti_attr.curr === contentLength);
     let totalArray = new Uint8Array(ti.udti_attr.curr);
     let offset = 0;
     for (let chunk of ti.udti_attr.chunks) {
