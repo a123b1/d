@@ -1551,7 +1551,14 @@ cbr.in.showBorder = function (bl) {
 }
 cbr.in.addEventListener('dragover', (event) => {
     event.preventDefault();
-    cbr.in.showBorder(true);
+    try {
+        const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
+        if (window.root_attr.download && isFile(parsedObject, false)) {
+            cbr.in.showBorder(true);
+        }
+    } catch (e) {
+        cbr.in.showBorder(false);
+    }
 });
 cbr.in.addEventListener('dragleave', (event) => {
     cbr.in.showBorder(false);
@@ -1560,10 +1567,9 @@ cbr.in.addEventListener('drop', (event) => {
     event.preventDefault();
     cbr.in.showBorder(false);
     const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
-    console.log(parsedObject)
     if (window.root_attr.download && isFile(parsedObject, false)) {
         let source = findFileItem(parsedObject);
-        console.log(source)
+        cbr.udt.addDownloadTask(source.querySelector("a").href, source, source.querySelector("div.item-name span").textContent);
     }
 });
 cbr.udt = cbr.es.content.querySelector(".dl-cbr-tasklist");
@@ -1618,19 +1624,52 @@ cbr.udt.addTask = function () {
 </li>
 `;
     cbr.udt.insertAdjacentHTML('beforeend', htmlTemplate);
-    return cbr.udt.querySelector("li:last-child div.dl-cbr-ti-container");
+    const ti = cbr.udt.querySelector("li:last-child div.dl-cbr-ti-container");
+    ti.querySelector(".ti-action-retry").addEventListener("click", (event) => {
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload && ti.udti_attr.istatus === cbr.udt.istatus.failed) {
+            if (!cbr.udt.isUploading()) {
+                cbr.udt.core_upload(ti)
+            } else {
+                ti.udti_attr.istatus = cbr.udt.istatus.waiting
+                cbr.udt.upItem(ti)
+            }
+        } else if (ti.udti_attr.itype === cbr.udt.itypes.download && ti.udti_attr.istatus === cbr.udt.istatus.failed) {
+            if (!cbr.udt.isDownloading()) {
+                cbr.udt.core_download(ti)
+            } else {
+                ti.udti_attr.istatus = cbr.udt.istatus.waiting
+                cbr.udt.upItem(ti)
+            }
+        }
+    });
+    return ti;
 }
 cbr.udt.startOtherTask = function (itype = 0) {
     for (const ti of cbr.udt.getAllTask(itype)) {
-        if (ti.udti_attr.istatus === cbr.udt.istatus.waiting) {
-            cbr.udt.core_upload(ti)
-            return ti;
+        if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
+            if (ti.udti_attr.istatus === cbr.udt.istatus.waiting) {
+                cbr.udt.core_upload(ti)
+                return ti;
+            }
+        } else if (ti.udti_attr.itype === cbr.udt.itypes.download) {
+            if (ti.udti_attr.istatus === cbr.udt.istatus.waiting) {
+                cbr.udt.core_download(ti)
+                return ti;
+            }
         }
     }
     return null;
 }
 cbr.udt.isUploading = function () {
     for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.upload)) {
+        if (ti.udti_attr.istatus === cbr.udt.istatus.processing || ti.udti_attr.istatus === cbr.udt.istatus.finalizing) {
+            return true;
+        }
+    }
+    return false;
+}
+cbr.udt.isDownloading = function () {
+    for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.download)) {
         if (ti.udti_attr.istatus === cbr.udt.istatus.processing || ti.udti_attr.istatus === cbr.udt.istatus.finalizing) {
             return true;
         }
@@ -1655,17 +1694,27 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
     if (!cbr.udt.isUploading()) { // 开始上传
         cbr.udt.core_upload(ti)
     }
-    ti.querySelector(".ti-action-retry").addEventListener("click", (event) => {
-        if (ti.udti_attr.itype === cbr.udt.itypes.upload && ti.udti_attr.istatus === cbr.udt.istatus.failed) {
-            if (!cbr.udt.isUploading()) {
-                cbr.udt.core_upload(ti)
-            } else {
-                ti.udti_attr.istatus = cbr.udt.istatus.waiting
-                cbr.udt.upItem(ti)
-            }
-        } else if (ti.udti_attr.itype === cbr.udt.itypes.download && ti.udti_attr.istatus === cbr.udt.istatus.failed) {
-        }
-    })
+    return ti;
+};
+cbr.udt.addDownloadTask = function (gturl, item, name) {
+    const ti = cbr.udt.addTask();
+    ti.udti_attr = {
+        itype: cbr.udt.itypes.download,
+        istatus: cbr.udt.istatus.waiting,
+        gturl: gturl,
+        item: item,
+        name: name,
+        total: item.item_attr.size,
+        curr: 0,
+        progress: 0,
+        chunks: [],
+        ui_progress_bar: ti.querySelector(".dl-cbr-ti-progress-bar"),
+        ui_progress: ti.querySelector(".dl-cbr-ti-progress"),
+    }
+    cbr.udt.upItem(ti);
+    if (!cbr.udt.isDownloading()) { // 开始下载
+        cbr.udt.core_download(ti)
+    }
     return ti;
 };
 cbr.udt.switchShowRetryBtn = function (ti,) {
@@ -1709,6 +1758,8 @@ cbr.udt.upItem = function (ti,) {
             } else {
                 cbr.udt.startOtherTask(cbr.udt.itypes.upload)
             }
+        } else if (ti.udti_attr.itype === cbr.udt.itypes.download) {
+            cbr.udt.startOtherTask(cbr.udt.itypes.download)
         }
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.finished) {
         cbr.udt.toggleAnimation(ti, false)
@@ -1738,8 +1789,10 @@ cbr.udt.upItem = function (ti,) {
                     }
                 }
             }
+            cbr.udt.startOtherTask(cbr.udt.itypes.upload)
+        } else if (ti.udti_attr.itype === cbr.udt.itypes.download) {
+            cbr.udt.startOtherTask(cbr.udt.itypes.download)
         }
-        cbr.udt.startOtherTask(cbr.udt.itypes.upload)
     } else if (ti.udti_attr.istatus === cbr.udt.istatus.processing) {
         if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
             status.textContent = `正在上传... ${ti.udti_attr.progress}%`
@@ -1803,7 +1856,55 @@ cbr.udt.core_upload = function (ti,) {
     };
     xhr.send(ti.udti_attr.file);
 }
+cbr.udt.core_download = function (ti,) {
+    ti.udti_attr.istatus = cbr.udt.istatus.processing
+    ti.udti_attr.progress = 0
+    cbr.udt.upItem(ti)
 
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", ti.udti_attr.gturl, true);
+    xhr.responseType = "arraybuffer";
+    xhr.setRequestHeader("Range", `bytes=${ti.udti_attr.curr}-`);
+    xhr.onprogress = function (event) {
+        if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / ti.udti_attr.total) * 100);
+            // ti.udti_attr.curr = event.loaded
+            ti.udti_attr.progress = percentComplete
+            console.log(`下载进度: ${percentComplete}%`);
+            console.log(formatBytes(event.loaded))
+            if (percentComplete === 100) {
+                ti.udti_attr.istatus = cbr.udt.istatus.finalizing
+            }
+            cbr.udt.upItem(ti)
+        }
+    };
+    xhr.onload = function () {
+        if (xhr.status === 206 || xhr.status === 200) {
+            console.log("下载成功",);
+            // ti.udti_attr.istatus = cbr.udt.istatus.finished
+            let chunk = new Uint8Array(xhr.response);
+            ti.udti_attr.curr += chunk.length;
+            console.log(formatBytes(chunk.length), formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total))
+            ti.udti_attr.chunks.push(chunk);
+            // let blob = xhr.response;
+            // let a = document.createElement("a");
+            // a.href = URL.createObjectURL(blob);
+            // a.download = ti.udti_attr.name;
+            // a.click();
+            // URL.revokeObjectURL(a.href);
+        } else {
+            console.error("下载失败", xhr.status, xhr.statusText);
+            ti.udti_attr.istatus = cbr.udt.istatus.failed
+        }
+        cbr.udt.upItem(ti)
+    };
+    xhr.onerror = function () {
+        console.error("请求错误");
+        ti.udti_attr.istatus = cbr.udt.istatus.failed
+        cbr.udt.upItem(ti)
+    };
+    xhr.send(ti.udti_attr.file);
+}
 
 // 右下角进度条
 class FetchingStatusBar {
