@@ -1816,6 +1816,9 @@ cbr.udt.upItem = function (ti,) {
                         }
                     }
                     if (sm) {
+                        if (document.getElementById("progress-bar").style.display !== "none") {
+                            return;
+                        }
                         chdir(null);
                     }
                 }
@@ -2010,6 +2013,7 @@ cbr.udt.core_download = async function (ti,) {
     cbr.udt.upItem(ti)
 
 }
+
 
 // 右下角进度条
 class FetchingStatusBar {
