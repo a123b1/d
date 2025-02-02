@@ -1526,10 +1526,10 @@ cbr.tabbtn_setting.addEventListener("click", (event) => {
 cbr.in.addEventListener("click", (event) => {
     for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.upload | cbr.udt.itypes.download)) {
         if (ti.udti_attr.istatus === cbr.udt.istatus.waiting || ti.udti_attr.istatus === cbr.udt.istatus.processing || ti.udti_attr.istatus === cbr.udt.istatus.finalizing || ti.udti_attr.istatus === cbr.udt.istatus.failed) {
-            if (ti.udti_attr.type === cbr.udt.itypes.upload) {
+            if (ti.udti_attr.itype === cbr.udt.itypes.upload) {
                 cbr.tabbtn_task_upload.click()
                 break;
-            } else if (ti.udti_attr.type === cbr.udt.itypes.download) {
+            } else if (ti.udti_attr.itype === cbr.udt.itypes.download) {
                 cbr.tabbtn_task_download.click()
                 break;
             }
