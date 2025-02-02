@@ -1866,12 +1866,17 @@ cbr.udt.core_download = function (ti,) {
     xhr.responseType = "arraybuffer";
     xhr.setRequestHeader("Range", `bytes=${ti.udti_attr.curr}-`);
     xhr.onprogress = function (event) {
+        if (xhr.response) {
+            let chunk = new Uint8Array(xhr.response);
+            ti.udti_attr.curr += chunk.length;
+            console.log(formatBytes(chunk.length), formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total))
+            ti.udti_attr.chunks.push(chunk);
+        }
         if (event.lengthComputable) {
-            const percentComplete = Math.round((event.loaded / ti.udti_attr.total) * 100);
-            // ti.udti_attr.curr = event.loaded
+            const percentComplete = Math.round((ti.udti_attr.curr / ti.udti_attr.total) * 100);
             ti.udti_attr.progress = percentComplete
             console.log(`下载进度: ${percentComplete}%`);
-            console.log(formatBytes(event.loaded))
+            console.log(formatBytes(event.loaded), formatBytes(ti.udti_attr.curr))
             if (percentComplete === 100) {
                 ti.udti_attr.istatus = cbr.udt.istatus.finalizing
             }
@@ -1882,10 +1887,6 @@ cbr.udt.core_download = function (ti,) {
         if (xhr.status === 206 || xhr.status === 200) {
             console.log("下载成功",);
             // ti.udti_attr.istatus = cbr.udt.istatus.finished
-            let chunk = new Uint8Array(xhr.response);
-            ti.udti_attr.curr += chunk.length;
-            console.log(formatBytes(chunk.length), formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total))
-            ti.udti_attr.chunks.push(chunk);
             // let blob = xhr.response;
             // let a = document.createElement("a");
             // a.href = URL.createObjectURL(blob);
@@ -1903,7 +1904,7 @@ cbr.udt.core_download = function (ti,) {
         ti.udti_attr.istatus = cbr.udt.istatus.failed
         cbr.udt.upItem(ti)
     };
-    xhr.send(ti.udti_attr.file);
+    xhr.send();
 }
 
 // 右下角进度条
