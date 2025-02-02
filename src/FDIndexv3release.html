@@ -1154,6 +1154,7 @@ window.root_attr = {
     "can_copy": true,
     "can_shortcut": true,
     "can_zip": true,
+    "can_resume": true,
     "max_upload_size": -1,
 
 };
@@ -1703,6 +1704,8 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
         total: 0,
         curr: 0,
         progress: 0,
+        session: null,
+        lstartindex: 0,
         ui_progress_bar: ti.querySelector(".dl-cbr-ti-progress-bar"),
         ui_progress: ti.querySelector(".dl-cbr-ti-progress"),
     }
@@ -1852,14 +1855,81 @@ cbr.udt.toggleAnimation = function (ti, show,) {
         ti.udti_attr.ui_progress.classList.add("sliding-bar-animation");
     }
 }
-cbr.udt.core_upload = function (ti,) {
+cbr.udt.core_upload = async function (ti,) {
     ti.udti_attr.istatus = cbr.udt.istatus.processing
     ti.udti_attr.progress = 0
     cbr.udt.upItem(ti)
 
+    if (window.root_attr.can_resume) {
+        // 创建上传会话/获取上次进度
+        if (ti.udti_attr.session) {
+            try {
+                const response = await fetch(ti.udti_attr.pturl, {
+                    method: "POST", headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({action: "upload_get_progress", session: ti.udti_attr.session,}),
+                });
+                console.log("upload_get_progress:response:", response);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = (await response.json());
+                console.log("upload_get_progress:response:json", data);
+                if (data.status === 200) {
+                    ti.udti_attr.istatus = cbr.udt.istatus.finished
+                    cbr.udt.upItem(ti)
+                    return;
+                } else if (data.status === 404) {
+                    ti.udti_attr.session = null;
+                } else if (data.status === 308) {
+                    ti.udti_attr.lstartindex = data["present"] + 1;
+                }
+            } catch (error) {
+                console.error("Error sending request:", error);
+                ti.udti_attr.istatus = cbr.udt.istatus.failed
+                cbr.udt.upItem(ti)
+                return;
+            }
+        }
+        if (!ti.udti_attr.session) {
+            ti.udti_attr.lstartindex = 0;
+            try {
+                const response = await fetch(ti.udti_attr.pturl, {
+                    method: "POST", headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({action: "upload_new_session",}),
+                });
+                console.log("upload_new_session:response:", response);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = (await response.json());
+                console.log("upload_new_session:response:json", data);
+                ti.udti_attr.session = data.session;
+            } catch (error) {
+                console.error("Error sending request:", error);
+                ti.udti_attr.istatus = cbr.udt.istatus.failed
+                cbr.udt.upItem(ti)
+                return;
+            }
+        }
+    }
+
+    let pturl = new URL(ti.udti_attr.pturl);
+    if (ti.udti_attr.session) {
+        pturl.searchParams.set("resume", "1");
+        pturl.searchParams.set("session", JSON.stringify(ti.udti_attr.session));
+    }
+
     const xhr = new XMLHttpRequest();
-    xhr.open("PUT", ti.udti_attr.pturl, true);
+    xhr.open("PUT", pturl, true);
     xhr.setRequestHeader("Content-Type", ti.udti_attr.file.type);
+    if (ti.udti_attr.session) {
+        console.log(`bytes ${ti.udti_attr.lstartindex}-${ti.udti_attr.file.size - 1}/${ti.udti_attr.file.size}`)
+        xhr.setRequestHeader("Content-Range", `bytes ${ti.udti_attr.lstartindex}-${ti.udti_attr.file.size - 1}/${ti.udti_attr.file.size}`);
+    }
     xhr.upload.onprogress = function (event) {
         if (event.lengthComputable) {
             const percentComplete = Math.round((event.loaded / event.total) * 100);
@@ -1888,7 +1958,11 @@ cbr.udt.core_upload = function (ti,) {
         ti.udti_attr.istatus = cbr.udt.istatus.failed
         cbr.udt.upItem(ti)
     };
-    xhr.send(ti.udti_attr.file);
+    if (ti.udti_attr.session) {
+        xhr.send(ti.udti_attr.file.slice(ti.udti_attr.lstartindex));
+    } else {
+        xhr.send(ti.udti_attr.file);
+    }
 }
 cbr.udt.core_download = async function (ti,) {
     ti.udti_attr.istatus = cbr.udt.istatus.processing
