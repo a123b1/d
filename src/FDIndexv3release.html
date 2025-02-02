@@ -1530,6 +1530,42 @@ cbr.in.addEventListener("click", (event) => {
     }
     cbr.es.overlay.style.display = "flex"
 });
+cbr.in.showBorder = function (bl) {
+    for (let sheet of document.styleSheets) {
+        try {
+            for (let rule of sheet.cssRules) {
+                if (rule.selectorText === '.circle::before') {
+                    if (bl) {
+                        rule.style.background = "rgba(255, 255,0 ,0.4)";
+                        rule.style.padding = "6px";
+                    } else {
+                        rule.style.background = "linear-gradient(0deg, #165ba6, #2088ee)";
+                        rule.style.padding = "1px";
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn(e); // 可能遇到跨域 CSS 访问限制
+        }
+    }
+}
+cbr.in.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    cbr.in.showBorder(true);
+});
+cbr.in.addEventListener('dragleave', (event) => {
+    cbr.in.showBorder(false);
+});
+cbr.in.addEventListener('drop', (event) => {
+    event.preventDefault();
+    cbr.in.showBorder(false);
+    const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
+    console.log(parsedObject)
+    if (window.root_attr.download && isFile(parsedObject, false)) {
+        let source = findFileItem(parsedObject);
+        console.log(source)
+    }
+});
 cbr.udt = cbr.es.content.querySelector(".dl-cbr-tasklist");
 cbr.udt.itypes = {
     upload: 1,
@@ -1688,7 +1724,7 @@ cbr.udt.upItem = function (ti,) {
             } else {
                 const put_path = ti.udti_attr.pturl.pathname.split("/");
                 const cur_path = new URL(window.location.href).pathname.split("/");
-                console.log(put_path, cur_path)
+                // console.log(put_path, cur_path)
                 if (cur_path.length > 0 && cur_path.length === put_path.length && cur_path[cur_path.length - 1].length === 0) {
                     let sm = true;
                     for (let i = 0; i < cur_path.length - 1; i++) {
