@@ -1932,7 +1932,7 @@ cbr.udt.core_upload = async function (ti,) {
     }
     xhr.upload.onprogress = function (event) {
         if (event.lengthComputable) {
-            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            const percentComplete = Math.round(((event.loaded + ti.udti_attr.lstartindex) / (event.total + ti.udti_attr.lstartindex)) * 100);
             ti.udti_attr.total = event.total
             ti.udti_attr.curr = event.loaded
             ti.udti_attr.progress = percentComplete
