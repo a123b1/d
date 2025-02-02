@@ -1524,6 +1524,17 @@ cbr.tabbtn_setting.addEventListener("click", (event) => {
     cbr.tabbtn_switchselection(event);
 });
 cbr.in.addEventListener("click", (event) => {
+    for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.upload | cbr.udt.itypes.download)) {
+        if (ti.udti_attr.istatus === cbr.udt.istatus.waiting || ti.udti_attr.istatus === cbr.udt.istatus.processing || ti.udti_attr.istatus === cbr.udt.istatus.finalizing || ti.udti_attr.istatus === cbr.udt.istatus.failed) {
+            if (ti.udti_attr.type === cbr.udt.itypes.upload) {
+                cbr.tabbtn_task_upload.click()
+                break;
+            } else if (ti.udti_attr.type === cbr.udt.itypes.download) {
+                cbr.tabbtn_task_download.click()
+                break;
+            }
+        }
+    }
     const cur = cbr.tabbtn_getcurrent()
     if (cur !== cbr.tabbtn_task_upload && cur !== cbr.tabbtn_task_download) {
         cbr.tabbtn_task_upload.click()
@@ -1569,7 +1580,7 @@ cbr.in.addEventListener('drop', (event) => {
     const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
     if (window.root_attr.download && isFile(parsedObject, false)) {
         let source = findFileItem(parsedObject);
-        cbr.udt.addDownloadTask(source.querySelector("a").href, source, source.querySelector("div.item-name span").textContent);
+        cbr.udt.addDownloadTask(new URL(source.querySelector("a").href), source, source.querySelector("div.item-name span").textContent);
     }
 });
 cbr.udt = cbr.es.content.querySelector(".dl-cbr-tasklist");
@@ -1677,6 +1688,11 @@ cbr.udt.isDownloading = function () {
     return false;
 }
 cbr.udt.addUploadTask = function (pturl, file, name) {
+    for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.upload)) {
+        if (ti.udti_attr.pturl.pathname === pturl.pathname) {
+            return;
+        }
+    }
     const ti = cbr.udt.addTask();
     ti.udti_attr = {
         itype: cbr.udt.itypes.upload,
@@ -1702,6 +1718,11 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
     return ti;
 };
 cbr.udt.addDownloadTask = function (gturl, item, name) {
+    for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.download)) {
+        if (ti.udti_attr.gturl.pathname === gturl.pathname) {
+            return;
+        }
+    }
     const ti = cbr.udt.addTask();
     ti.udti_attr = {
         itype: cbr.udt.itypes.download,
