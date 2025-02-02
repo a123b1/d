@@ -1909,25 +1909,44 @@ cbr.udt.core_download = async function (ti,) {
     // };
     // xhr.send();
 
+    let response;
     let controller = new AbortController();
     // controller.abort();
-    let response = await fetch(ti.udti_attr.gturl, {
-        method: "GET",
-        headers: {"Range": `bytes=${ti.udti_attr.curr}-`},
-        signal: controller.signal
-    });
+    try {
+        response = await fetch(ti.udti_attr.gturl, {
+            method: "GET",
+            headers: {"Range": `bytes=${ti.udti_attr.curr}-`},
+            signal: controller.signal
+        });
+    } catch (e) {
+        console.error("请求错误", e);
+        ti.udti_attr.istatus = cbr.udt.istatus.failed
+        cbr.udt.upItem(ti)
+        return;
+    }
+
     if (!response.ok && response.status !== 206) {
-        console.error("响应错误");
+        console.error("响应错误", response);
         ti.udti_attr.istatus = cbr.udt.istatus.failed
         cbr.udt.upItem(ti)
         return;
     }
     let reader = response.body.getReader();
     let contentLength = Number(response.headers.get("Content-Length")) || ti.udti_attr.total;
-    console.log(`预计下载大小: ${formatBytes(contentLength)}`);
+    console.log(`预计下载: ${formatBytes(contentLength)}`);
 
     while (true) {
-        const {done, value} = await reader.read();
+        let done, value;
+        try {
+            const _ = await reader.read();
+            value = _.value;
+            done = _.done;
+        } catch (e) {
+            console.error("读取错误", e);
+            ti.udti_attr.istatus = cbr.udt.istatus.failed
+            cbr.udt.upItem(ti)
+            return;
+        }
         if (done) break;
         ti.udti_attr.chunks.push(value);
         ti.udti_attr.curr += value.length;
@@ -1939,7 +1958,7 @@ cbr.udt.core_download = async function (ti,) {
         }
         cbr.udt.upItem(ti)
     }
-    console.log(`下载完成`, formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total));
+    console.log(`已读完`, formatBytes(ti.udti_attr.curr), formatBytes(ti.udti_attr.total), ti.udti_attr.curr === ti.udti_attr.total, ti.udti_attr.curr === contentLength);
     let totalArray = new Uint8Array(ti.udti_attr.curr);
     let offset = 0;
     for (let chunk of ti.udti_attr.chunks) {
@@ -1953,9 +1972,12 @@ cbr.udt.core_download = async function (ti,) {
     a.download = ti.udti_attr.name;
     a.click();
     URL.revokeObjectURL(a.href);
-    console.log("下载成功", a.href);
+    console.log("下载成功",);
+    ti.udti_attr.chunks.clear();
+    ti.udti_attr.curr = 0;
     ti.udti_attr.istatus = cbr.udt.istatus.finished
     cbr.udt.upItem(ti)
+
 }
 
 // 右下角进度条
