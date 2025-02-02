@@ -1694,6 +1694,11 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
     if (!cbr.udt.isUploading()) { // 开始上传
         cbr.udt.core_upload(ti)
     }
+    if (cbr.tabbtn_getcurrent() === cbr.tabbtn_task_upload) {
+        ti.closest("li").style.display = "block"
+    } else {
+        ti.closest("li").style.display = "none"
+    }
     return ti;
 };
 cbr.udt.addDownloadTask = function (gturl, item, name) {
@@ -1704,7 +1709,7 @@ cbr.udt.addDownloadTask = function (gturl, item, name) {
         gturl: gturl,
         item: item,
         name: name,
-        total: item.item_attr.size,
+        total: parseInt(item.item_attr.size, 10),
         curr: 0,
         progress: 0,
         chunks: [],
@@ -1714,6 +1719,11 @@ cbr.udt.addDownloadTask = function (gturl, item, name) {
     cbr.udt.upItem(ti);
     if (!cbr.udt.isDownloading()) { // 开始下载
         cbr.udt.core_download(ti)
+    }
+    if (cbr.tabbtn_getcurrent() === cbr.tabbtn_task_download) {
+        ti.closest("li").style.display = "block"
+    } else {
+        ti.closest("li").style.display = "none"
     }
     return ti;
 };
