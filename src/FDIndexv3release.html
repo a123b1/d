@@ -1772,7 +1772,7 @@ cbr.udt.addDownloadTaskByTree = function (trees, source, paths,) {
         if (!gturl.pathname.endsWith("/")) gturl.pathname += "/";
         for (const path of paths) gturl.pathname += path + "/";
         gturl.pathname += encodeURIComponent(e.name)
-        cbr.udt.addDownloadTask(gturl, e, [...paths, encodeURIComponent(e.name)].join("/"))
+        cbr.udt.addDownloadTask(gturl, e, [...(paths.map(u => decodeURIComponent(u))), e.name].join("/"))
     })
     for (const folder of folders) {
         cbr.udt.addDownloadTaskByTree(folder["children"], source, [...paths, encodeURIComponent(folder["name"]),],);
