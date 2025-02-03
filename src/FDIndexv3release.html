@@ -1565,7 +1565,7 @@ cbr.in.addEventListener('dragover', (event) => {
     event.preventDefault();
     try {
         const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
-        if (window.root_attr.download && isFile(parsedObject, false)) {
+        if (window.root_attr.download) {
             cbr.in.showBorder(true);
         }
     } catch (e) {
@@ -1581,7 +1581,14 @@ cbr.in.addEventListener('drop', (event) => {
     const parsedObject = JSON.parse(event.dataTransfer.getData("application/json"));
     if (window.root_attr.download && isFile(parsedObject, false)) {
         let source = findFileItem(parsedObject);
-        cbr.udt.addDownloadTask(new URL(source.querySelector("a").href), source, source.querySelector("div.item-name span").textContent);
+        cbr.udt.addDownloadTask(new URL(source.querySelector("a").href), source.item_attr, source.querySelector("div.item-name span").textContent);
+    } else if (window.root_attr.download && isFolder(parsedObject, false)) {
+        let source = findFileItem(parsedObject);
+        if (confirm(`下载文件夹 “${source.item_attr.name}“？（注：浏览器不能在本地创建文件夹。）`)) {
+            toggleAnimation(true);
+            fetchingStatusBar.displayInfo("正在获取信息...");
+            _resolveTree(getFullPath(source), true);
+        }
     }
 });
 cbr.udt = cbr.es.content.querySelector(".dl-cbr-tasklist");
@@ -1720,7 +1727,7 @@ cbr.udt.addUploadTask = function (pturl, file, name) {
     }
     return ti;
 };
-cbr.udt.addDownloadTask = function (gturl, item, name) {
+cbr.udt.addDownloadTask = function (gturl, item_attr, name) {
     for (const ti of cbr.udt.getAllTask(cbr.udt.itypes.download)) {
         if (ti.udti_attr.gturl.pathname === gturl.pathname) {
             return;
@@ -1731,9 +1738,9 @@ cbr.udt.addDownloadTask = function (gturl, item, name) {
         itype: cbr.udt.itypes.download,
         istatus: cbr.udt.istatus.waiting,
         gturl: gturl,
-        item: item,
+        item_attr: item_attr,
         name: name,
-        total: parseInt(item.item_attr.size, 10),
+        total: parseInt(item_attr.size, 10),
         curr: 0,
         progress: 0,
         chunks: [],
@@ -1751,6 +1758,27 @@ cbr.udt.addDownloadTask = function (gturl, item, name) {
     }
     return ti;
 };
+cbr.udt.addDownloadTaskByTree = function (trees, source, paths) {
+    let files = [], folders = [];
+    for (const tree of trees) {
+        if (isFolder(tree, false)) {
+            folders.push(tree)
+        } else if (isFile(tree, false)) {
+            files.push(tree)
+        }
+    }
+    files.map(e => {
+        const gturl = new URL(source);
+        if (!gturl.pathname.endsWith("/")) gturl.pathname += "/";
+        for (const path of paths) gturl.pathname += path + "/";
+        gturl.pathname += encodeURIComponent(e.name)
+        cbr.udt.addDownloadTask(gturl, e, [...paths, encodeURIComponent(e.name)].join("/"))
+    })
+    for (const folder of folders) {
+        cbr.udt.addDownloadTaskByTree(folder["children"], source, [...paths, encodeURIComponent(folder["name"]),]);
+    }
+
+}
 cbr.udt.switchShowRetryBtn = function (ti,) {
     if (ti.udti_attr.istatus === cbr.udt.istatus.failed) {
         ti.querySelector(".ti-action-retry").style.display = "inline"
@@ -1886,7 +1914,7 @@ cbr.udt.core_upload = async function (ti,) {
                     ti.udti_attr.lstartindex = data["present"] + 1;
                 }
             } catch (error) {
-                console.error("Error sending request:", error);
+                console.error("Error:", error);
                 ti.udti_attr.istatus = cbr.udt.istatus.failed
                 cbr.udt.upItem(ti)
                 return;
@@ -1909,7 +1937,7 @@ cbr.udt.core_upload = async function (ti,) {
                 console.log("upload_new_session:response:json", data);
                 ti.udti_attr.session = data.session;
             } catch (error) {
-                console.error("Error sending request:", error);
+                console.error("Error:", error);
                 ti.udti_attr.istatus = cbr.udt.istatus.failed
                 cbr.udt.upItem(ti)
                 return;
@@ -2077,7 +2105,7 @@ cbr.udt.core_download = async function (ti,) {
     let blob = new Blob([totalArray]);
     let a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = ti.udti_attr.name;
+    a.download = ti.udti_attr.name.split("/").at(-1);
     a.click();
     URL.revokeObjectURL(a.href);
     console.log("下载成功",);
@@ -2781,7 +2809,7 @@ async function _chdir(e,) {
             document.querySelector('#open_drive').setAttribute("href", getCurrentFolderShareLink(e.target.item_attr));
         }
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     toggleAnimation(false);
     fetchingStatusBar.displayInfo();
@@ -2858,7 +2886,7 @@ async function _move(source, to,) {
         }
 
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     chdir(null);
 }
@@ -2907,7 +2935,7 @@ async function _rename(source, name,) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     chdir(null);
 }
@@ -3007,7 +3035,7 @@ async function _share(source, data,) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     chdir(null);
 }
@@ -3038,7 +3066,7 @@ async function _trash(source,) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     chdir(null);
 }
@@ -3090,7 +3118,7 @@ async function _delete2(source,) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     chdir(null);
 }
@@ -3106,7 +3134,7 @@ async function _deleteSelected(sources) {
                 action: "delete_selected", ...resolveSelectedItems2kw(sources),
             }),
         });
-        console.log("delete_selectd:response:", response);
+        console.log("delete_selected:response:", response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -3130,7 +3158,7 @@ async function _newFolder(name,) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     } catch (error) {
-        console.error("Error sending request:", error);
+        console.error("Error:", error);
     }
     chdir(null);
 }
@@ -3184,7 +3212,7 @@ async function _zipping_request(e, source,) {
 
 }
 
-async function _resolveTree(source) {
+async function _resolveTree(source, download_file = false) {
     let data;
     const baseUrl = new URL(window.location.href.replace(/#$/, ""));
     try {
@@ -3193,7 +3221,7 @@ async function _resolveTree(source) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                action: "resolve_tree", source: source,
+                action: "resolve_tree", source: source, local: download_file,
             }),
         });
         console.log("resolve_tree:response:", response);
@@ -3209,10 +3237,16 @@ async function _resolveTree(source) {
     toggleAnimation(false);
     fetchingStatusBar.displayInfo();
     if (data.summary.fileCount > 0) {
-        if (confirm(`${data.summary.fileCount}个文件，${data.summary.folderCount > 0 ? `${data.summary.folderCount}个文件夹，` : ""}总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始转存？`)) {
-            // toggleAnimation(true);
-            openDialog();
-            copy_from(data);
+        if (download_file) {
+            if (confirm(`${data.summary.fileCount}个文件，总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始下载？`)) {
+                cbr.udt.addDownloadTaskByTree([data["tree"],], source, [])
+            }
+        } else {
+            if (confirm(`${data.summary.fileCount}个文件，${data.summary.folderCount > 0 ? `${data.summary.folderCount}个文件夹，` : ""}总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始转存？`)) {
+                // toggleAnimation(true);
+                openDialog();
+                copy_from(data);
+            }
         }
     }
 }
