@@ -1758,7 +1758,7 @@ cbr.udt.addDownloadTask = function (gturl, item_attr, name) {
     }
     return ti;
 };
-cbr.udt.addDownloadTaskByTree = function (trees, source, paths, root = true) {
+cbr.udt.addDownloadTaskByTree = function (trees, source, paths,) {
     let files = [], folders = [];
     for (const tree of trees) {
         if (isFolder(tree, false)) {
@@ -1775,11 +1775,7 @@ cbr.udt.addDownloadTaskByTree = function (trees, source, paths, root = true) {
         cbr.udt.addDownloadTask(gturl, e, [...paths, encodeURIComponent(e.name)].join("/"))
     })
     for (const folder of folders) {
-        if (root) {
-            cbr.udt.addDownloadTaskByTree(folder["children"], source, [], false,);
-        } else {
-            cbr.udt.addDownloadTaskByTree(folder["children"], source, [...paths, encodeURIComponent(folder["name"]),], false,);
-        }
+        cbr.udt.addDownloadTaskByTree(folder["children"], source, [...paths, encodeURIComponent(folder["name"]),],);
     }
 
 }
@@ -3243,6 +3239,10 @@ async function _resolveTree(source, download_file = false) {
     if (data.summary.fileCount > 0) {
         if (download_file) {
             if (confirm(`${data.summary.fileCount}个文件，总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始下载？`)) {
+                if (source.endsWith("/")) source = source.slice(0, -1);
+                let ps = source.split("/");
+                ps.pop();
+                source = ps.join("/") + "/";
                 const u = new URL(window.location.href)
                 u.pathname = source;
                 cbr.udt.addDownloadTaskByTree([data["tree"],], u.toString(), [])
