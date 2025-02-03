@@ -1758,7 +1758,7 @@ cbr.udt.addDownloadTask = function (gturl, item_attr, name) {
     }
     return ti;
 };
-cbr.udt.addDownloadTaskByTree = function (trees, source, paths) {
+cbr.udt.addDownloadTaskByTree = function (trees, source, paths, root = true) {
     let files = [], folders = [];
     for (const tree of trees) {
         if (isFolder(tree, false)) {
@@ -1775,7 +1775,11 @@ cbr.udt.addDownloadTaskByTree = function (trees, source, paths) {
         cbr.udt.addDownloadTask(gturl, e, [...paths, encodeURIComponent(e.name)].join("/"))
     })
     for (const folder of folders) {
-        cbr.udt.addDownloadTaskByTree(folder["children"], source, [...paths, encodeURIComponent(folder["name"]),]);
+        if (root) {
+            cbr.udt.addDownloadTaskByTree(folder["children"], source, [], false,);
+        } else {
+            cbr.udt.addDownloadTaskByTree(folder["children"], source, [...paths, encodeURIComponent(folder["name"]),], false,);
+        }
     }
 
 }
