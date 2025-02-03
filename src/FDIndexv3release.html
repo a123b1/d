@@ -3239,7 +3239,9 @@ async function _resolveTree(source, download_file = false) {
     if (data.summary.fileCount > 0) {
         if (download_file) {
             if (confirm(`${data.summary.fileCount}个文件，总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始下载？`)) {
-                cbr.udt.addDownloadTaskByTree([data["tree"],], source, [])
+                const u = new URL(window.location.href)
+                u.pathname = source;
+                cbr.udt.addDownloadTaskByTree([data["tree"],], u.toString(), [])
             }
         } else {
             if (confirm(`${data.summary.fileCount}个文件，${data.summary.folderCount > 0 ? `${data.summary.folderCount}个文件夹，` : ""}总大小${formatBytes(parseInt(data.summary.totalSize, 10)).replace(/\s/, "")}，开始转存？`)) {
