@@ -1408,7 +1408,7 @@ cbr.es = addDialog(`
 
 .dl-cbr-tasklist-container{
     margin-top: 4px;
-    border: 1px dashed #00000000;
+    border: 2px dashed #00000000;
 }
 
 .dl-cbr-tasklist{
@@ -2137,7 +2137,7 @@ cbr.content_tasklist.addEventListener('dragenter', (event) => {
         return;
     }
     event.preventDefault();
-    cbr.content_tasklist.style.border = "1px dashed #2088ee";
+    cbr.content_tasklist.style.border = "2px dashed #2088ee";
 });
 cbr.content_tasklist.addEventListener('dragover', (event) => {
     if (!cbr.tabbtn_task_upload.classList.contains("dl-cbr-tabbutton-selected")) {
@@ -2146,10 +2146,10 @@ cbr.content_tasklist.addEventListener('dragover', (event) => {
         return;
     }
     event.preventDefault();
-    cbr.content_tasklist.style.border = "1px dashed #2088ee";
+    cbr.content_tasklist.style.border = "2px dashed #2088ee";
 });
 cbr.content_tasklist.addEventListener('dragleave', () => {
-    cbr.content_tasklist.style.border = "1px dashed #00000000";
+    cbr.content_tasklist.style.border = "2px dashed #00000000";
 });
 cbr.content_tasklist.addEventListener('drop', (event) => {
     if (!cbr.tabbtn_task_upload.classList.contains("dl-cbr-tabbutton-selected")) {
@@ -2158,7 +2158,7 @@ cbr.content_tasklist.addEventListener('drop', (event) => {
         return;
     }
     event.preventDefault();
-    cbr.content_tasklist.style.border = "1px dashed #00000000";
+    cbr.content_tasklist.style.border = "2px dashed #00000000";
     const dataTransferItems = event.dataTransfer.items;
     const validFiles = [];
     for (let i = 0; i < dataTransferItems.length; i++) {
