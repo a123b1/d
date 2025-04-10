@@ -2129,7 +2129,90 @@ cbr.udt.core_download = async function (ti,) {
     cbr.udt.upItem(ti)
 
 }
+cbr.content_tasklist.addEventListener('dragenter', (event) => {
+    event.preventDefault();
+    cbr.content_tasklist.style.border = "3px dashed #2088ee";
+});
+cbr.content_tasklist.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    cbr.content_tasklist.style.border = "3px dashed #2088ee";
+});
+cbr.content_tasklist.addEventListener('dragleave', () => {
+    cbr.content_tasklist.style.border = "3px dashed #00000000";
+});
+cbr.content_tasklist.addEventListener('drop', (event) => {
+    event.preventDefault();
+    cbr.content_tasklist.style.border = "3px dashed #00000000";
+    const dataTransferItems = event.dataTransfer.items;
+    const validFiles = [];
+    for (let i = 0; i < dataTransferItems.length; i++) {
+        const item = dataTransferItems[i];
+        const entry = item.webkitGetAsEntry && item.webkitGetAsEntry();
+        // console.log(item, entry);
+        if (entry && entry.isDirectory) {
+            continue;
+        }
+        if (item.kind === 'file') {
+            const file = item.getAsFile();
+            // console.log(file,);
+            if (file) {
+                validFiles.push(file);
+            }
+        }
+    }
+    if (validFiles.length > 0) {
+        for (const file of validFiles) {
+            let can = true;
+            let name = file.name.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
+            if (name.length === 0) {
+                can = false;
+            }
+            if (/^\.*$/.test(name)) {
+                can = false;
+            }
+            if (!can) {
+                continue;
+            }
+            for (let disallowedUploadElement of window.root_attr.disallowed_upload) {
+                if (!disallowedUploadElement.startsWith('.')) {
+                    disallowedUploadElement = "." + disallowedUploadElement;
+                }
+                if (name.endsWith(disallowedUploadElement)) {
+                    alert(document.getElementById('tip-disallowed-upload').textContent);
+                    can = false;
+                    break;
+                }
+            }
+            if (!can) {
+                continue;
+            }
+            if (root_attr.max_upload_size > 0 && file.size >= root_attr.max_upload_size * 1024 * 1024) {
+                alert(`单文件大小限制为${root_attr.max_upload_size}MB。`);
+                can = false;
+                continue;
+            }
 
+            if (root_attr.unique_name) {
+                for (let itemElement of getFileList()) {
+                    if (name === itemElement.querySelector(".item-name span").textContent) {
+                        alert(`名称重复 “${name}” 。`);
+                        can = false;
+                        break;
+                    }
+                }
+            }
+            if (!can) {
+                continue;
+            }
+
+            let url = new URL(window.location.href.replace(/#$/, ""));
+            if (!url.pathname.endsWith('/')) url.pathname += "/";
+            url.pathname = url.pathname + encodeURIComponent(name);
+            cbr.udt.addUploadTask(url, file, name);
+        }
+
+    }
+});
 
 // 右下角进度条
 class FetchingStatusBar {
