@@ -2819,6 +2819,8 @@ function getCurrentFolderShareLink(attr,) {
     let id = attr.id === "root" ? window.root_attr.id : attr.id;
     if (window.root_attr.type === Types.google_drive) {
         return `https://drive.google.com/open?id=${id}`;
+    } else if (window.root_attr.type === Types.zoho_workdrive) {
+        return `https://workdrive.zohoexternal.com/folder/${id}`;
     } else if (window.root_attr.type === Types.deno_mysql || window.root_attr.type === Types.cf_d1_kv) {
         return `did://${id}`;
     } else {
@@ -2832,6 +2834,8 @@ if (window.root_attr.btn_goto_drive !== true) {
 }
 if (window.root_attr.type === Types.google_drive) {
     document.querySelector('#open_drive').setAttribute('title', "在Google网盘打开");
+} else if (window.root_attr.type === Types.zoho_workdrive) {
+    document.querySelector('#open_drive').setAttribute('title', "在Zoho网盘打开");
 } else {
     document.querySelector('#open_drive').setAttribute('title', "");
 }
