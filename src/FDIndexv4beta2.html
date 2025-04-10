@@ -2288,7 +2288,7 @@ function addFile(attr) {
         let htmlTemplate = `
 <div class="item file" draggable="false">
     <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
-        <div class="item-content" draggable="${window.root_attr.upload}">
+        <div class="item-content" draggable="true">
             <i class="item-icon"></i>
             <div class="item-info">
                 <div class="item-name"><span>${attr.name}</span></div>
@@ -2421,7 +2421,7 @@ function addFile(attr) {
         let htmlTemplate = `
 <div class="item folder" draggable="false">
     <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
-        <div class="item-content" draggable="${window.root_attr.upload}">
+        <div class="item-content" draggable="true">
             <i class="item-icon"></i>
             <div class="item-info">
                 <div class="item-name"><span>${attr.name}</span></div>
@@ -2592,7 +2592,7 @@ function addFile(attr) {
         let htmlTemplate = `
 <div class="item folder" draggable="false">
     <a href="${url.toString()}" target="_self" onclick="event.preventDefault();" draggable="false">
-        <div class="item-content" draggable="${window.root_attr.upload}">
+        <div class="item-content" draggable="true">
             <i class="item-icon"></i>
             <div class="item-info">
                 <div class="item-name"><span>${attr.name}</span></div>
