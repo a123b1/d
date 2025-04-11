@@ -534,6 +534,15 @@
             display: inline-block;
         }
 
+        .item-action-more-icon {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%232196F3' d='M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 22px;
+            height: 22px;
+            display: inline-block;
+        }
+
         .item-info {
             pointer-events: none;
             width: 100%;
@@ -964,6 +973,10 @@
 
     </style>
     <style>
+        .item-action button.item-action-more {
+            display: none;
+        }
+
         @media only screen and (max-width: 767px) {
             body {
                 margin: 74px 0 0;
@@ -974,10 +987,49 @@
             }
 
             .content {
-                padding: 0 0 24px 0;
+                /*padding: 0 0 24px 0;*/
             }
 
+            .item-action button:not(.item-action-more) {
+                display: none;
+            }
+
+            .item-action button.item-action-more {
+                display: inline-block;
+            }
         }
+
+    </style>
+    <style>
+        .menu {
+            position: absolute;
+            background-color: #CEEACA;
+            border-radius: 4px;
+            padding: 4px 0;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            user-select: none;
+        }
+
+        .menu div {
+            padding: 8px 28px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .menu div:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .menu div.disabled {
+            color: #a2a2a2;
+        }
+
+        .menu div.disabled:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
     </style>
 </head>
 <body>
@@ -1150,6 +1202,16 @@
         </div>
     </div>
 </div>
+
+<div id="item-menu" class="menu">
+    <div class="menu-action" id="item-menu-action-zipping">打包下载</div>
+    <div class="menu-action" id="item-menu-action-download">下载</div>
+    <div class="menu-action" id="item-menu-action-rename">重命名</div>
+    <div class="menu-action" id="item-menu-action-share">共享设置</div>
+    <div class="menu-action" id="item-menu-action-trash">移至垃圾桶</div>
+    <div class="menu-action" id="item-menu-action-delete">永久删除</div>
+</div>
+
 <script>  <!--defer-->
 
 const FDIndex_version = null;
@@ -2324,6 +2386,26 @@ function showListMsg(s, error = false) {
 
 showListMsg("")
 
+// 文件item操作菜单
+const item_menu = document.getElementById('item-menu');
+document.addEventListener('click', function () {
+    item_menu.currentTrItem = null;
+    item_menu.style.display = 'none';
+});
+document.addEventListener('keydown', function (event) {
+    item_menu.currentTrItem = null;
+    if (event.key === 'Escape') {
+        item_menu.style.display = 'none';
+    }
+});
+document.querySelector("#item-menu-action-download").addEventListener("click", async function () {
+    if (item_menu.currentTrItem) {
+        // await editAccount(item_menu.currentTrItem)
+    }
+    item_menu.currentTrItem = null;
+    item_menu.style.display = 'none';
+})
+
 function formatTimestamp(timestamp, format) {
     const date = new Date((timestamp + (8 * 60 * 60)) * 1000);
     const map = {
@@ -2538,6 +2620,36 @@ function addFile(attr) {
                 _delete(e);
             });
         }
+        {
+            _new__action.insertAdjacentHTML('beforeend', `
+<button class="item-action-more" title="更多操作">
+    <i class="item-action-more-icon"></i>
+</button>
+`);
+            _new__action.querySelector('.item-action-more').addEventListener('click', function (e) {
+                // console.log(e.target);
+                if (e.target.tagName === 'A') { // 多余
+                    e.stopPropagation();
+                    e.preventDefault();
+                    e.target.parentNode.click();
+                    return;
+                }
+                // e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+
+                item_menu.querySelector("#item-menu-action-zipping").style.display = "none";
+                item_menu.querySelector("#item-menu-action-download").style.display = window.root_attr.download ? "" : "none";
+                item_menu.querySelector("#item-menu-action-rename").style.display = window.root_attr.rename ? "" : "none";
+                item_menu.querySelector("#item-menu-action-share").style.display = window.root_attr.share === true && window.root_attr.can_share === true ? "" : "none";
+                item_menu.querySelector("#item-menu-action-trash").style.display = window.root_attr.trash === true && window.root_attr.can_trash === true ? "" : "none";
+                item_menu.querySelector("#item-menu-action-delete").style.display = window.root_attr.delete === true ? "" : "none";
+                item_menu.currentTrItem = _new;
+                item_menu.style.display = 'block';
+                item_menu.style.left = `${e.pageX}px`;
+                item_menu.style.top = `${e.pageY}px`;
+            });
+        }
     } else if (isFolder(attr, false)) {
         let htmlTemplate = `
 <div class="item folder" draggable="false">
@@ -2716,6 +2828,36 @@ function addFile(attr) {
                 e.target.style.backgroundColor = "";
             }
         });
+        {
+            _new__action.insertAdjacentHTML('beforeend', `
+<button class="item-action-more" title="更多操作">
+    <i class="item-action-more-icon"></i>
+</button>
+`);
+            _new__action.querySelector('.item-action-more').addEventListener('click', function (e) {
+                // console.log(e.target);
+                if (e.target.tagName === 'A') { // 多余
+                    e.stopPropagation();
+                    e.preventDefault();
+                    e.target.parentNode.click();
+                    return;
+                }
+                // e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+
+                item_menu.querySelector("#item-menu-action-zipping").style.display = window.root_attr.download_as_zip === true && window.root_attr.can_zip === true ? "" : "none";
+                item_menu.querySelector("#item-menu-action-download").style.display = "none";
+                item_menu.querySelector("#item-menu-action-rename").style.display = window.root_attr.rename ? "" : "none";
+                item_menu.querySelector("#item-menu-action-share").style.display = window.root_attr.share === true && window.root_attr.can_share === true ? "" : "none";
+                item_menu.querySelector("#item-menu-action-trash").style.display = window.root_attr.trash === true && window.root_attr.can_trash === true ? "" : "none";
+                item_menu.querySelector("#item-menu-action-delete").style.display = window.root_attr.delete === true ? "" : "none";
+                item_menu.currentTrItem = _new;
+                item_menu.style.display = 'block';
+                item_menu.style.left = `${e.pageX}px`;
+                item_menu.style.top = `${e.pageY}px`;
+            });
+        }
     } else if (isDrive(attr,)) {
         let htmlTemplate = `
 <div class="item folder" draggable="false">
