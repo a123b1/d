@@ -2216,6 +2216,11 @@ cbr.udt.core_download = async function (ti,) {
 
 }
 cbr.content_tasklist.addEventListener('dragenter', (event) => {
+    if (!root_attr.upload) {
+        event.preventDefault();
+        event.stopPropagation()
+        return;
+    }
     if (!cbr.tabbtn_task_upload.classList.contains("dl-cbr-tabbutton-selected")) {
         event.preventDefault();
         event.stopPropagation()
@@ -2225,6 +2230,11 @@ cbr.content_tasklist.addEventListener('dragenter', (event) => {
     cbr.content_tasklist.style.border = "2px dashed #2088ee";
 });
 cbr.content_tasklist.addEventListener('dragover', (event) => {
+    if (!root_attr.upload) {
+        event.preventDefault();
+        event.stopPropagation()
+        return;
+    }
     if (!cbr.tabbtn_task_upload.classList.contains("dl-cbr-tabbutton-selected")) {
         event.preventDefault();
         event.stopPropagation()
@@ -2237,6 +2247,11 @@ cbr.content_tasklist.addEventListener('dragleave', () => {
     cbr.content_tasklist.style.border = "2px dashed #00000000";
 });
 cbr.content_tasklist.addEventListener('drop', (event) => {
+    if (!root_attr.upload) {
+        event.preventDefault();
+        event.stopPropagation()
+        return;
+    }
     if (!cbr.tabbtn_task_upload.classList.contains("dl-cbr-tabbutton-selected")) {
         event.preventDefault();
         event.stopPropagation()
