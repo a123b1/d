@@ -41,10 +41,15 @@
             align-items: center;
             padding: 6px;
             width: 100%;
+
+            overflow-x: auto;
+            scrollbar-width: none;
+            flex-wrap: nowrap;
+            white-space: nowrap;
         }
 
         .home {
-            min-width: 32px;
+            /*min-width: 32px;*/
             font-size: 22px;
             height: auto;
             /*margin: 7px 0px 7px 0px;*/
@@ -3533,6 +3538,12 @@ function addPath(attr, parent_path) {
             event.target.style.backgroundColor = "";
         }
     });
+
+    {
+        const path_container = document.querySelector('div.banner-left');
+        path_container.scrollLeft = path_container.scrollWidth;
+    }
+
     return _new;
 }
 
