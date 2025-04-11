@@ -2398,7 +2398,42 @@ document.addEventListener('keydown', function (event) {
         item_menu.style.display = 'none';
     }
 });
-document.querySelector("#item-menu-action-download").addEventListener("click", async function () {
+item_menu.querySelector("#item-menu-action-zipping").addEventListener("click", async function () {
+    if (item_menu.currentTrItem) {
+        // await editAccount(item_menu.currentTrItem)
+    }
+    item_menu.currentTrItem = null;
+    item_menu.style.display = 'none';
+})
+item_menu.querySelector("#item-menu-action-download").addEventListener("click", async function () {
+    if (item_menu.currentTrItem) {
+        // await editAccount(item_menu.currentTrItem)
+    }
+    item_menu.currentTrItem = null;
+    item_menu.style.display = 'none';
+})
+item_menu.querySelector("#item-menu-action-rename").addEventListener("click", async function () {
+    if (item_menu.currentTrItem) {
+        // await editAccount(item_menu.currentTrItem)
+    }
+    item_menu.currentTrItem = null;
+    item_menu.style.display = 'none';
+})
+item_menu.querySelector("#item-menu-action-share").addEventListener("click", async function () {
+    if (item_menu.currentTrItem) {
+        // await editAccount(item_menu.currentTrItem)
+    }
+    item_menu.currentTrItem = null;
+    item_menu.style.display = 'none';
+})
+item_menu.querySelector("#item-menu-action-trash").addEventListener("click", async function () {
+    if (item_menu.currentTrItem) {
+        // await editAccount(item_menu.currentTrItem)
+    }
+    item_menu.currentTrItem = null;
+    item_menu.style.display = 'none';
+})
+item_menu.querySelector("#item-menu-action-delete").addEventListener("click", async function () {
     if (item_menu.currentTrItem) {
         // await editAccount(item_menu.currentTrItem)
     }
@@ -2646,8 +2681,23 @@ function addFile(attr) {
                 item_menu.querySelector("#item-menu-action-delete").style.display = window.root_attr.delete === true ? "" : "none";
                 item_menu.currentTrItem = _new;
                 item_menu.style.display = 'block';
-                item_menu.style.left = `${e.pageX}px`;
-                item_menu.style.top = `${e.pageY}px`;
+
+                // item_menu.style.left = `${e.pageX}px`;
+                // item_menu.style.top = `${e.pageY}px`;
+                const menuWidth = item_menu.offsetWidth;
+                const menuHeight = item_menu.offsetHeight;
+                const pageWidth = window.innerWidth;
+                const pageHeight = window.innerHeight;
+                let x = e.pageX;
+                let y = e.pageY;
+                if (x + menuWidth > pageWidth) {
+                    x = pageWidth - menuWidth - 40;
+                }
+                if (y + menuHeight > pageHeight) {
+                    y = pageHeight - menuHeight;
+                }
+                item_menu.style.left = `${x}px`;
+                item_menu.style.top = `${y}px`;
             });
         }
     } else if (isFolder(attr, false)) {
@@ -2854,8 +2904,23 @@ function addFile(attr) {
                 item_menu.querySelector("#item-menu-action-delete").style.display = window.root_attr.delete === true ? "" : "none";
                 item_menu.currentTrItem = _new;
                 item_menu.style.display = 'block';
-                item_menu.style.left = `${e.pageX}px`;
-                item_menu.style.top = `${e.pageY}px`;
+
+                // item_menu.style.left = `${e.pageX}px`;
+                // item_menu.style.top = `${e.pageY}px`;
+                const menuWidth = item_menu.offsetWidth;
+                const menuHeight = item_menu.offsetHeight;
+                const pageWidth = window.innerWidth;
+                const pageHeight = window.innerHeight;
+                let x = e.pageX;
+                let y = e.pageY;
+                if (x + menuWidth > pageWidth) {
+                    x = pageWidth - menuWidth - 40;
+                }
+                if (y + menuHeight > pageHeight) {
+                    y = pageHeight - menuHeight;
+                }
+                item_menu.style.left = `${x}px`;
+                item_menu.style.top = `${y}px`;
             });
         }
     } else if (isDrive(attr,)) {
