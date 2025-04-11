@@ -302,6 +302,7 @@
 
         .list {
             /*clear: both;*/
+            padding-bottom: 120px;
         }
 
         #progress-bar {
@@ -1007,7 +1008,7 @@
             border-radius: 4px;
             padding: 4px 0;
             display: none;
-            z-index: 1000;
+            z-index: 999;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             user-select: none;
         }
@@ -2441,6 +2442,7 @@ item_menu.querySelector("#item-menu-action-delete").addEventListener("click", as
     item_menu.style.display = 'none';
 })
 
+
 function formatTimestamp(timestamp, format) {
     const date = new Date((timestamp + (8 * 60 * 60)) * 1000);
     const map = {
@@ -2684,20 +2686,21 @@ function addFile(attr) {
 
                 // item_menu.style.left = `${e.pageX}px`;
                 // item_menu.style.top = `${e.pageY}px`;
-                const menuWidth = item_menu.offsetWidth;
-                const menuHeight = item_menu.offsetHeight;
-                const pageWidth = window.innerWidth;
-                const pageHeight = window.innerHeight;
-                let x = e.pageX;
-                let y = e.pageY;
-                if (x + menuWidth > pageWidth) {
-                    x = pageWidth - menuWidth - 40;
+                const menu = item_menu;
+                const menuWidth = menu.offsetWidth;
+                const menuHeight = menu.offsetHeight;
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                let x = e.clientX;
+                let y = e.clientY;
+                if (x + menuWidth > viewportWidth) {
+                    x = viewportWidth - menuWidth - 40;
                 }
-                if (y + menuHeight > pageHeight) {
-                    y = pageHeight - menuHeight;
+                if (y + menuHeight > viewportHeight) {
+                    y = viewportHeight - menuHeight;
                 }
-                item_menu.style.left = `${x}px`;
-                item_menu.style.top = `${y}px`;
+                menu.style.left = `${x + window.scrollX}px`;
+                menu.style.top = `${y + window.scrollY}px`;
             });
         }
     } else if (isFolder(attr, false)) {
@@ -2907,20 +2910,21 @@ function addFile(attr) {
 
                 // item_menu.style.left = `${e.pageX}px`;
                 // item_menu.style.top = `${e.pageY}px`;
-                const menuWidth = item_menu.offsetWidth;
-                const menuHeight = item_menu.offsetHeight;
-                const pageWidth = window.innerWidth;
-                const pageHeight = window.innerHeight;
-                let x = e.pageX;
-                let y = e.pageY;
-                if (x + menuWidth > pageWidth) {
-                    x = pageWidth - menuWidth - 40;
+                const menu = item_menu;
+                const menuWidth = menu.offsetWidth;
+                const menuHeight = menu.offsetHeight;
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                let x = e.clientX;
+                let y = e.clientY;
+                if (x + menuWidth > viewportWidth) {
+                    x = viewportWidth - menuWidth - 40;
                 }
-                if (y + menuHeight > pageHeight) {
-                    y = pageHeight - menuHeight;
+                if (y + menuHeight > viewportHeight) {
+                    y = viewportHeight - menuHeight;
                 }
-                item_menu.style.left = `${x}px`;
-                item_menu.style.top = `${y}px`;
+                menu.style.left = `${x + window.scrollX}px`;
+                menu.style.top = `${y + window.scrollY}px`;
             });
         }
     } else if (isDrive(attr,)) {
