@@ -992,7 +992,15 @@
             }
 
             .item-action button:not(.item-action-more) {
-                display: none;
+                visibility: hidden;
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                opacity: 0;
+                pointer-events: none;
+                overflow: hidden;
+                border: 0;
+                padding: 0;
             }
 
             .item-action button.item-action-more {
@@ -4334,7 +4342,7 @@ let data = [
     {"id": "UBk9grPZPU6Dcf", "type": "file", "name": "444", "size": 0, "shared": false, modified_time: null,}
 ]
 for (let i = 0; i < data.length; i++) {
-    // addFile(data[i]);
+    addFile(data[i]);
 }
 
 
