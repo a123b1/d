@@ -2003,7 +2003,7 @@ cbr.udt.core_upload = async function (ti,) {
     ti.udti_attr.progress = 0
     cbr.udt.upItem(ti)
 
-    if (ti.udti_attr.file.relativePath) { // 创建文件夹
+    if (ti.udti_attr.file.relativePath && ti.udti_attr.file.relativePath.length > 0) { // 创建文件夹
         let url = new URL(ti.udti_attr.file.relativePath.baseurl)
         for (const p1name of ti.udti_attr.file.relativePath) {
             try {
@@ -2023,7 +2023,7 @@ cbr.udt.core_upload = async function (ti,) {
                 cbr.udt.upItem(ti)
                 return;
             }
-            url.pathname = url.pathname + p1name + "/"
+            url.pathname = url.pathname + encodeURIComponent(p1name) + "/"
         }
     }
 
@@ -2386,13 +2386,14 @@ cbr.content_tasklist.addEventListener('drop', async (event) => {
         if (!url.pathname.endsWith('/')) url.pathname += "/";
         for (const file of files) {
             let file_url = new URL(url)
-            if (file.relativePath) {
+            if (file.relativePath && file.relativePath.length > 0) {
                 file.relativePath.baseurl = new URL(url)
                 file_url.pathname = file_url.pathname + file.relativePath.map(encodeURIComponent).join("/") + "/"
             }
             file_url.pathname = file_url.pathname + encodeURIComponent(file.formated_name);
             // console.log(file_url, file, file.formated_name)
-            cbr.udt.addUploadTask(file_url, file, file.formated_name);
+            cbr.udt.addUploadTask(file_url, file,
+                file.relativePath && file.relativePath.length > 0 ? file.relativePath.join("/") + "/" + file.formated_name : file.formated_name);
         }
     }
 });
