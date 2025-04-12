@@ -2074,6 +2074,11 @@ cbr.udt.core_upload = async function (ti,) {
                 }
                 const data = (await response.json());
                 console.log("upload_new_session:response:json", data);
+                if (data === null) {
+                    ti.udti_attr.istatus = cbr.udt.istatus.finished
+                    cbr.udt.upItem(ti)
+                    return;
+                }
                 ti.udti_attr.session = data.session;
             } catch (error) {
                 console.error("Error:", error);
