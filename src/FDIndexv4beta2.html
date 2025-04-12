@@ -2365,13 +2365,17 @@ cbr.content_tasklist.addEventListener('drop', async (event) => {
             }
 
             if (root_attr.unique_name) {
-                for (let itemElement of getFileList()) {
-                    if (name === itemElement.querySelector(".item-name span").textContent) {
-                        alert(`名称重复 “${name}” 。`);
-                        can = false;
-                        break;
+                if (file.relativePath && file.relativePath.length > 0) { // 不检查
+                } else {
+                    for (let itemElement of getFileList()) {
+                        if (name === itemElement.querySelector(".item-name span").textContent) {
+                            alert(`名称重复 “${name}” 。`);
+                            can = false;
+                            break;
+                        }
                     }
                 }
+
             }
             if (!can) {
                 // continue;
