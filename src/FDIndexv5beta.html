@@ -1232,8 +1232,7 @@
 
 const FDIndex_version = null;
 const Types = Object.freeze({
-    google_drive: 1, cf_d1_kv: 2, deno_mysql: 3, // tidbcloud
-    zoho_workdrive: 4,
+    google_drive: 1, cf_d1_kv: 2, deno_mysql: 3, zoho_workdrive: 4, netlify_blob: 5,
 });
 
 window.root_attr = {
@@ -3182,7 +3181,7 @@ function getCurrentFolderShareLink(attr,) {
         return `https://drive.google.com/open?id=${id}`;
     } else if (window.root_attr.type === Types.zoho_workdrive) {
         return `https://workdrive.zohoexternal.com/folder/${id}`;
-    } else if (window.root_attr.type === Types.deno_mysql || window.root_attr.type === Types.cf_d1_kv) {
+    } else if (window.root_attr.type === Types.deno_mysql || window.root_attr.type === Types.cf_d1_kv || window.root_attr.type === Types.netlify_blob) {
         return `did://${id}`;
     } else {
         return `#`;
